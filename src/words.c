@@ -83,7 +83,7 @@ void	select_words(t_typer *tester)
 	{
 		index = rand() % lang->size;
 		word = lang->words[index];
-		if (num_words <= lang->size && wordnode_exists(tester->wordlist, word))
+		if (i < lang->size && wordnode_exists(tester->wordlist, word))
 			continue ;
 		wordlist_add_back(&tester->wordlist, new_wordnode(word));
 		i++;
@@ -219,7 +219,7 @@ void print_keyboard(t_typer *tester, int y)
 	ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴┬──┘", y++, line_start);
 	line_start += 9;
 	ft_printf("\e[%d;%dH", y++, line_start);
-	if (' ' == tester->c)
+	if (' ' == tester->c && tester->is_correct >= 0)
 	{
 		if (tester->is_correct)
 			ft_printf("│\e[30;42m%s\e[39;49m│", space);

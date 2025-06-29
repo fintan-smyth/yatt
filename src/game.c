@@ -34,6 +34,7 @@ void	run_game(t_typer *tester)
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
 	{
+		tester->is_correct = -1;
 		if (tester->c == ' ')
 		{
 			if (cur_word->pos != 0)
