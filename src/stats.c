@@ -105,6 +105,7 @@ int	display_stats(t_typer *tester)
 {
 	char	c;
 
+	print_wordlist(tester);
 	printf("\n");
 	printf("\e[35;1mAdj WPM\e[m:\t%.1f\n", calculate_adj_wpm(tester));
 	printf("\e[35;1mNet WPM\e[m:\t%.1f\n", calculate_net_wpm(tester));
@@ -112,7 +113,7 @@ int	display_stats(t_typer *tester)
 	printf("\e[33;1mAccuracy\e[m:\t%.1f%%\n", calculate_accuracy(tester) * 100);
 	printf("\e[33;1mCorrect inputs\e[m:\t%d/%d\n", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
 	printf("\n\e[1;3mPress '\e[32mR\e[39m' to retry or '\e[31mQ\e[39m' to quit\e[m\n");
-	c = getchar();
+	c = ft_tolower(getchar());
 	while (1)
 	{
 		if (c == ESC || c == 'q')
