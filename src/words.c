@@ -57,17 +57,36 @@ void	clear_wordlist(t_word **wordlist)
 	*wordlist = NULL;
 }
 
+int	wordnode_exists(t_word *wordlist, char *word)
+{
+	t_word	*cur_word;
+
+	cur_word = wordlist;
+	while (cur_word != NULL)
+	{
+		if (cur_word->word == word)
+			return (1);
+		cur_word = cur_word->next;
+	}
+	return (0);
+}
+
 void	select_words(t_typer *tester)
 {
-	int		i = -1;
-	int		index;
-	int		num_words = tester->num_words;
-	t_lang	*lang = &tester->lang;
+	unsigned int		i = 0;
+	unsigned int		num_words = tester->num_words;
+	int					index;
+	char				*word;
+	t_lang				*lang = &tester->lang;
 
-	while (++i < num_words)
+	while (i < num_words)
 	{
 		index = rand() % lang->size;
-		wordlist_add_back(&tester->wordlist, new_wordnode(lang->words[index]));
+		word = lang->words[index];
+		if (num_words <= lang->size && wordnode_exists(tester->wordlist, word))
+			continue ;
+		wordlist_add_back(&tester->wordlist, new_wordnode(word));
+		i++;
 	}
 }
 
