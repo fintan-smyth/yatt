@@ -16,7 +16,7 @@ void	reset_game(t_typer *tester)
 {
 	select_words(tester);
 	tester->inputs_count = 0;
-	tester->wordno = 0;
+	tester->cur_word_idx = 0;
 	tester->incorrect_inputs = 0;
 	tester->c = 0;
 }
@@ -24,11 +24,12 @@ void	reset_game(t_typer *tester)
 void	run_game(t_typer *tester)
 {
 	t_word	*cur_word;
+	int		line;
 
 	reset_game(tester);
 	cur_word = tester->wordlist;
-	print_wordlist(tester->wordlist, tester->wordno);
-	print_keyboard(tester);
+	line = print_wordlist(tester);
+	print_keyboard(tester, line);
 	tester->c = getchar();
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
@@ -41,7 +42,7 @@ void	run_game(t_typer *tester)
 				check_input(tester, tester->c, cur_word);
 				if (cur_word->next == NULL)
 					break ;
-				tester->wordno++;
+				tester->cur_word_idx++;
 				cur_word = cur_word->next;
 			}
 		}
@@ -64,13 +65,13 @@ void	run_game(t_typer *tester)
 				if (cur_word->prev != NULL)
 				{
 					cur_word = cur_word->prev;
-					tester->wordno--;
+					tester->cur_word_idx--;
 				}
 			}
 		}
-		print_wordlist(tester->wordlist, tester->wordno);
-		print_keyboard(tester);
-		if (tester->wordno == tester->num_words - 1 && ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
+		line = print_wordlist(tester);
+		print_keyboard(tester, line);
+		if (tester->cur_word_idx == tester->num_words - 1 && ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
 			break ;
 		tester->c = getchar();
 	}

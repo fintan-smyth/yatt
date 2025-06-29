@@ -35,15 +35,21 @@ t_lang	load_language_file(char	*filename)
 
 void	init(t_typer *tester)
 {
+	t_env	*env;
+
+	env = ft_calloc(1, sizeof(*env));
 	srand(get_time_ms());
-	store_term_settings(tester);
-	set_term_settings(tester);
+	store_term_settings(env);
+	set_term_settings(env);
+	set_winsize(env);
+	tester->env = env;
 }
 
 void	cleanup(t_typer *tester)
 {
 	free_split(&tester->lang.words);
-	reset_term_settings(tester);
+	reset_term_settings(tester->env);
+	free(tester->env);
 }
 
 int	handle_args(int argc, char **argv, t_typer *tester)

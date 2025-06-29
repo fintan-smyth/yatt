@@ -42,6 +42,14 @@ struct s_word
 	char	input_buf[BUFSIZE];
 };
 
+typedef struct s_env
+{
+	struct termios	g_term_original;
+	int				win_width;
+	int				win_height;
+
+}	t_env;
+
 typedef struct s_typer
 {
 	t_word			*wordlist;
@@ -49,23 +57,24 @@ typedef struct s_typer
 	char			c;
 	int				is_correct;
 	int				num_words;
-	int				wordno;
+	int				cur_word_idx;
 	int				inputs_count;
 	int				incorrect_inputs;
 	size_t			start_time;
 	size_t			end_time;
-	struct termios	g_term_original;
+	t_env			*env;
 }	t_typer;
-void	store_term_settings(t_typer *tester);
 
-void	set_term_settings(t_typer *tester);
-void	reset_term_settings(t_typer *tester);
+void	store_term_settings(t_env *env);
+void	set_term_settings(t_env *env);
+void	reset_term_settings(t_env *env);
+void	set_winsize(t_env *env);
 
 t_word	*new_wordnode(char *str);
 t_word	*wordlist_add_back(t_word **lst, t_word *word);
 void	clear_wordlist(t_word **wordlist);
-void	print_wordlist(t_word *wordlist, int wordno);
-void 	print_keyboard(t_typer *tester);
+int		print_wordlist(t_typer *tester);
+void 	print_keyboard(t_typer *tester, int y);
 void	select_words(t_typer *tester);
 
 void	run_game(t_typer *tester);

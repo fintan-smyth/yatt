@@ -53,7 +53,7 @@ int	count_errors(t_typer *tester)
 	cur_word = tester->wordlist;
 	errors = 0;
 	word_idx = 0;
-	while (cur_word != NULL && word_idx <= tester->wordno)
+	while (cur_word != NULL && word_idx <= tester->cur_word_idx)
 	{
 		if (ft_strcmp(cur_word->input_buf, cur_word->word) != 0)
 			errors++;
