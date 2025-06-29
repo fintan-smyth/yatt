@@ -88,5 +88,6 @@ double	calculate_accuracy(t_typer *tester);
 int		display_stats(t_typer *tester);
 
 size_t	get_time_ms(void);
+int	max_int(int a, int b);
 
 #endif // YATT_H

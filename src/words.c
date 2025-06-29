@@ -108,6 +108,7 @@ int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
 	int		char_count;
 	int		word_count;
 	int		start;
+	int		len;
 
 	width = tester->env->win_width;
 	char_count = 0;
@@ -115,10 +116,11 @@ int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
 	word_count = *nl_word;
 	while (cur_word != NULL)
 	{
-		if (char_count + cur_word->len + 1 >= width)
+		len = max_int(cur_word->pos, cur_word->len);
+		if (char_count + len + 1 >= width)
 			break ;
 		word_count++;
-		char_count += cur_word->len + 1;
+		char_count += len + 1;
 		cur_word = cur_word->next;
 	}
 	start = (1 + width - char_count) / 2 + 1;
@@ -160,12 +162,13 @@ void	print_formatted_key(t_typer *tester, char c)
 	if (c == tester->c)
 	{
 		if (tester->is_correct)
-			ft_printf("\e[30;42m%c\e[39;49m ", ft_toupper(c));
+			ft_printf("\e[30;42m %c \e[39;49m", ft_toupper(c));
 		else
-			ft_printf("\e[30;41m%c\e[39;49m ", ft_toupper(c));
+			ft_printf("\e[30;41m %c \e[39;49m", ft_toupper(c));
 	}
 	else
-		ft_printf("%c ", ft_toupper(c));
+		ft_printf(" %c ", ft_toupper(c));
+	ft_putstr_fd("│", 1);
 }
 
 void print_keyboard(t_typer *tester, int y)
@@ -173,32 +176,39 @@ void print_keyboard(t_typer *tester, int y)
 	char	row1[] = "qwertyuiop";
 	char	row2[] = "asdfghjkl";
 	char	row3[] = "zxcvbnm";
+	char	space[] = "     SPACE     ";
 	int		i;
 	int		line_start;
 
-	line_start = tester->env->win_width / 2 - 9;
+	line_start = tester->env->win_width / 2 - 20;
 	y += 3;
-	ft_printf("\e[1m\e[%d;%dH", y++, line_start++);
+	ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
+	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
 	while (row1[++i])
 		print_formatted_key(tester, row1[i]);
-	ft_printf("\e[1m\e[%d;%dH", y++, line_start++);
+	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
+	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
 	while (row2[++i])
 		print_formatted_key(tester, row2[i]);
-	ft_printf("\e[1m\e[%d;%dH", y++, line_start++);
+	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴───┘", y++, line_start++);
+	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
 	while (row3[++i])
 		print_formatted_key(tester, row3[i]);
-	ft_printf("\e[1m\e[%d;%dH", y++, ++line_start);
+	ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴┬──┘", y++, line_start);
+	line_start += 9;
+	ft_printf("\e[%d;%dH", y++, line_start);
 	if (' ' == tester->c)
 	{
 		if (tester->is_correct)
-			ft_printf("\e[30;42m%s\e[39;49m", "[ SPACE ]");
+			ft_printf("│\e[30;42m%s\e[39;49m│", space);
 		else
-			ft_printf("\e[30;41m%s\e[39;49m","[ SPACE ]" );
+			ft_printf("│\e[30;41m%s\e[39;49m│", space);
 	}
 	else
-		ft_printf("[ SPACE ]");
+		ft_printf("│%s│", space);
+	ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
 	ft_printf("\e[m\n");
 }

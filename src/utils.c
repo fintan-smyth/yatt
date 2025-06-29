@@ -19,3 +19,10 @@ size_t	get_time_ms(void)
 	gettimeofday(&current_time, NULL);
 	return (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
 }
+
+int	max_int(int a, int b)
+{
+	if (a > b)
+		return (a);
+	return (b);
+}
