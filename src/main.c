@@ -30,6 +30,7 @@ t_lang	load_language_file(char	*filename)
 	lang.size = ft_lstsize(word_list);
 	lang.words = (char **)ft_lst_to_arr(word_list);
 	ft_lstclear(&word_list, NULL);
+	close(fd);
 	return (lang);
 }
 
