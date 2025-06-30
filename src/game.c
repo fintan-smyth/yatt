@@ -49,14 +49,16 @@ int	render_game(t_typer *tester, int finished)
 	ft_putstr_fd("╯", 1);
 	if (finished)
 		return (display_stats(tester, line));
-	print_keyboard(tester, line);
+	line = print_keyboard(tester, line);
+	// char	buf[1024];
+	// ft_snprintf(buf, 1024, "\e[33;1mCorrect inputs\e[m: %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
+	// print_str_centred(buf, ++line, tester->env->win_width);
 	return (line);
 }
 
 int	run_game(t_typer *tester)
 {
 	t_word	*cur_word;
-	int		line;
 
 	reset_game(tester);
 	cur_word = tester->wordlist;
