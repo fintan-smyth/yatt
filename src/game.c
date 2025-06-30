@@ -58,8 +58,8 @@ void	run_game(t_typer *tester)
 		{
 			if (cur_word->pos > 0)
 			{
-				cur_word->input_buf[cur_word->pos] = 0;
 				cur_word->pos--;
+				cur_word->input_buf[cur_word->pos] = 0;
 			}
 			else
 			{
