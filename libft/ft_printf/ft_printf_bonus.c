@@ -90,3 +90,27 @@ int	ft_dprintf(int fd, const char *format, ...)
 	free(output);
 	return (len);
 }
+
+int	ft_snprintf(char *buf, size_t size, const char *format, ...)
+{
+	va_list			args;
+	char			*output;
+	int				len;
+	t_format		fmt;
+
+	len = 0;
+	output = NULL;
+	va_start(args, format);
+	while (*format)
+	{
+		if (!extract_til_conv(&format, &output))
+			break ;
+		if (!extract_format(&format, &fmt))
+			return (-1);
+		put_arg_format(&args, &fmt, &output, &len);
+	}
+	ft_strlcpy(buf, output, size);
+	len += ft_strlen(output);
+	free(output);
+	return (len);
+}

@@ -21,7 +21,15 @@
 
 typedef struct s_list
 {
-	void			*content;
+	union
+	{
+		void		*content;
+		void		*str;
+		int			num;
+		long		lnum;
+		char		c;
+		double		dbl;
+	};
 	struct s_list	*next;
 }	t_list;
 
@@ -89,6 +97,7 @@ char	*get_next_line(int fd);
 
 int		ft_printf(const char *format, ...);
 int		ft_dprintf(int fd, const char *format, ...);
+int		ft_snprintf(char *buf, size_t size, const char *format, ...);
 
 // My own
 void	free_split(char ***strings);
