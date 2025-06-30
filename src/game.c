@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "yatt.h"
 
 void	reset_game(t_typer *tester)
@@ -21,6 +22,35 @@ void	reset_game(t_typer *tester)
 	tester->c = 0;
 }
 
+int	render_game(t_typer *tester)
+{
+	int	line;
+	int	i;
+
+	ft_printf("\e[2J\e[H╭");
+	i = 2;
+	while (i++ < tester->env->win_width)
+		ft_putstr_fd("─", 1);
+	ft_putstr_fd("╮", 1);
+	ft_printf("\e[2;H│\e[\e[%dG│", i, tester->env->win_width);
+	line = print_wordlist(tester);
+	ft_printf("\e[%d;1H├", line);
+	i = 2;
+	while (i++ < tester->env->win_width)
+		ft_putstr_fd("─", 1);
+	ft_putstr_fd("┤", 1);
+	i = line;
+	while (i++ < tester->env->win_height - 1)
+		ft_printf("\e[%d;H│\e[\e[%dG│", i, tester->env->win_width);
+	ft_putstr_fd("╰", 1);
+	i = 2;
+	while (i++ < tester->env->win_width)
+		ft_putstr_fd("─", 1);
+	ft_putstr_fd("╯", 1);
+	print_keyboard(tester, line);
+	return (line);
+}
+
 void	run_game(t_typer *tester)
 {
 	t_word	*cur_word;
@@ -28,8 +58,7 @@ void	run_game(t_typer *tester)
 
 	reset_game(tester);
 	cur_word = tester->wordlist;
-	line = print_wordlist(tester);
-	print_keyboard(tester, line);
+	render_game(tester);
 	tester->c = getchar();
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
@@ -47,7 +76,7 @@ void	run_game(t_typer *tester)
 				cur_word = cur_word->next;
 			}
 		}
-		else if (ft_isprint(tester->c) && cur_word->pos < BUFSIZE - 1)
+		else if (ft_isprint(tester->c) && cur_word->pos < tester->env->win_width - 6)
 		{
 			cur_word->input_buf[cur_word->pos] = tester->c;
 			check_input(tester, tester->c, cur_word);
@@ -70,8 +99,7 @@ void	run_game(t_typer *tester)
 				}
 			}
 		}
-		line = print_wordlist(tester);
-		print_keyboard(tester, line);
+		render_game(tester);
 		if (tester->cur_word_idx == tester->num_words - 1 && ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
 			break ;
 		tester->c = getchar();

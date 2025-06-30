@@ -129,7 +129,7 @@ int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
 	int		start;
 	int		len;
 
-	width = tester->env->win_width;
+	width = tester->env->win_width - 4;
 	char_count = 0;
 	cur_word = first_word;
 	word_count = *nl_word;
@@ -142,7 +142,7 @@ int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
 		char_count += len + 1;
 		cur_word = cur_word->next;
 	}
-	start = (1 + width - char_count) / 2 + 1;
+	start = (1 + width - char_count) / 2 + 3;
 	*nl_word = word_count;
 	return (start);
 }
@@ -155,25 +155,27 @@ int	print_wordlist(t_typer *tester)
 	int		x;
 	int		y;
 
-	ft_printf("\e[2J\e[H");
 	cur_word = tester->wordlist;
 	word_idx = 0;
 	nl_word = 0;
-	y = 0;
+	y = 1;
 	while (cur_word != NULL)
 	{
 		if (nl_word == word_idx)
 		{
 			x = calculate_line_start(tester, cur_word, &nl_word);
 			y += 2;
-			ft_printf("\e[%d;%dH", y, x);
+			ft_printf("\e[%d;H│\e[B\e[D│\e[%dG│\e[%d;%dH│\e[%d;%dH",
+				y, tester->env->win_width,
+				y, tester->env->win_width,
+				y, x);
 		}
 		print_word(cur_word, word_idx, tester->cur_word_idx);
 		cur_word = cur_word->next;
 		word_idx++;
 	}
 	write(1, "\n", 1);
-	return (y);
+	return (y + 2);
 }
 
 void	print_formatted_key(t_typer *tester, char c)

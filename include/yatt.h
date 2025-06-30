@@ -53,6 +53,7 @@ typedef struct s_env
 typedef struct s_typer
 {
 	t_word			*wordlist;
+	t_word			*render_start;
 	t_lang			lang;
 	char			c;
 	int				is_correct;
@@ -63,6 +64,7 @@ typedef struct s_typer
 	size_t			start_time;
 	size_t			end_time;
 	t_env			*env;
+	int				last_display_cutoff;
 }	t_typer;
 
 void	store_term_settings(t_env *env);
