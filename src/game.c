@@ -22,7 +22,7 @@ void	reset_game(t_typer *tester)
 	tester->c = 0;
 }
 
-int	render_game(t_typer *tester)
+int	render_game(t_typer *tester, int finished)
 {
 	int	line;
 	int	i;
@@ -47,18 +47,20 @@ int	render_game(t_typer *tester)
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("╯", 1);
+	if (finished)
+		return (display_stats(tester, line));
 	print_keyboard(tester, line);
 	return (line);
 }
 
-void	run_game(t_typer *tester)
+int	run_game(t_typer *tester)
 {
 	t_word	*cur_word;
 	int		line;
 
 	reset_game(tester);
 	cur_word = tester->wordlist;
-	render_game(tester);
+	render_game(tester, 0);
 	tester->c = getchar();
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
@@ -99,12 +101,13 @@ void	run_game(t_typer *tester)
 				}
 			}
 		}
-		render_game(tester);
+		render_game(tester, 0);
 		if (tester->cur_word_idx == tester->num_words - 1 && ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
 			break ;
 		tester->c = getchar();
 	}
 	tester->end_time = get_time_ms();
+	return (render_game(tester, 1));
 }
 
 void	game_loop(t_typer *tester)
@@ -112,8 +115,7 @@ void	game_loop(t_typer *tester)
 	int	retval;
 
 	do {
-		run_game(tester);
-		retval = display_stats(tester);
+		retval = run_game(tester);
 		clear_wordlist(&tester->wordlist);
 	} while (retval == 0);
 }

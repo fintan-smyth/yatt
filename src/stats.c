@@ -75,7 +75,7 @@ double	calculate_net_wpm(t_typer *tester)
 	minutes = time_diff / (60000.0);
 	words_typed = tester->inputs_count / 5.0;
 	errors = count_errors(tester);
-	printf("\e[31m<<errors: %d words_typed: %.1f minutes: %.1f>>\e[m\n", errors, words_typed, minutes);
+	// printf("\e[31m<<errors: %d words_typed: %.1f minutes: %.1f>>\e[m\n", errors, words_typed, minutes);
 	wpm = (words_typed - errors) / minutes;
 	if (wpm < 0)
 		wpm = 0;
@@ -101,18 +101,21 @@ double	calculate_accuracy(t_typer *tester)
 	return (((double)tester->inputs_count - tester->incorrect_inputs) / tester->inputs_count);
 }
 
-int	display_stats(t_typer *tester)
+int	display_stats(t_typer *tester, int line)
 {
 	char	c;
+	int		start_x;
 
-	print_wordlist(tester);
-	printf("\n");
-	printf("\e[35;1mAdj WPM\e[m:\t%.1f\n", calculate_adj_wpm(tester));
-	printf("\e[35;1mNet WPM\e[m:\t%.1f\n", calculate_net_wpm(tester));
-	printf("\e[35;1mRaw WPM\e[m:\t%.1f\n\n", calculate_raw_wpm(tester));
-	printf("\e[33;1mAccuracy\e[m:\t%.1f%%\n", calculate_accuracy(tester) * 100);
-	printf("\e[33;1mCorrect inputs\e[m:\t%d/%d\n", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
-	printf("\n\e[1;3mPress '\e[32mR\e[39m' to retry or '\e[31mQ\e[39m' to quit\e[m\n");
+	line += 3;
+	start_x = tester->env->win_width / 2 - 11;
+	printf("\e[%d;%dH\e[35;1mAdj WPM\e[m:\t\t%.1f", line++, start_x, calculate_adj_wpm(tester));
+	printf("\e[%d;%dH\e[35;1mNet WPM\e[m:\t\t%.1f", line++, start_x, calculate_net_wpm(tester));
+	printf("\e[%d;%dH\e[35;1mRaw WPM\e[m:\t\t%.1f", line++, start_x, calculate_raw_wpm(tester));
+	printf("\e[%d;%dH\e[33;1mAccuracy\e[m:\t\t%.1f%%", ++line, start_x, calculate_accuracy(tester) * 100);
+	printf("\e[%d;%dH\e[33;1mCorrect inputs\e[m:\t%d/%d", ++line, start_x, tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
+	start_x = tester->env->win_width / 2 - 16;
+	line++;
+	printf("\e[%d;%dH\e[1;3mPress '\e[32mR\e[39m' to retry or '\e[31mQ\e[39m' to quit\e[m", ++line, start_x);
 	c = ft_tolower(getchar());
 	while (1)
 	{

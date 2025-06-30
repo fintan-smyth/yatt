@@ -79,17 +79,18 @@ int		print_wordlist(t_typer *tester);
 void 	print_keyboard(t_typer *tester, int y);
 void	select_words(t_typer *tester);
 
-void	run_game(t_typer *tester);
+int		run_game(t_typer *tester);
 void	game_loop(t_typer *tester);
+int		render_game(t_typer *tester, int finished);
 
 void	check_input(t_typer *tester, char c, t_word *cur_word);
 double	calculate_raw_wpm(t_typer *tester);
 double	calculate_net_wpm(t_typer *tester);
 double	calculate_adj_wpm(t_typer *tester);
 double	calculate_accuracy(t_typer *tester);
-int		display_stats(t_typer *tester);
+int		display_stats(t_typer *tester, int line);
 
 size_t	get_time_ms(void);
-int	max_int(int a, int b);
+int		max_int(int a, int b);
 
 #endif // YATT_H
