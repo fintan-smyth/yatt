@@ -76,7 +76,7 @@ t_word	*new_wordnode(char *str);
 t_word	*wordlist_add_back(t_word **lst, t_word *word);
 void	clear_wordlist(t_word **wordlist);
 int		print_wordlist(t_typer *tester);
-void 	print_keyboard(t_typer *tester, int y);
+int		print_keyboard(t_typer *tester, int y);
 void	select_words(t_typer *tester);
 
 int		run_game(t_typer *tester);
@@ -92,5 +92,7 @@ int		display_stats(t_typer *tester, int line);
 
 size_t	get_time_ms(void);
 int		max_int(int a, int b);
+int		ft_output_len(char *str);
+int		print_str_centred(char *str, int row, int width);
 
 #endif // YATT_H

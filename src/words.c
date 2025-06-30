@@ -192,7 +192,7 @@ void	print_formatted_key(t_typer *tester, char c)
 	ft_putstr_fd("│", 1);
 }
 
-void print_keyboard(t_typer *tester, int y)
+int print_keyboard(t_typer *tester, int y)
 {
 	char	row1[] = "qwertyuiop";
 	char	row2[] = "asdfghjkl";
@@ -201,7 +201,7 @@ void print_keyboard(t_typer *tester, int y)
 	int		i;
 	int		line_start;
 
-	line_start = tester->env->win_width / 2 - 20;
+	line_start = (tester->env->win_width - 41) / 2 + 1;
 	y += 3;
 	ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
 	ft_printf("\e[%d;%dH│", y++, line_start);
@@ -232,4 +232,5 @@ void print_keyboard(t_typer *tester, int y)
 		ft_printf("│%s│", space);
 	ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
 	ft_printf("\e[m\n");
+	return (y);
 }

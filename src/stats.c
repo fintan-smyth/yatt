@@ -87,35 +87,80 @@ double	calculate_adj_wpm(t_typer *tester)
 	size_t	time_diff;
 	double	minutes;
 	double	words_typed;
-	double	acc;
 
 	time_diff = tester->end_time - tester->start_time;
 	minutes = time_diff / (60000.0);
-	words_typed = tester->inputs_count / 5.0;
-	acc = calculate_accuracy(tester);
-	return (acc * words_typed / minutes);
+	words_typed = (tester->inputs_count - tester->incorrect_inputs) / 5.0;
+	return (words_typed / minutes);
 }
 
 double	calculate_accuracy(t_typer *tester)
 {
+	if (tester->inputs_count == 0)
+		return (0);
 	return (((double)tester->inputs_count - tester->incorrect_inputs) / tester->inputs_count);
+}
+
+void	print_adj_wpm(t_typer *tester, int line)
+{
+	char	buf[256];
+	
+	snprintf(buf, 256, "\e[35;1mAdj WPM\e[m: %.1f", calculate_adj_wpm(tester));
+	print_str_centred(buf, line, tester->env->win_width);
+}
+
+void	print_net_wpm(t_typer *tester, int line)
+{
+	char	buf[256];
+	
+	snprintf(buf, 256, "\e[35;1mNet WPM\e[m: %.1f", calculate_net_wpm(tester));
+	print_str_centred(buf, line, tester->env->win_width);
+}
+
+void	print_raw_wpm(t_typer *tester, int line)
+{
+	char	buf[256];
+	
+	snprintf(buf, 256, "\e[35;1mRaw WPM\e[m: %.1f", calculate_raw_wpm(tester));
+	print_str_centred(buf, line, tester->env->win_width);
+}
+
+void	print_accuracy(t_typer *tester, int line)
+{
+	char	buf[256];
+	
+	snprintf(buf, 256, "\e[33;1mAccuracy\e[m: %.1f%%", calculate_accuracy(tester) * 100);
+	print_str_centred(buf, line, tester->env->win_width);
+}
+
+void	print_correct_inputs(t_typer *tester, int line)
+{
+	char	buf[256];
+	
+	ft_snprintf(buf, 256, "\e[33;1mCorrect inputs\e[m: %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
+	print_str_centred(buf, line, tester->env->win_width);
 }
 
 int	display_stats(t_typer *tester, int line)
 {
 	char	c;
-	int		start_x;
+	// int		start_x;
 
 	line += 3;
-	start_x = tester->env->win_width / 2 - 11;
-	printf("\e[%d;%dH\e[35;1mAdj WPM\e[m:\t\t%.1f", line++, start_x, calculate_adj_wpm(tester));
-	printf("\e[%d;%dH\e[35;1mNet WPM\e[m:\t\t%.1f", line++, start_x, calculate_net_wpm(tester));
-	printf("\e[%d;%dH\e[35;1mRaw WPM\e[m:\t\t%.1f", line++, start_x, calculate_raw_wpm(tester));
-	printf("\e[%d;%dH\e[33;1mAccuracy\e[m:\t\t%.1f%%", ++line, start_x, calculate_accuracy(tester) * 100);
-	printf("\e[%d;%dH\e[33;1mCorrect inputs\e[m:\t%d/%d", ++line, start_x, tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
-	start_x = tester->env->win_width / 2 - 16;
+	// start_x = tester->env->win_width / 2 - 10;
+	// printf("\e[%d;%dH\e[35;1mAdj WPM\e[m:        %.1f", line++, start_x, calculate_adj_wpm(tester));
+	// printf("\e[%d;%dH\e[35;1mNet WPM\e[m:        %.1f", line++, start_x, calculate_net_wpm(tester));
+	// printf("\e[%d;%dH\e[35;1mRaw WPM\e[m:        %.1f", line++, start_x, calculate_raw_wpm(tester));
+	// printf("\e[%d;%dH\e[33;1mAccuracy\e[m:       %.1f%%", ++line, start_x, calculate_accuracy(tester) * 100);
+	// printf("\e[%d;%dH\e[33;1mCorrect inputs\e[m: %d/%d", ++line, start_x, tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
+	// start_x = tester->env->win_width / 2 - 16;
+	print_adj_wpm(tester, line++);
+	print_net_wpm(tester, line++);
+	print_raw_wpm(tester, line++);
+	print_accuracy(tester, ++line);
+	print_correct_inputs(tester, ++line);
 	line++;
-	printf("\e[%d;%dH\e[1;3mPress '\e[32mR\e[39m' to retry or '\e[31mQ\e[39m' to quit\e[m", ++line, start_x);
+	print_str_centred("\e[1;3mPress '\e[32mR\e[39m' to retry or '\e[31mQ\e[39m' to quit\e[m", ++line, tester->env->win_width);
 	c = ft_tolower(getchar());
 	while (1)
 	{
