@@ -51,6 +51,7 @@ void	cleanup(t_typer *tester)
 	free_split(&tester->lang.words);
 	reset_term_settings(tester->env);
 	free(tester->env);
+	ft_printf("\e[2J\e[H");
 }
 
 int	handle_args(int argc, char **argv, t_typer *tester)

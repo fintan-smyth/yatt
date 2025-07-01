@@ -39,6 +39,8 @@ double	calculate_raw_wpm(t_typer *tester)
 	double	words_typed;
 
 	time_diff = tester->end_time - tester->start_time;
+	if (time_diff == 0)
+		return (0);
 	minutes = time_diff / (60000.0);
 	words_typed = tester->inputs_count / 5.0;
 	return (words_typed / minutes);
@@ -89,6 +91,8 @@ double	calculate_adj_wpm(t_typer *tester)
 	double	words_typed;
 
 	time_diff = tester->end_time - tester->start_time;
+	if (time_diff == 0)
+		return (0);
 	minutes = time_diff / (60000.0);
 	words_typed = (tester->inputs_count - tester->incorrect_inputs) / 5.0;
 	return (words_typed / minutes);
