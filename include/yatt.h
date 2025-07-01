@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/01 23:51:56 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 00:48:18 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ typedef struct s_typer
 	t_word			*wordlist;
 	t_word			*render_start;
 	t_lang			lang;
-	char			c;
+	unsigned char	c;
 	int				is_correct;
 	int				num_words;
 	int				cur_word_idx;
@@ -104,7 +104,10 @@ size_t	get_time_ms(void);
 int		max_int(int a, int b);
 int		ft_output_len(char *str);
 int		print_str_centred(char *str, int row, int width);
+void	draw_borders(t_typer *tester);
 
 void	setup_default_fingers(t_typer *tester);
+void	pick_key_cols(t_typer *tester);
+int 	print_keyboard_picker(t_typer *tester, int y);
 
 #endif // YATT_H

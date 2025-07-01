@@ -6,12 +6,13 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/01 23:51:19 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 00:48:55 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "yatt.h"
+#include <stdio.h>
 
 void	set_key_col(t_typer *tester, unsigned char c, int col)
 {
@@ -53,4 +54,27 @@ void	setup_default_fingers(t_typer *tester)
 	set_keyset_col(tester, pinky_l, YELLOW);
 	set_keyset_col(tester, pinky_r, YELLOW);
 	set_keyset_col(tester, thumb, CYAN);
+}
+
+void	pick_key_cols(t_typer *tester)
+{
+	char	c;
+
+	tester->c = 0;
+	draw_borders(tester);
+	print_keyboard_picker(tester, tester->env->win_height / 2 - 6);
+	tester->c = getchar();
+	while (tester->c != ESC)
+	{
+		print_keyboard_picker(tester, tester->env->win_height / 2 - 6);
+		if (ft_isalpha(tester->c) || tester->c == ' ')
+		{
+			c = getchar();
+			if (c >= '0' && c <= '7')
+				tester->fingers[tester->c] = c - '0';
+			tester->c = 0;
+			print_keyboard_picker(tester, tester->env->win_height / 2 - 6);
+		}
+		tester->c = getchar();
+	}
 }

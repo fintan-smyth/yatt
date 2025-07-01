@@ -16,6 +16,7 @@ SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/game.c \
 	  $(SRC_DIR)/utils.c \
 	  $(SRC_DIR)/options.c \
+	  $(SRC_DIR)/keys.c \
 
 OBJ = $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRC:.c=.o))
 

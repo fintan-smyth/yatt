@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/01 21:31:03 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 00:16:42 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	render_game(t_typer *tester, int finished, t_word *cur_word)
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("╮", 1);
-	ft_printf("\e[2;H│\e[\e[%dG│", i, tester->env->win_width);
+	ft_printf("\e[2;H│\e[%dG│", i, tester->env->win_width);
 	line = print_wordlist(tester);
 	ft_printf("\e[%d;1H├", line);
 	i = 2;
@@ -120,6 +120,8 @@ void	game_loop(t_typer *tester)
 
 	do {
 		retval = run_game(tester);
+		if (retval == 2)
+			pick_key_cols(tester);
 		clear_wordlist(&tester->wordlist);
-	} while (retval == 0);
+	} while (retval != 1);
 }

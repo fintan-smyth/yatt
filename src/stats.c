@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 21:15:02 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/06/29 17:47:56 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 00:53:10 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,8 @@ int	display_stats(t_typer *tester, int line)
 	print_accuracy(tester, ++line);
 	print_correct_inputs(tester, ++line);
 	line++;
-	print_str_centred("\e[1;3mPress '\e[32mR\e[39m' to retry or '\e[31mQ\e[39m' to quit\e[m", ++line, tester->env->win_width);
+	print_str_centred("\e[1;3mPress '\e[32mR\e[39m' to retry, '\e[31mQ\e[39m' to quit,\e[m", ++line, tester->env->win_width);
+	print_str_centred("\e[1;3mor '\e[34mO\e[39m' for options\e[m", line + 2, tester->env->win_width);
 	c = ft_tolower(getchar());
 	while (1)
 	{
@@ -172,6 +173,8 @@ int	display_stats(t_typer *tester, int line)
 			return (1);
 		else if (c == 'r')
 			return (0);
+		else if (c == 'o')
+			return (2);
 		c = getchar();
 	}
 }

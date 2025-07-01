@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:44:19 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/06/27 12:44:40 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 00:13:26 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,23 @@ int	print_str_centred(char *str, int row, int width)
 	start_x = (width - len) / 2 + 1;
 	ft_printf("\e[%d;%dH%s", row, start_x, str);
 	return (start_x);
+}
+
+void	draw_borders(t_typer *tester)
+{
+	int	i;
+
+	ft_printf("\e[2J\e[H╭");
+	i = 2;
+	while (i++ < tester->env->win_width)
+		ft_putstr_fd("─", 1);
+	ft_putstr_fd("╮", 1);
+	i = 1;
+	while (i++ < tester->env->win_height - 1)
+		ft_printf("\e[%d;H│\e[\e[%dG│", i, tester->env->win_width);
+	ft_putstr_fd("╰", 1);
+	i = 2;
+	while (i++ < tester->env->win_width)
+		ft_putstr_fd("─", 1);
+	ft_putstr_fd("╯", 1);
 }
