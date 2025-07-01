@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/06/29 17:25:17 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/01 21:31:03 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	reset_game(t_typer *tester)
 	tester->c = 0;
 }
 
-int	render_game(t_typer *tester, int finished)
+int	render_game(t_typer *tester, int finished, t_word *cur_word)
 {
 	int	line;
 	int	i;
@@ -49,7 +49,7 @@ int	render_game(t_typer *tester, int finished)
 	ft_putstr_fd("╯", 1);
 	if (finished)
 		return (display_stats(tester, line));
-	line = print_keyboard(tester, line);
+	line = print_keyboard(tester, line, cur_word);
 	// char	buf[1024];
 	// ft_snprintf(buf, 1024, "\e[33;1mCorrect inputs\e[m: %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
 	// print_str_centred(buf, ++line, tester->env->win_width);
@@ -61,8 +61,9 @@ int	run_game(t_typer *tester)
 	t_word	*cur_word;
 
 	reset_game(tester);
+	tester->kmode = 1;
 	cur_word = tester->wordlist;
-	render_game(tester, 0);
+	render_game(tester, 0, cur_word);
 	tester->c = getchar();
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
@@ -103,13 +104,14 @@ int	run_game(t_typer *tester)
 				}
 			}
 		}
-		render_game(tester, 0);
-		if (tester->cur_word_idx == tester->num_words - 1 && ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
+		render_game(tester, 0, cur_word);
+		if (tester->cur_word_idx == tester->num_words - 1
+			&& ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
 			break ;
 		tester->c = getchar();
 	}
 	tester->end_time = get_time_ms();
-	return (render_game(tester, 1));
+	return (render_game(tester, 1, cur_word));
 }
 
 void	game_loop(t_typer *tester)

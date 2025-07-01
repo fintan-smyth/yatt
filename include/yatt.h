@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   type_test.h                                        :+:      :+:    :+:   */
+/*   yatt.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/06/29 17:46:58 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/01 23:08:24 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ typedef struct s_env
 	struct termios	g_term_original;
 	int				win_width;
 	int				win_height;
-
 }	t_env;
 
 typedef struct s_typer
@@ -65,6 +64,8 @@ typedef struct s_typer
 	size_t			end_time;
 	t_env			*env;
 	int				last_display_cutoff;
+	int				kmode;
+	int				fingers[128];
 }	t_typer;
 
 void	store_term_settings(t_env *env);
@@ -76,12 +77,12 @@ t_word	*new_wordnode(char *str);
 t_word	*wordlist_add_back(t_word **lst, t_word *word);
 void	clear_wordlist(t_word **wordlist);
 int		print_wordlist(t_typer *tester);
-int		print_keyboard(t_typer *tester, int y);
+int		print_keyboard(t_typer *tester, int y, t_word *cur_word);
 void	select_words(t_typer *tester);
 
 int		run_game(t_typer *tester);
 void	game_loop(t_typer *tester);
-int		render_game(t_typer *tester, int finished);
+int		render_game(t_typer *tester, int finished, t_word *cur_word);
 
 void	check_input(t_typer *tester, char c, t_word *cur_word);
 double	calculate_raw_wpm(t_typer *tester);
@@ -94,5 +95,7 @@ size_t	get_time_ms(void);
 int		max_int(int a, int b);
 int		ft_output_len(char *str);
 int		print_str_centred(char *str, int row, int width);
+
+void	setup_fingers(t_typer *tester);
 
 #endif // YATT_H

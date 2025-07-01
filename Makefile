@@ -1,10 +1,9 @@
-# Compiler
 CC = cc
 
-# Compiler flags
-CFLAGS = -Wall -Wextra -g3 -I ./include
+CFLAGS = -Wall -Wextra -I ./include
 
-DBG_FLAGS = #-fsanitize=address
+DBG_FLAGS =		-g3 \
+				# -fsanitize=address \
 
 SRC_DIR := ./src
 
@@ -16,9 +15,9 @@ SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/stats.c \
 	  $(SRC_DIR)/game.c \
 	  $(SRC_DIR)/utils.c \
+	  $(SRC_DIR)/options.c \
 
 OBJ = $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRC:.c=.o))
-
 
 NAME = yatt
 

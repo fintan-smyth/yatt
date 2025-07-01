@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:33:41 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/06/29 17:56:34 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/01 23:23:24 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,26 +178,66 @@ int	print_wordlist(t_typer *tester)
 	return (y + 2);
 }
 
-void	print_formatted_key(t_typer *tester, char c)
+void	print_formatted_key(t_typer *tester, char c, t_word *cur_word)
 {
-	if (c == tester->c)
+	if (tester->kmode == 0)
 	{
-		if (tester->is_correct)
-			ft_printf("\e[30;42m %c \e[39;49m", ft_toupper(c));
+		if (c == tester->c)
+		{
+			if (tester->is_correct)
+				ft_printf("\e[30;42m %c \e[39;49m", ft_toupper(c));
+			else
+				ft_printf("\e[30;41m %c \e[39;49m", ft_toupper(c));
+		}
 		else
-			ft_printf("\e[30;41m %c \e[39;49m", ft_toupper(c));
+			ft_printf(" %c ", ft_toupper(c));
 	}
-	else
-		ft_printf(" %c ", ft_toupper(c));
+	else if (tester->kmode == 1)
+	{
+		int	pos = cur_word->pos;
+		int	len = cur_word->len;
+
+		if (pos < len && c == cur_word->word[pos])
+			ft_printf("\e[30;4%dm %c \e[39;49m", tester->fingers[(unsigned char)c], ft_toupper(c));
+		else
+			ft_printf(" %c ", ft_toupper(c));
+	}
 	ft_putstr_fd("│", 1);
 }
 
-int print_keyboard(t_typer *tester, int y)
+void	print_formatted_space(t_typer *tester, t_word *cur_word)
+{
+	char	space[] = "     SPACE     ";
+
+	if (tester->kmode == 0)
+	{
+		if (' ' == tester->c && tester->is_correct >= 0)
+		{
+			if (tester->is_correct)
+				ft_printf("│\e[30;42m%s\e[39;49m│", space);
+			else
+				ft_printf("│\e[30;41m%s\e[39;49m│", space);
+		}
+		else
+			ft_printf("│%s│", space);
+	}
+	else if (tester->kmode == 1)
+	{
+		int	pos = cur_word->pos;
+		int	len = cur_word->len;
+
+		if (pos == len)
+			ft_printf("│\e[30;4%dm%s\e[39;49m│", tester->fingers[' '], space);
+		else
+			ft_printf("│%s│", space);
+	}
+}
+
+int print_keyboard(t_typer *tester, int y, t_word *cur_word)
 {
 	char	row1[] = "qwertyuiop";
 	char	row2[] = "asdfghjkl";
 	char	row3[] = "zxcvbnm";
-	char	space[] = "     SPACE     ";
 	int		i;
 	int		line_start;
 
@@ -207,29 +247,21 @@ int print_keyboard(t_typer *tester, int y)
 	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
 	while (row1[++i])
-		print_formatted_key(tester, row1[i]);
+		print_formatted_key(tester, row1[i], cur_word);
 	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
 	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
 	while (row2[++i])
-		print_formatted_key(tester, row2[i]);
+		print_formatted_key(tester, row2[i], cur_word);
 	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴───┘", y++, line_start++);
 	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
 	while (row3[++i])
-		print_formatted_key(tester, row3[i]);
+		print_formatted_key(tester, row3[i], cur_word);
 	ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴┬──┘", y++, line_start);
 	line_start += 9;
 	ft_printf("\e[%d;%dH", y++, line_start);
-	if (' ' == tester->c && tester->is_correct >= 0)
-	{
-		if (tester->is_correct)
-			ft_printf("│\e[30;42m%s\e[39;49m│", space);
-		else
-			ft_printf("│\e[30;41m%s\e[39;49m│", space);
-	}
-	else
-		ft_printf("│%s│", space);
+	print_formatted_space(tester, cur_word);
 	ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
 	ft_printf("\e[m\n");
 	return (y);
