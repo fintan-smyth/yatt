@@ -6,50 +6,51 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/01 23:04:53 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/01 23:51:19 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "yatt.h"
 
-void	setup_fingers(t_typer *tester)
+void	set_key_col(t_typer *tester, unsigned char c, int col)
 {
-	char			index[] = "rtfgcvbyhnujm";
-	char			middle[] = "edxik";
-	char			ring[] = "wszol";
-	char			pinky[] = "qap";
-	char			thumb[] = " ";
-	unsigned char	c;
+	if (col < 0 || col > 7)
+		return ;
+	tester->fingers[c] = col;
+	tester->fingers[ft_toupper(c)] = col;
+}
 
-	c = 1;
-	while (c <= 127)
-	{
-		if (ft_strchr(index, c))
-		{
-			tester->fingers[c] = 1;
-			tester->fingers[ft_toupper(c)] = 1;
-		}
-		else if (ft_strchr(middle, c))
-		{
-			tester->fingers[c] = 2;
-			tester->fingers[ft_toupper(c)] = 2;
-		}
-		else if (ft_strchr(ring, c))
-		{
-			tester->fingers[c] = 3;
-			tester->fingers[ft_toupper(c)] = 3;
-		}
-		else if (ft_strchr(pinky, c))
-		{
-			tester->fingers[c] = 4;
-			tester->fingers[ft_toupper(c)] = 4;
-		}
-		else if (ft_strchr(thumb, c))
-		{
-			tester->fingers[c] = 5;
-			tester->fingers[ft_toupper(c)] = 5;
-		}
-		c++;
-	}
+void	set_keyset_col(t_typer *tester, char *keyset, int col)
+{
+	int	i;
+
+	i = -1;
+	while (keyset[++i])
+		set_key_col(tester, keyset[i], col);
+}
+
+void	setup_default_fingers(t_typer *tester)
+{
+	char			index_l[] = "rtfgcvb";
+	char			middle_l[] = "edx";
+	char			ring_l[] = "wsz";
+	char			pinky_l[] = "qa";
+
+	char			index_r[] = "yhnujm";
+	char			middle_r[] = "ik";
+	char			ring_r[] = "ol";
+	char			pinky_r[] = "p";
+
+	char			thumb[] = " ";
+
+	set_keyset_col(tester, index_l, BLUE);
+	set_keyset_col(tester, index_r, MAGENTA);
+	set_keyset_col(tester, middle_l, RED);
+	set_keyset_col(tester, middle_r, RED);
+	set_keyset_col(tester, ring_l, GREEN);
+	set_keyset_col(tester, ring_r, GREEN);
+	set_keyset_col(tester, pinky_l, YELLOW);
+	set_keyset_col(tester, pinky_r, YELLOW);
+	set_keyset_col(tester, thumb, CYAN);
 }

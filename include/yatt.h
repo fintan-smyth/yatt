@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/01 23:08:24 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/01 23:51:56 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,15 @@
 # define ESC 27
 # define BACKSPACE 127
 # define BUFSIZE 256
+
+# define BLACK 0
+# define RED 1
+# define GREEN 2
+# define YELLOW 3
+# define BLUE 4
+# define MAGENTA 5
+# define CYAN 6
+# define WHITE 7
 
 typedef struct s_lang
 {
@@ -96,6 +105,6 @@ int		max_int(int a, int b);
 int		ft_output_len(char *str);
 int		print_str_centred(char *str, int row, int width);
 
-void	setup_fingers(t_typer *tester);
+void	setup_default_fingers(t_typer *tester);
 
 #endif // YATT_H

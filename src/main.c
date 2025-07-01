@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 13:37:32 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/01 23:09:12 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/01 23:51:37 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	init(t_typer *tester)
 	set_term_settings(env);
 	set_winsize(env);
 	tester->env = env;
-	setup_fingers(tester);
+	setup_default_fingers(tester);
 }
 
 void	cleanup(t_typer *tester)
