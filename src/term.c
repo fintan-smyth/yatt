@@ -34,7 +34,8 @@ void	set_term_settings(t_env *env)
 	term.c_lflag &= ~ECHO;
 	term.c_lflag &= ~(ICANON);
 	tcsetattr(fileno(stdin), TCSANOW, &term);
-	printf("\e[?25l");
+	ft_printf("\e[?25l");
+	ft_printf("\e[?1049h");
 }
 
 void	reset_term_settings(t_env *env)
@@ -43,7 +44,8 @@ void	reset_term_settings(t_env *env)
 	struct termios term;
 	term = env->g_term_original;
 	tcsetattr(fileno(stdin), TCSANOW, &term);
-	printf("\e[?25h");
+	ft_printf("\e[?1049l");
+	ft_printf("\e[?25h");
 }
 
 void	set_winsize(t_env *env)
