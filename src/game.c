@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 01:05:20 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 01:18:48 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ int	run_game(t_typer *tester)
 	t_word	*cur_word;
 
 	reset_game(tester);
-	tester->kmode = 1;
 	cur_word = tester->wordlist;
 	render_game(tester, 0, cur_word);
 	tester->c = getchar();
