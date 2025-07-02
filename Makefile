@@ -1,6 +1,6 @@
 CC = cc
 
-CFLAGS = -Wall -Wextra -I ./include
+CFLAGS = -Wall -Wextra -I ./include -O3
 
 DBG_FLAGS =		-g3 \
 				# -fsanitize=address \

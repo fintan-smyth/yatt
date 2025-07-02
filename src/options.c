@@ -80,3 +80,61 @@ void	pick_key_cols(t_typer *tester)
 		tester->c = getchar();
 	}
 }
+
+void	print_menu_screen(t_typer *tester)
+{
+	int		line;
+	int		width = ft_strlen(tester->lang.name) + 5;
+	char	buf1[128];
+	char	buf2[128];
+
+	draw_borders(tester);
+	line = tester->env->win_height / 2 - 2;
+	snprintf(buf1, 128, "\e[1;34m<%*s\e[m", width, ">");
+	if (tester->menu_state.selected == 0)
+		print_str_centred(buf1, line, tester->env->win_width);
+	snprintf(buf2, 128, "\e[1m%d\e[m", tester->num_words);
+	print_str_centred(buf2, line, tester->env->win_width);
+	line += 2;
+	if (tester->menu_state.selected == 1)
+		print_str_centred(buf1, line, tester->env->win_width);
+	snprintf(buf2, 128, "\e[1m%s\e[m", tester->lang.name);
+	print_str_centred(buf2, line, tester->env->win_width);
+	line += 2;
+	if (tester->menu_state.selected == 2)
+		print_str_centred("\e[30;44;1mChoose key colours\e[m", line, tester->env->win_width);
+	else
+		print_str_centred("\e[1mChoose key colours\e[m", line, tester->env->win_width);
+}
+
+void	change_selection(t_menu *menu, int dir)
+{
+	int	selected;
+
+	if (dir != 1 && dir != -1)
+		return ;
+	selected = menu->selected;
+	selected += dir;
+	if (selected == menu->no_entries)
+		selected = 0;
+	if (selected < 0)
+		selected = menu->no_entries - 1;
+	menu->selected = selected;
+}
+
+void	render_options(t_typer *tester)
+{
+	char	c;
+
+	print_menu_screen(tester);
+	c = getchar();
+	while (c != 'q')
+	{
+		if (c == 'j')
+			change_selection(&tester->menu_state, 1);
+		else if (c == 'k')
+			change_selection(&tester->menu_state, -1);
+		print_menu_screen(tester);
+		c = getchar();
+	}
+}

@@ -35,6 +35,7 @@
 
 typedef struct s_lang
 {
+	char	*name;
 	char	**words;
 	size_t	size;
 }	t_lang;
@@ -58,6 +59,12 @@ typedef struct s_env
 	int				win_height;
 }	t_env;
 
+typedef struct s_menu
+{
+	int	selected;
+	int	no_entries;
+}	t_menu;
+
 typedef struct s_typer
 {
 	t_word			*wordlist;
@@ -75,6 +82,7 @@ typedef struct s_typer
 	int				last_display_cutoff;
 	int				kmode;
 	int				fingers[128];
+	t_menu			menu_state;
 }	t_typer;
 
 void	store_term_settings(t_env *env);
@@ -109,5 +117,6 @@ void	draw_borders(t_typer *tester);
 void	setup_default_fingers(t_typer *tester);
 void	pick_key_cols(t_typer *tester);
 int 	print_keyboard_picker(t_typer *tester, int y);
+void	render_options(t_typer *tester);
 
 #endif // YATT_H

@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "yatt.h"
 
 t_lang	load_language_file(char	*filename)
@@ -19,6 +20,7 @@ t_lang	load_language_file(char	*filename)
 	char	*nl_ptr;
 	t_list	*word_list = NULL;
 	t_lang	lang;
+	char	*name;
 
 	fd = open(filename, O_RDONLY);
 	while ((line = get_next_line(fd)) != NULL)
@@ -29,6 +31,11 @@ t_lang	load_language_file(char	*filename)
 	}
 	lang.size = ft_lstsize(word_list);
 	lang.words = (char **)ft_lst_to_arr(word_list);
+	name = ft_strrchr(filename, '/');
+	if (name == NULL)
+		lang.name = ft_strdup(filename);
+	else
+		lang.name = ft_strdup(name + 1);
 	ft_lstclear(&word_list, NULL);
 	close(fd);
 	return (lang);
@@ -44,6 +51,7 @@ void	init(t_typer *tester)
 	set_term_settings(env);
 	set_winsize(env);
 	tester->env = env;
+	tester->menu_state.no_entries = 3;
 	setup_default_fingers(tester);
 	tester->kmode = 1;
 }
@@ -51,6 +59,7 @@ void	init(t_typer *tester)
 void	cleanup(t_typer *tester)
 {
 	free_split(&tester->lang.words);
+	free(tester->lang.name);
 	reset_term_settings(tester->env);
 	free(tester->env);
 }

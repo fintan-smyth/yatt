@@ -104,7 +104,8 @@ void	game_loop(t_typer *tester)
 	do {
 		retval = run_game(tester);
 		if (retval == 2)
-			pick_key_cols(tester);
+			// pick_key_cols(tester);
+			render_options(tester);
 		clear_wordlist(&tester->wordlist);
 	} while (retval != 1);
 }
