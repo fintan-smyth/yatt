@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:48:55 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 01:11:35 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,21 +59,23 @@ void	setup_default_fingers(t_typer *tester)
 void	pick_key_cols(t_typer *tester)
 {
 	char	c;
+	int		y_start;
 
+	y_start = tester->env->win_height / 2 - 6;
 	tester->c = 0;
 	draw_borders(tester);
-	print_keyboard_picker(tester, tester->env->win_height / 2 - 6);
+	print_keyboard_picker(tester, y_start);
 	tester->c = getchar();
 	while (tester->c != ESC)
 	{
-		print_keyboard_picker(tester, tester->env->win_height / 2 - 6);
+		print_keyboard_picker(tester, y_start);
 		if (ft_isalpha(tester->c) || tester->c == ' ')
 		{
 			c = getchar();
 			if (c >= '0' && c <= '7')
 				tester->fingers[tester->c] = c - '0';
 			tester->c = 0;
-			print_keyboard_picker(tester, tester->env->win_height / 2 - 6);
+			print_keyboard_picker(tester, y_start);
 		}
 		tester->c = getchar();
 	}

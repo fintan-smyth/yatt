@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:16:42 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 01:05:20 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,32 +27,16 @@ int	render_game(t_typer *tester, int finished, t_word *cur_word)
 	int	line;
 	int	i;
 
-	ft_printf("\e[2J\e[H╭");
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("╮", 1);
-	ft_printf("\e[2;H│\e[%dG│", i, tester->env->win_width);
+	draw_borders(tester);
 	line = print_wordlist(tester);
 	ft_printf("\e[%d;1H├", line);
 	i = 2;
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("┤", 1);
-	i = line;
-	while (i++ < tester->env->win_height - 1)
-		ft_printf("\e[%d;H│\e[\e[%dG│", i, tester->env->win_width);
-	ft_putstr_fd("╰", 1);
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("╯", 1);
 	if (finished)
 		return (display_stats(tester, line));
 	line = print_keyboard(tester, line, cur_word);
-	// char	buf[1024];
-	// ft_snprintf(buf, 1024, "\e[33;1mCorrect inputs\e[m: %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
-	// print_str_centred(buf, ++line, tester->env->win_width);
 	return (line);
 }
 

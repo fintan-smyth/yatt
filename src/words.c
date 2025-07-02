@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:33:41 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:05:05 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/02 01:07:01 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,10 +165,7 @@ int	print_wordlist(t_typer *tester)
 		{
 			x = calculate_line_start(tester, cur_word, &nl_word);
 			y += 2;
-			ft_printf("\e[%d;H│\e[B\e[D│\e[%dG│\e[%d;%dH│\e[%d;%dH",
-				y, tester->env->win_width,
-				y, tester->env->win_width,
-				y, x);
+			ft_printf("\e[%d;%dH", y, x);
 		}
 		print_word(cur_word, word_idx, tester->cur_word_idx);
 		cur_word = cur_word->next;
