@@ -145,19 +145,9 @@ void	print_correct_inputs(t_typer *tester, int line)
 	print_str_centred(buf, line, tester->env->win_width);
 }
 
-int	display_stats(t_typer *tester, int line)
+void	print_stats(t_typer *tester, int line)
 {
-	char	c;
-	// int		start_x;
-
 	line += 3;
-	// start_x = tester->env->win_width / 2 - 10;
-	// printf("\e[%d;%dH\e[35;1mAdj WPM\e[m:        %.1f", line++, start_x, calculate_adj_wpm(tester));
-	// printf("\e[%d;%dH\e[35;1mNet WPM\e[m:        %.1f", line++, start_x, calculate_net_wpm(tester));
-	// printf("\e[%d;%dH\e[35;1mRaw WPM\e[m:        %.1f", line++, start_x, calculate_raw_wpm(tester));
-	// printf("\e[%d;%dH\e[33;1mAccuracy\e[m:       %.1f%%", ++line, start_x, calculate_accuracy(tester) * 100);
-	// printf("\e[%d;%dH\e[33;1mCorrect inputs\e[m: %d/%d", ++line, start_x, tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
-	// start_x = tester->env->win_width / 2 - 16;
 	print_adj_wpm(tester, line++);
 	print_net_wpm(tester, line++);
 	print_raw_wpm(tester, line++);
@@ -166,7 +156,28 @@ int	display_stats(t_typer *tester, int line)
 	line++;
 	print_str_centred("\e[1;3mPress '\e[32mR\e[39m' to retry, '\e[31mQ\e[39m' to quit,\e[m", ++line, tester->env->win_width);
 	print_str_centred("\e[1;3mor '\e[34mO\e[39m' for options\e[m", line + 2, tester->env->win_width);
-	c = ft_tolower(getchar());
+}
+
+void	render_stats(t_typer *tester)
+{
+	int	line;
+	int	i;
+
+	draw_borders(tester);
+	line = print_wordlist(tester);
+	ft_printf("\e[%d;1H├", line);
+	i = 2;
+	while (i++ < tester->env->win_width)
+		ft_putstr_fd("─", 1);
+	ft_putstr_fd("┤", 1);
+	return (print_stats(tester, line));
+}
+
+int	stats_screen(t_typer *tester)
+{
+	char	c;
+
+	c = 0;
 	while (1)
 	{
 		if (c == ESC || c == 'q')
@@ -174,7 +185,8 @@ int	display_stats(t_typer *tester, int line)
 		else if (c == 'r')
 			return (0);
 		else if (c == 'o')
-			return (2);
-		c = getchar();
+			render_options(tester);
+		render_stats(tester);
+		c = getchar_nb(tester, render_stats);
 	}
 }

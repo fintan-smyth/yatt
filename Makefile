@@ -1,6 +1,6 @@
 CC = cc
 
-CFLAGS = -Wall -Wextra -I ./include -O3
+CFLAGS = -Wall -Wextra -I ./include -O0
 
 DBG_FLAGS =		-g3 \
 				-pg \

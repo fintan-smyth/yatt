@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 17:19:06 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/04 00:05:36 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	reset_game(t_typer *tester)
 	tester->c = 0;
 }
 
-int	render_game(t_typer *tester, int finished, t_word *cur_word)
+void	render_game(t_typer *tester)
 {
 	int	line;
 	int	i;
@@ -34,67 +34,61 @@ int	render_game(t_typer *tester, int finished, t_word *cur_word)
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("┤", 1);
-	if (finished)
-		return (display_stats(tester, line));
-	line = print_keyboard(tester, line, cur_word);
-	return (line);
+	print_keyboard(tester, line, tester->cur_word);
 }
 
-int	run_game(t_typer *tester)
+void	run_game(t_typer *tester)
 {
-	t_word	*cur_word;
-
 	reset_game(tester);
-	cur_word = tester->wordlist;
-	render_game(tester, 0, cur_word);
-	tester->c = getchar();
+	tester->cur_word = tester->wordlist;
+	render_game(tester);
+	tester->c = getchar_nb(tester, render_game);
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
 	{
 		tester->is_correct = -1;
 		if (tester->c == ' ')
 		{
-			if (cur_word->pos != 0)
+			if (tester->cur_word->pos != 0)
 			{
 				tester->inputs_count++;
-				check_input(tester, tester->c, cur_word);
-				if (cur_word->next == NULL)
+				check_input(tester, tester->c, tester->cur_word);
+				if (tester->cur_word->next == NULL)
 					break ;
 				tester->cur_word_idx++;
-				cur_word = cur_word->next;
+				tester->cur_word = tester->cur_word->next;
 			}
 		}
-		else if (ft_isprint(tester->c) && cur_word->pos < tester->env->win_width - 6 && cur_word->pos < BUFSIZE)
+		else if (ft_isprint(tester->c) && tester->cur_word->pos < tester->env->win_width - 6 && tester->cur_word->pos < BUFSIZE)
 		{
-			cur_word->input_buf[cur_word->pos] = tester->c;
-			check_input(tester, tester->c, cur_word);
-			cur_word->pos++;
+			tester->cur_word->input_buf[tester->cur_word->pos] = tester->c;
+			check_input(tester, tester->c, tester->cur_word);
+			tester->cur_word->pos++;
 			tester->inputs_count++;
 		}
 		else if (tester->c == BACKSPACE)
 		{
-			if (cur_word->pos > 0)
+			if (tester->cur_word->pos > 0)
 			{
-				cur_word->pos--;
-				cur_word->input_buf[cur_word->pos] = 0;
+				tester->cur_word->pos--;
+				tester->cur_word->input_buf[tester->cur_word->pos] = 0;
 			}
 			else
 			{
-				if (cur_word->prev != NULL)
+				if (tester->cur_word->prev != NULL)
 				{
-					cur_word = cur_word->prev;
+					tester->cur_word = tester->cur_word->prev;
 					tester->cur_word_idx--;
 				}
 			}
 		}
-		render_game(tester, 0, cur_word);
+		render_game(tester);
 		if (tester->cur_word_idx == tester->options.num_words - 1
-			&& ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
+			&& ft_strcmp(tester->cur_word->input_buf, tester->cur_word->word) == 0)
 			break ;
-		tester->c = getchar();
+		tester->c = getchar_nb(tester, render_game);
 	}
 	tester->end_time = get_time_ms();
-	return (render_game(tester, 1, cur_word));
 }
 
 void	game_loop(t_typer *tester)
@@ -102,9 +96,8 @@ void	game_loop(t_typer *tester)
 	int	retval;
 
 	do {
-		retval = run_game(tester);
-		if (retval == 2)
-			render_options(tester);
+		run_game(tester);
+		retval = stats_screen(tester);
 		clear_wordlist(&tester->wordlist);
 	} while (retval != 1);
 }

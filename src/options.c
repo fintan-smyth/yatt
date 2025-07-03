@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 17:48:38 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 23:55:53 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	print_menu_words(t_typer *tester, int selected, int line)
 	ft_snprintf(buf, 128, "\e[31m%s\e[m  %d  \e[31m%s\e[m",
 		(selected && tester->options.num_words > 1) ? "<" : " ",
 		tester->options.num_words,
-		(selected && tester->options.num_words < 100) ? ">" : "");
+		(selected && tester->options.num_words < 100) ? ">" : " ");
 	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
 
@@ -216,21 +216,21 @@ void	render_options(t_typer *tester)
 
 	tester->menu_state.selected = 0;
 	print_menu_screen(tester);
-	c = getchar();
+	c = getchar_nb(tester, print_menu_screen);
 	while (c != 'q' && c != ESC)
 	{
-		if (c == 'j')
+		if (c == 'j' || c == K_DOWN)
 			change_selection(&tester->menu_state, 1);
-		else if (c == 'k')
+		else if (c == 'k' || c == K_UP)
 			change_selection(&tester->menu_state, -1);
-		else if (c == 'h')
+		else if (c == 'h' || c == K_LEFT)
 			menu_change_value(tester, -1);
-		else if (c == 'l')
+		else if (c == 'l' || c == K_RIGHT)
 			menu_change_value(tester, 1);
 		else if ((c == ' ' || c == '\n') && tester->menu_state.selected == M_KEYCOLS)
 			pick_key_cols(tester);
 		print_menu_screen(tester);
-		c = getchar();
+		c = getchar_nb(tester, print_menu_screen);
 	}
 	if (ft_strcmp(extract_lang_name(tester->options.cur_lang->str), tester->lang.name) != 0)
 	{

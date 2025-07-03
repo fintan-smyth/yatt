@@ -6,11 +6,14 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:44:19 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:13:26 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 23:54:27 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "yatt.h"
+#include <stdio.h>
+#include <sys/select.h>
+#include <unistd.h>
 
 size_t	get_time_ms(void)
 {
@@ -78,4 +81,51 @@ void	draw_borders(t_typer *tester)
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("╯", 1);
+}
+
+int	kbhit(void)
+{
+	struct timeval	tv;
+	fd_set			fds;
+
+	tv.tv_sec = 0;
+	tv.tv_usec = POLL_US;
+	FD_ZERO(&fds);
+	FD_SET(STDIN_FILENO, &fds);
+	select(1, &fds, NULL, NULL, &tv);
+	return (FD_ISSET(STDIN_FILENO, &fds));
+}
+
+int	get_escape_char(char *sequence)
+{
+	if (sequence[1] == 0)
+		return (ESC);
+	if (sequence[1] == 91)
+	{
+		char	dir = sequence[2];
+		if (dir == 65)
+			return (K_UP);
+		if (dir == 66)
+			return (K_DOWN);
+		if (dir == 67)
+			return (K_RIGHT);
+		if (dir == 68)
+			return (K_LEFT);
+	}
+	return (-1);
+}
+
+char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
+{
+	char	c[4] = {};
+
+	while (!kbhit())
+	{
+		if (set_winsize(tester->env))
+			render(tester);
+	}
+	read(0, c, 3);
+	if (c[0] == ESC)
+		return (get_escape_char(c));
+	return (c[0]);
 }

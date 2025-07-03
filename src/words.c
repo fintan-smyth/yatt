@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:33:41 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 17:34:10 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 19:39:44 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	wordnode_exists(t_word *wordlist, char *word)
 	cur_word = wordlist;
 	while (cur_word != NULL)
 	{
-		if (cur_word->word == word)
+		if (ft_strcmp(cur_word->word, word) == 0)
 			return (1);
 		cur_word = cur_word->next;
 	}

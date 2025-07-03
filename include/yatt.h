@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 17:45:57 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/04 00:04:12 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # define ESC 27
 # define BACKSPACE 127
 # define BUFSIZE 256
+# define POLL_NS 50000000
+# define POLL_US 50000
 
 # define BLACK 0
 # define RED 1
@@ -33,14 +35,20 @@
 # define CYAN 6
 # define WHITE 7
 
-enum
-{
+enum {
 	M_WORDS = 0,
 	M_PUNC,
 	M_LANG,
 	M_KMODE,
 	M_KEYCOLS,
 	M_MAX,
+};
+
+enum {
+	K_UP = 1,
+	K_DOWN,
+	K_LEFT,
+	K_RIGHT,
 };
 
 typedef struct s_lang
@@ -89,6 +97,7 @@ typedef struct s_typer
 {
 	t_word			*wordlist;
 	t_word			*render_start;
+	t_word			*cur_word;
 	t_lang			lang;
 	t_options		options;
 	unsigned char	c;
@@ -106,7 +115,7 @@ typedef struct s_typer
 void	store_term_settings(t_env *env);
 void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
-void	set_winsize(t_env *env);
+int		set_winsize(t_env *env);
 
 char	*extract_lang_name(char *lang_path);
 t_lang	load_language_file(char	*filename);
@@ -118,22 +127,27 @@ int		print_wordlist(t_typer *tester);
 int		print_keyboard(t_typer *tester, int y, t_word *cur_word);
 void	select_words(t_typer *tester);
 
-int		run_game(t_typer *tester);
+void	run_game(t_typer *tester);
 void	game_loop(t_typer *tester);
-int		render_game(t_typer *tester, int finished, t_word *cur_word);
+void		render_game(t_typer *tester);
 
 void	check_input(t_typer *tester, char c, t_word *cur_word);
 double	calculate_raw_wpm(t_typer *tester);
 double	calculate_net_wpm(t_typer *tester);
 double	calculate_adj_wpm(t_typer *tester);
 double	calculate_accuracy(t_typer *tester);
-int		display_stats(t_typer *tester, int line);
+void	print_stats(t_typer *tester, int line);
+void	render_stats(t_typer *tester);
+int		stats_screen(t_typer *tester);
 
 size_t	get_time_ms(void);
 int		max_int(int a, int b);
 int		ft_output_len(char *str);
 int		print_str_centred(char *str, int row, int width);
 void	draw_borders(t_typer *tester);
+int		kbhit(void);
+int		get_escape_char(char *sequence);
+char	getchar_nb(t_typer *tester, void (*render)(t_typer *));
 
 void	setup_default_fingers(t_options *tester);
 void	pick_key_cols(t_typer *tester);
