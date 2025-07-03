@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 01:09:34 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:48:38 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,21 @@ void	print_menu_words(t_typer *tester, int selected, int line)
 
 	print_str_centred("\e[1;34mNo. Words:\e[m", line, tester->env->win_width * 2 / 3);
 	ft_snprintf(buf, 128, "\e[31m%s\e[m  %d  \e[31m%s\e[m",
-		(selected && tester->options.num_words > 0) ? "<" : " ",
+		(selected && tester->options.num_words > 1) ? "<" : " ",
 		tester->options.num_words,
-		(selected && tester->options.num_words < 100) ? ">" : " ");
+		(selected && tester->options.num_words < 100) ? ">" : "");
+	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+}
+
+void	print_menu_punc(t_typer *tester, int selected, int line)
+{
+	char	buf[128];
+
+	print_str_centred("\e[1;36mPunctuation:\e[m", line, tester->env->win_width * 2 / 3);
+	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
+		selected ? "<" : " ",
+		tester->options.punc ? "On" : "Off",
+		selected ? ">" : " ");
 	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
 
@@ -124,6 +136,8 @@ void	print_menu_screen(t_typer *tester)
 	draw_borders(tester);
 	line = tester->env->win_height / 2 - 4;
 	print_menu_words(tester, tester->menu_state.selected == M_WORDS, line);
+	line += 2;
+	print_menu_punc(tester, tester->menu_state.selected == M_PUNC, line);
 	line += 2;
 	print_menu_lang(tester, tester->menu_state.selected == M_LANG, line);
 	line += 2;
@@ -192,6 +206,8 @@ void	menu_change_value(t_typer *tester, int dir)
 	}
 	if (selected == M_KMODE)
 		tester->options.kmode = !tester->options.kmode;
+	if (selected == M_PUNC)
+		tester->options.punc = !tester->options.punc;
 }
 
 void	render_options(t_typer *tester)

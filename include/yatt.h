@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 01:04:05 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:45:57 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 enum
 {
 	M_WORDS = 0,
+	M_PUNC,
 	M_LANG,
 	M_KMODE,
 	M_KEYCOLS,
@@ -55,7 +56,7 @@ struct s_word
 {
 	t_word	*next;
 	t_word	*prev;
-	char	*word;
+	char	word[128];
 	int		len;
 	int		pos;
 	char	input_buf[BUFSIZE];
@@ -75,6 +76,7 @@ typedef struct s_options
 	t_list	*cur_lang;
 	int		fingers[128];
 	int		kmode;
+	int		punc;
 }	t_options;
 
 typedef struct s_menu

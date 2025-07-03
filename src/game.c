@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 00:49:10 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:19:06 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	run_game(t_typer *tester)
 				cur_word = cur_word->next;
 			}
 		}
-		else if (ft_isprint(tester->c) && cur_word->pos < tester->env->win_width - 6)
+		else if (ft_isprint(tester->c) && cur_word->pos < tester->env->win_width - 6 && cur_word->pos < BUFSIZE)
 		{
 			cur_word->input_buf[cur_word->pos] = tester->c;
 			check_input(tester, tester->c, cur_word);

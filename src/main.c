@@ -59,6 +59,7 @@ void	init_default_options(t_options *options)
 	options->kmode = 1;
 	options->cur_lang = options->lang_paths;
 	options->num_words = 30;
+	options->punc = 1;
 }
 
 void	init(t_typer *tester)

@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:33:41 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 00:51:35 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:34:10 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_word	*new_wordnode(char *str)
 	t_word	*wordnode;
 
 	wordnode = ft_calloc(1, sizeof(*wordnode));
-	wordnode->word = str;
+	ft_strlcpy(wordnode->word, str, 128);
 	wordnode->len = ft_strlen(str);
 	return (wordnode);
 }
@@ -78,6 +78,7 @@ void	select_words(t_typer *tester)
 	int					index;
 	char				*word;
 	t_lang				*lang = &tester->lang;
+	t_word				*wordnode;
 
 	while (i < num_words)
 	{
@@ -85,7 +86,17 @@ void	select_words(t_typer *tester)
 		word = lang->words[index];
 		if (i < lang->size && wordnode_exists(tester->wordlist, word))
 			continue ;
-		wordlist_add_back(&tester->wordlist, new_wordnode(word));
+		wordnode = wordlist_add_back(&tester->wordlist, new_wordnode(word));
+		if (tester->options.punc)
+		{
+			int	seed = rand() % 10;
+
+			if (seed == 0)
+				ft_strlcat(wordnode->word, ",", 128);
+			if (seed == 1)
+				ft_strlcat(wordnode->word, ".", 128);
+			wordnode->len = ft_strlen(wordnode->word);
+		}
 		i++;
 	}
 }
