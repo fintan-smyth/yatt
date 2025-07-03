@@ -13,6 +13,16 @@
 #include "libft.h"
 #include "yatt.h"
 
+char	*extract_lang_name(char *lang_path)
+{
+	char	*name;
+
+	name = ft_strrchr(lang_path, '/');
+	if (name == NULL)
+		return (lang_path);
+	return (name + 1);
+}
+
 t_lang	load_language_file(char	*filename)
 {
 	int		fd;
@@ -20,7 +30,6 @@ t_lang	load_language_file(char	*filename)
 	char	*nl_ptr;
 	t_list	*word_list = NULL;
 	t_lang	lang;
-	char	*name;
 
 	fd = open(filename, O_RDONLY);
 	while ((line = get_next_line(fd)) != NULL)
@@ -31,14 +40,25 @@ t_lang	load_language_file(char	*filename)
 	}
 	lang.size = ft_lstsize(word_list);
 	lang.words = (char **)ft_lst_to_arr(word_list);
-	name = ft_strrchr(filename, '/');
-	if (name == NULL)
-		lang.name = ft_strdup(filename);
-	else
-		lang.name = ft_strdup(name + 1);
+	lang.name = ft_strdup(extract_lang_name(filename));
 	ft_lstclear(&word_list, NULL);
 	close(fd);
 	return (lang);
+}
+
+void	init_lang_paths(t_options *options)
+{
+	ft_lstadd_back(&options->lang_paths, ft_lstnew(ft_strdup("./lang/english1000")));
+	ft_lstadd_back(&options->lang_paths, ft_lstnew(ft_strdup("./lang/english-advanced")));
+}
+
+void	init_default_options(t_options *options)
+{
+	init_lang_paths(options);
+	setup_default_fingers(options);
+	options->kmode = 1;
+	options->cur_lang = options->lang_paths;
+	options->num_words = 30;
 }
 
 void	init(t_typer *tester)
@@ -51,17 +71,22 @@ void	init(t_typer *tester)
 	set_term_settings(env);
 	set_winsize(env);
 	tester->env = env;
-	tester->menu_state.no_entries = 3;
-	setup_default_fingers(tester);
-	tester->kmode = 1;
+	tester->menu_state.no_entries = M_MAX;
+	init_default_options(&tester->options);
+}
+
+void	cleanup_lang(t_lang *lang)
+{
+	free_split(&lang->words);
+	free(lang->name);
 }
 
 void	cleanup(t_typer *tester)
 {
-	free_split(&tester->lang.words);
-	free(tester->lang.name);
+	cleanup_lang(&tester->lang);
 	reset_term_settings(tester->env);
 	free(tester->env);
+	ft_lstclear(&tester->options.lang_paths, free);
 }
 
 int	handle_args(int argc, char **argv, t_typer *tester)
@@ -71,8 +96,8 @@ int	handle_args(int argc, char **argv, t_typer *tester)
 
 	errno = 0;
 	if (argc == 1)
-		tester->num_words = 30;
-	else if (argc == 2)
+		return (0);
+	if (argc == 2)
 	{
 		words = ft_strtol(argv[1], &endptr, 10);
 		if (*endptr != 0 || errno != 0)
@@ -81,7 +106,7 @@ int	handle_args(int argc, char **argv, t_typer *tester)
 			return (2);
 		if (words < 1)
 			return (3);
-		tester->num_words = words;
+		tester->options.num_words = words;
 	}
 	else
 		return (1);
@@ -94,7 +119,7 @@ int main(int argc, char **argv)
 	int	retval;
 
 	init(tester);
-	tester->lang = load_language_file("./lang/english1000");
+	tester->lang = load_language_file(tester->options.cur_lang->str);
 	if ((retval = handle_args(argc, argv, tester)) != 0)
 	{
 		if (retval == 1)

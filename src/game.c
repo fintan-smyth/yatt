@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 01:18:48 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 00:49:10 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int	run_game(t_typer *tester)
 			}
 		}
 		render_game(tester, 0, cur_word);
-		if (tester->cur_word_idx == tester->num_words - 1
+		if (tester->cur_word_idx == tester->options.num_words - 1
 			&& ft_strcmp(cur_word->input_buf, cur_word->word) == 0)
 			break ;
 		tester->c = getchar();
@@ -104,7 +104,6 @@ void	game_loop(t_typer *tester)
 	do {
 		retval = run_game(tester);
 		if (retval == 2)
-			// pick_key_cols(tester);
 			render_options(tester);
 		clear_wordlist(&tester->wordlist);
 	} while (retval != 1);

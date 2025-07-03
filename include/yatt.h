@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:48:18 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 01:04:05 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,15 @@
 # define MAGENTA 5
 # define CYAN 6
 # define WHITE 7
+
+enum
+{
+	M_WORDS = 0,
+	M_LANG,
+	M_KMODE,
+	M_KEYCOLS,
+	M_MAX,
+};
 
 typedef struct s_lang
 {
@@ -59,6 +68,15 @@ typedef struct s_env
 	int				win_height;
 }	t_env;
 
+typedef struct s_options
+{
+	int		num_words;
+	t_list	*lang_paths;
+	t_list	*cur_lang;
+	int		fingers[128];
+	int		kmode;
+}	t_options;
+
 typedef struct s_menu
 {
 	int	selected;
@@ -70,9 +88,9 @@ typedef struct s_typer
 	t_word			*wordlist;
 	t_word			*render_start;
 	t_lang			lang;
+	t_options		options;
 	unsigned char	c;
 	int				is_correct;
-	int				num_words;
 	int				cur_word_idx;
 	int				inputs_count;
 	int				incorrect_inputs;
@@ -80,8 +98,6 @@ typedef struct s_typer
 	size_t			end_time;
 	t_env			*env;
 	int				last_display_cutoff;
-	int				kmode;
-	int				fingers[128];
 	t_menu			menu_state;
 }	t_typer;
 
@@ -90,6 +106,9 @@ void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
 void	set_winsize(t_env *env);
 
+char	*extract_lang_name(char *lang_path);
+t_lang	load_language_file(char	*filename);
+void	cleanup_lang(t_lang *lang);
 t_word	*new_wordnode(char *str);
 t_word	*wordlist_add_back(t_word **lst, t_word *word);
 void	clear_wordlist(t_word **wordlist);
@@ -114,7 +133,7 @@ int		ft_output_len(char *str);
 int		print_str_centred(char *str, int row, int width);
 void	draw_borders(t_typer *tester);
 
-void	setup_default_fingers(t_typer *tester);
+void	setup_default_fingers(t_options *tester);
 void	pick_key_cols(t_typer *tester);
 int 	print_keyboard_picker(t_typer *tester, int y);
 void	render_options(t_typer *tester);

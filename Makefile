@@ -3,6 +3,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -I ./include -O3
 
 DBG_FLAGS =		-g3 \
+				-pg \
 				# -fsanitize=address \
 
 SRC_DIR := ./src

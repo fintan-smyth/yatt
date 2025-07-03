@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 01:11:35 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 01:09:34 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,46 @@
 #include "yatt.h"
 #include <stdio.h>
 
-void	set_key_col(t_typer *tester, unsigned char c, int col)
+void	set_key_col(t_options *options, unsigned char c, int col)
 {
 	if (col < 0 || col > 7)
 		return ;
-	tester->fingers[c] = col;
-	tester->fingers[ft_toupper(c)] = col;
+	options->fingers[c] = col;
+	options->fingers[ft_toupper(c)] = col;
 }
 
-void	set_keyset_col(t_typer *tester, char *keyset, int col)
+void	set_keyset_col(t_options *options, char *keyset, int col)
 {
 	int	i;
 
 	i = -1;
 	while (keyset[++i])
-		set_key_col(tester, keyset[i], col);
+		set_key_col(options, keyset[i], col);
 }
 
-void	setup_default_fingers(t_typer *tester)
+void	setup_default_fingers(t_options *options)
 {
-	char			index_l[] = "rtfgcvb";
-	char			middle_l[] = "edx";
-	char			ring_l[] = "wsz";
-	char			pinky_l[] = "qa";
+	char			index_l[]	= "rtfgcvb";
+	char			middle_l[]	= "edx";
+	char			ring_l[]	= "wsz";
+	char			pinky_l[]	= "qa";
 
-	char			index_r[] = "yhnujm";
-	char			middle_r[] = "ik";
-	char			ring_r[] = "ol";
-	char			pinky_r[] = "p";
+	char			index_r[]	= "yhnujm";
+	char			middle_r[]	= "ik";
+	char			ring_r[]	= "ol";
+	char			pinky_r[]	= "p";
 
-	char			thumb[] = " ";
+	char			thumb[]		= " ";
 
-	set_keyset_col(tester, index_l, BLUE);
-	set_keyset_col(tester, index_r, MAGENTA);
-	set_keyset_col(tester, middle_l, RED);
-	set_keyset_col(tester, middle_r, RED);
-	set_keyset_col(tester, ring_l, GREEN);
-	set_keyset_col(tester, ring_r, GREEN);
-	set_keyset_col(tester, pinky_l, YELLOW);
-	set_keyset_col(tester, pinky_r, YELLOW);
-	set_keyset_col(tester, thumb, CYAN);
+	set_keyset_col(options, index_l, BLUE);
+	set_keyset_col(options, index_r, MAGENTA);
+	set_keyset_col(options, middle_l, RED);
+	set_keyset_col(options, middle_r, RED);
+	set_keyset_col(options, ring_l, GREEN);
+	set_keyset_col(options, ring_r, GREEN);
+	set_keyset_col(options, pinky_l, YELLOW);
+	set_keyset_col(options, pinky_r, YELLOW);
+	set_keyset_col(options, thumb, CYAN);
 }
 
 void	pick_key_cols(t_typer *tester)
@@ -73,7 +73,7 @@ void	pick_key_cols(t_typer *tester)
 		{
 			c = getchar();
 			if (c >= '0' && c <= '7')
-				tester->fingers[tester->c] = c - '0';
+				tester->options.fingers[tester->c] = c - '0';
 			tester->c = 0;
 			print_keyboard_picker(tester, y_start);
 		}
@@ -81,30 +81,58 @@ void	pick_key_cols(t_typer *tester)
 	}
 }
 
+void	print_menu_words(t_typer *tester, int selected, int line)
+{
+	char	buf[128];
+
+	print_str_centred("\e[1;34mNo. Words:\e[m", line, tester->env->win_width * 2 / 3);
+	ft_snprintf(buf, 128, "\e[31m%s\e[m  %d  \e[31m%s\e[m",
+		(selected && tester->options.num_words > 0) ? "<" : " ",
+		tester->options.num_words,
+		(selected && tester->options.num_words < 100) ? ">" : " ");
+	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+}
+
+void	print_menu_lang(t_typer *tester, int selected, int line)
+{
+	char	buf[128];
+
+	print_str_centred("\e[1;32mLanguage:\e[m", line, tester->env->win_width * 2 / 3);
+	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
+		selected ? "<" : " ",
+		extract_lang_name(tester->options.cur_lang->str),
+		selected ? ">" : " ");
+	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+}
+
+void	print_menu_kmode(t_typer *tester, int selected, int line)
+{
+	char	buf[128];
+
+	print_str_centred("\e[1;33mKeyboard mode:\e[m", line, tester->env->win_width * 2 / 3);
+	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
+		selected ? "<" : " ",
+		tester->options.kmode ? "Instructional" : "Accuracy",
+		selected ? ">" : " ");
+	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+}
+
 void	print_menu_screen(t_typer *tester)
 {
 	int		line;
-	int		width = ft_strlen(tester->lang.name) + 5;
-	char	buf1[128];
-	char	buf2[128];
 
 	draw_borders(tester);
-	line = tester->env->win_height / 2 - 2;
-	snprintf(buf1, 128, "\e[1;34m<%*s\e[m", width, ">");
-	if (tester->menu_state.selected == 0)
-		print_str_centred(buf1, line, tester->env->win_width);
-	snprintf(buf2, 128, "\e[1m%d\e[m", tester->num_words);
-	print_str_centred(buf2, line, tester->env->win_width);
+	line = tester->env->win_height / 2 - 4;
+	print_menu_words(tester, tester->menu_state.selected == M_WORDS, line);
 	line += 2;
-	if (tester->menu_state.selected == 1)
-		print_str_centred(buf1, line, tester->env->win_width);
-	snprintf(buf2, 128, "\e[1m%s\e[m", tester->lang.name);
-	print_str_centred(buf2, line, tester->env->win_width);
+	print_menu_lang(tester, tester->menu_state.selected == M_LANG, line);
 	line += 2;
-	if (tester->menu_state.selected == 2)
-		print_str_centred("\e[30;44;1mChoose key colours\e[m", line, tester->env->win_width);
+	print_menu_kmode(tester, tester->menu_state.selected == M_KMODE, line);
+	line += 3;
+	if (tester->menu_state.selected == M_KEYCOLS)
+		print_str_centred("\e[30;45;1mChoose key colours\e[m", line, tester->env->win_width);
 	else
-		print_str_centred("\e[1mChoose key colours\e[m", line, tester->env->win_width);
+		print_str_centred("\e[35;1mChoose key colours\e[m", line, tester->env->win_width);
 }
 
 void	change_selection(t_menu *menu, int dir)
@@ -122,19 +150,75 @@ void	change_selection(t_menu *menu, int dir)
 	menu->selected = selected;
 }
 
+void	menu_change_value(t_typer *tester, int dir)
+{
+	int			selected;
+	t_options	*options = &tester->options;
+
+	if (dir != 1 && dir != -1)
+		return ;
+	selected = tester->menu_state.selected;
+	if (selected == M_WORDS)
+	{
+		int	new_val = options->num_words + dir;
+
+		if (new_val > 100)
+			new_val = 100;
+		if (new_val < 1)
+			new_val = 1;
+		options->num_words = new_val;
+		return ;
+	}
+	if (selected == M_LANG)
+	{
+		if (dir == 1)
+		{
+			options->cur_lang = options->cur_lang->next;
+			if (options->cur_lang == NULL)
+				options->cur_lang = options->lang_paths;
+			return ;
+		}
+		if (options->cur_lang == options->lang_paths)
+		{
+			options->cur_lang = ft_lstlast(options->lang_paths);
+			return ;
+		}
+		t_list	*current = options->lang_paths;
+		
+		while (current->next != options->cur_lang)
+			current = current->next;
+		options->cur_lang = current;
+		return ;
+	}
+	if (selected == M_KMODE)
+		tester->options.kmode = !tester->options.kmode;
+}
+
 void	render_options(t_typer *tester)
 {
 	char	c;
 
+	tester->menu_state.selected = 0;
 	print_menu_screen(tester);
 	c = getchar();
-	while (c != 'q')
+	while (c != 'q' && c != ESC)
 	{
 		if (c == 'j')
 			change_selection(&tester->menu_state, 1);
 		else if (c == 'k')
 			change_selection(&tester->menu_state, -1);
+		else if (c == 'h')
+			menu_change_value(tester, -1);
+		else if (c == 'l')
+			menu_change_value(tester, 1);
+		else if ((c == ' ' || c == '\n') && tester->menu_state.selected == M_KEYCOLS)
+			pick_key_cols(tester);
 		print_menu_screen(tester);
 		c = getchar();
+	}
+	if (ft_strcmp(extract_lang_name(tester->options.cur_lang->str), tester->lang.name) != 0)
+	{
+		cleanup_lang(&tester->lang);
+		tester->lang = load_language_file(tester->options.cur_lang->str);
 	}
 }

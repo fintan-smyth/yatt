@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 00:02:18 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:55:10 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 00:52:30 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	print_formatted_key(t_typer *tester, char c, t_word *cur_word)
 {
-	if (tester->kmode == 0)
+	if (tester->options.kmode == 0)
 	{
 		if (c == tester->c)
 		{
@@ -26,15 +26,15 @@ void	print_formatted_key(t_typer *tester, char c, t_word *cur_word)
 		else
 			ft_printf(" %c ", ft_toupper(c));
 	}
-	else if (tester->kmode == 1)
+	else if (tester->options.kmode == 1)
 	{
 		int	pos = cur_word->pos;
 		int	len = cur_word->len;
 
 		if (pos < len && c == cur_word->word[pos])
-			ft_printf("\e[30;4%dm %c \e[39;49m", tester->fingers[(unsigned char)c], ft_toupper(c));
+			ft_printf("\e[30;4%dm %c \e[39;49m", tester->options.fingers[(unsigned char)c], ft_toupper(c));
 		else
-			ft_printf("\e[3%dm %c \e[39;49m", tester->fingers[(unsigned char)c], ft_toupper(c));
+			ft_printf("\e[3%dm %c \e[39;49m", tester->options.fingers[(unsigned char)c], ft_toupper(c));
 	}
 	ft_putstr_fd("│", 1);
 }
@@ -43,7 +43,7 @@ void	print_formatted_space(t_typer *tester, t_word *cur_word)
 {
 	char	space[] = "     SPACE     ";
 
-	if (tester->kmode == 0)
+	if (tester->options.kmode == 0)
 	{
 		if (' ' == tester->c && tester->is_correct >= 0)
 		{
@@ -55,15 +55,15 @@ void	print_formatted_space(t_typer *tester, t_word *cur_word)
 		else
 			ft_printf("│%s│", space);
 	}
-	else if (tester->kmode == 1)
+	else if (tester->options.kmode == 1)
 	{
 		int	pos = cur_word->pos;
 		int	len = cur_word->len;
 
 		if (pos == len)
-			ft_printf("│\e[30;4%dm%s\e[39;49m│", tester->fingers[' '], space);
+			ft_printf("│\e[30;4%dm%s\e[39;49m│", tester->options.fingers[' '], space);
 		else
-			ft_printf("│\e[3%dm%s\e[39;49m│", tester->fingers[' '], space);
+			ft_printf("│\e[3%dm%s\e[39;49m│", tester->options.fingers[' '], space);
 	}
 }
 
@@ -110,7 +110,7 @@ void	print_picker_key(t_typer *tester, unsigned char c)
 		if (tester->c == c)
 			ft_printf("\e[30;47m %c \e[39;49m", ft_toupper(c));
 		else
-			ft_printf("\e[3%dm %c \e[39;49m", tester->fingers[c], ft_toupper(c));
+			ft_printf("\e[3%dm %c \e[39;49m", tester->options.fingers[c], ft_toupper(c));
 		ft_putstr_fd("│", 1);
 	}
 	else
@@ -118,7 +118,7 @@ void	print_picker_key(t_typer *tester, unsigned char c)
 		if (tester->c == c)
 			ft_printf("│\e[30;47m%s\e[39;49m│", space);
 		else
-			ft_printf("│\e[3%dm%s\e[39;49m│", tester->fingers[' '], space);
+			ft_printf("│\e[3%dm%s\e[39;49m│", tester->options.fingers[' '], space);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 19:33:41 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 01:07:01 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/03 00:51:35 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	wordnode_exists(t_word *wordlist, char *word)
 void	select_words(t_typer *tester)
 {
 	unsigned int		i = 0;
-	unsigned int		num_words = tester->num_words;
+	unsigned int		num_words = tester->options.num_words;
 	int					index;
 	char				*word;
 	t_lang				*lang = &tester->lang;
