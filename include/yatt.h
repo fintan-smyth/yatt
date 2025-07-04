@@ -37,6 +37,7 @@
 
 enum {
 	M_WORDS = 0,
+	M_NUMBERS,
 	M_PUNC,
 	M_LANG,
 	M_KMODE,
@@ -85,6 +86,7 @@ typedef struct s_options
 	int		fingers[128];
 	int		kmode;
 	int		punc;
+	int		numbers;
 }	t_options;
 
 typedef struct s_menu
@@ -151,7 +153,7 @@ char	getchar_nb(t_typer *tester, void (*render)(t_typer *));
 
 void	setup_default_fingers(t_options *tester);
 void	pick_key_cols(t_typer *tester);
-int 	print_keyboard_picker(t_typer *tester, int y);
+void	print_keyboard_picker(t_typer *tester);
 void	render_options(t_typer *tester);
 
 #endif // YATT_H

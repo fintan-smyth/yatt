@@ -63,21 +63,20 @@ void	pick_key_cols(t_typer *tester)
 
 	y_start = tester->env->win_height / 2 - 6;
 	tester->c = 0;
-	draw_borders(tester);
-	print_keyboard_picker(tester, y_start);
-	tester->c = getchar();
+	print_keyboard_picker(tester);
+	tester->c = getchar_nb(tester, print_keyboard_picker);
 	while (tester->c != ESC)
 	{
-		print_keyboard_picker(tester, y_start);
+		print_keyboard_picker(tester);
 		if (ft_isalpha(tester->c) || tester->c == ' ')
 		{
 			c = getchar();
 			if (c >= '0' && c <= '7')
 				tester->options.fingers[tester->c] = c - '0';
 			tester->c = 0;
-			print_keyboard_picker(tester, y_start);
+			print_keyboard_picker(tester);
 		}
-		tester->c = getchar();
+		tester->c = getchar_nb(tester, print_keyboard_picker);
 	}
 }
 
@@ -90,6 +89,18 @@ void	print_menu_words(t_typer *tester, int selected, int line)
 		(selected && tester->options.num_words > 1) ? "<" : " ",
 		tester->options.num_words,
 		(selected && tester->options.num_words < 100) ? ">" : " ");
+	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+}
+
+void	print_menu_numbers(t_typer *tester, int selected, int line)
+{
+	char	buf[128];
+
+	print_str_centred("\e[1;36mNumbers:\e[m", line, tester->env->win_width * 2 / 3);
+	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
+		selected ? "<" : " ",
+		tester->options.numbers ? "On" : "Off",
+		selected ? ">" : " ");
 	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
 
@@ -136,6 +147,8 @@ void	print_menu_screen(t_typer *tester)
 	draw_borders(tester);
 	line = tester->env->win_height / 2 - 4;
 	print_menu_words(tester, tester->menu_state.selected == M_WORDS, line);
+	line += 2;
+	print_menu_numbers(tester, tester->menu_state.selected == M_NUMBERS, line);
 	line += 2;
 	print_menu_punc(tester, tester->menu_state.selected == M_PUNC, line);
 	line += 2;
@@ -208,6 +221,8 @@ void	menu_change_value(t_typer *tester, int dir)
 		tester->options.kmode = !tester->options.kmode;
 	if (selected == M_PUNC)
 		tester->options.punc = !tester->options.punc;
+	if (selected == M_NUMBERS)
+		tester->options.numbers = !tester->options.numbers;
 }
 
 void	render_options(t_typer *tester)

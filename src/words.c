@@ -71,6 +71,23 @@ int	wordnode_exists(t_word *wordlist, char *word)
 	return (0);
 }
 
+void	generate_number_word(char *buf)
+{
+	int	seed;
+	int	len;
+	int	i;
+
+	seed = rand() % 3;
+	len = seed + 2;
+	i = 0;
+	while (i < len)
+	{
+		buf[i] = rand() % 10 + '0';
+		i++;
+	}
+	buf[i] = 0;
+}
+
 void	select_words(t_typer *tester)
 {
 	unsigned int		i = 0;
@@ -87,14 +104,19 @@ void	select_words(t_typer *tester)
 		if (i < lang->size && wordnode_exists(tester->wordlist, word))
 			continue ;
 		wordnode = wordlist_add_back(&tester->wordlist, new_wordnode(word));
-		if (tester->options.punc)
+		if (tester->options.punc || tester->options.numbers)
 		{
-			int	seed = rand() % 10;
+			int	seed = rand() % 20;
 
-			if (seed == 0)
-				ft_strlcat(wordnode->word, ",", 128);
-			if (seed == 1)
-				ft_strlcat(wordnode->word, ".", 128);
+			if (tester->options.numbers && rand() % 5 == 0)
+				generate_number_word(wordnode->word);
+			if (tester->options.punc)
+			{
+				if (seed < 2)
+					ft_strlcat(wordnode->word, ",", 128);
+				else if (seed < 4)
+					ft_strlcat(wordnode->word, ".", 128);
+			}
 			wordnode->len = ft_strlen(wordnode->word);
 		}
 		i++;

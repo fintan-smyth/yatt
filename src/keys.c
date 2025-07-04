@@ -136,14 +136,17 @@ int	print_col_hints(t_typer *tester, int y)
 	return (y);
 }
 
-int print_keyboard_picker(t_typer *tester, int y)
+void	print_keyboard_picker(t_typer *tester)
 {
 	char	row1[] = "qwertyuiop";
 	char	row2[] = "asdfghjkl";
 	char	row3[] = "zxcvbnm";
 	int		i;
+	int		y;
 	int		line_start;
 
+	draw_borders(tester);
+	y= tester->env->win_height / 2 - 6;
 	y = print_col_hints(tester, y);
 	line_start = (tester->env->win_width - 41) / 2 + 1;
 	y += 2;
@@ -168,5 +171,4 @@ int print_keyboard_picker(t_typer *tester, int y)
 	print_picker_key(tester, ' ');
 	ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
 	ft_printf("\e[m\n");
-	return (y);
 }
