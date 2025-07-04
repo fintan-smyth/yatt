@@ -187,6 +187,6 @@ int	stats_screen(t_typer *tester)
 		else if (c == 'o')
 			render_options(tester);
 		render_stats(tester);
-		c = getchar_nb(tester, render_stats);
+		c = ft_tolower(getchar_nb(tester, render_stats));
 	}
 }

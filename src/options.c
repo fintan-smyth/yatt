@@ -59,9 +59,7 @@ void	setup_default_fingers(t_options *options)
 void	pick_key_cols(t_typer *tester)
 {
 	char	c;
-	int		y_start;
 
-	y_start = tester->env->win_height / 2 - 6;
 	tester->c = 0;
 	print_keyboard_picker(tester);
 	tester->c = getchar_nb(tester, print_keyboard_picker);
