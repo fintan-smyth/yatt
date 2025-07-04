@@ -82,6 +82,11 @@ void	run_game(t_typer *tester)
 				}
 			}
 		}
+		else
+		{
+			tester->c = getchar_nb(tester, render_game);
+			continue ;
+		}
 		render_game(tester);
 		if (tester->cur_word_idx == tester->options.num_words - 1
 			&& ft_strcmp(tester->cur_word->input_buf, tester->cur_word->word) == 0)
