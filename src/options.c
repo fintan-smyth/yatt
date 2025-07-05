@@ -45,6 +45,8 @@ void	setup_default_fingers(t_options *options)
 
 	char			thumb[]		= " ";
 
+	for (int i = 0; i < 128; i++)
+		options->fingers[i] = 7;
 	set_keyset_col(options, index_l, BLUE);
 	set_keyset_col(options, index_r, MAGENTA);
 	set_keyset_col(options, middle_l, RED);
