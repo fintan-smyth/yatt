@@ -39,9 +39,9 @@ void	setup_default_fingers(t_options *options)
 	char			pinky_l[]	= "qa";
 
 	char			index_r[]	= "yhnujm";
-	char			middle_r[]	= "ik";
-	char			ring_r[]	= "ol";
-	char			pinky_r[]	= "p";
+	char			middle_r[]	= "ik,<";
+	char			ring_r[]	= "ol.>";
+	char			pinky_r[]	= "p;:/?'\"[{]}";
 
 	char			thumb[]		= " ";
 
@@ -252,4 +252,8 @@ void	render_options(t_typer *tester)
 		cleanup_lang(&tester->lang);
 		tester->lang = load_language_file(tester->options.cur_lang->str);
 	}
+	if (tester->options.punc || tester->options.numbers)
+		tester->options.full_keyboard = 1;
+	else
+		tester->options.full_keyboard = 0;
 }

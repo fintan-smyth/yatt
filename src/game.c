@@ -34,7 +34,10 @@ void	render_game(t_typer *tester)
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("┤", 1);
-	print_keyboard_full(tester, line, tester->cur_word);
+	if (tester->options.full_keyboard)
+		print_keyboard_full(tester, line, tester->cur_word);
+	else
+		print_keyboard(tester, line, tester->cur_word);
 }
 
 void	run_game(t_typer *tester)
@@ -46,7 +49,7 @@ void	run_game(t_typer *tester)
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
 	{
-		tester->is_correct = -1;
+		tester->is_correct = 1;
 		if (tester->c == ' ')
 		{
 			if (tester->cur_word->pos != 0)
