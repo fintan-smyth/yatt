@@ -87,6 +87,7 @@ typedef struct s_options
 	int		kmode;
 	int		punc;
 	int		numbers;
+	int		full_keyboard;
 }	t_options;
 
 typedef struct s_menu
@@ -127,6 +128,7 @@ t_word	*wordlist_add_back(t_word **lst, t_word *word);
 void	clear_wordlist(t_word **wordlist);
 int		print_wordlist(t_typer *tester);
 int		print_keyboard(t_typer *tester, int y, t_word *cur_word);
+int 	print_keyboard_full(t_typer *tester, int y, t_word *cur_word);
 void	select_words(t_typer *tester);
 
 void	run_game(t_typer *tester);

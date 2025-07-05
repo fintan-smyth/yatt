@@ -34,7 +34,7 @@ void	render_game(t_typer *tester)
 	while (i++ < tester->env->win_width)
 		ft_putstr_fd("─", 1);
 	ft_putstr_fd("┤", 1);
-	print_keyboard(tester, line, tester->cur_word);
+	print_keyboard_full(tester, line, tester->cur_word);
 }
 
 void	run_game(t_typer *tester)
