@@ -116,6 +116,24 @@ void	select_words(t_typer *tester)
 					ft_strlcat(wordnode->word, ",", 128);
 				else if (seed < 4)
 					ft_strlcat(wordnode->word, ".", 128);
+				else if (seed < 8)
+				{
+					if (seed < 6 && tester->options.quotes)
+						surround_string(wordnode->word, "'");
+					else if (tester->options.quotes)
+						surround_string(wordnode->word, "\"");
+				}
+				else if (seed < 12 && tester->options.brackets)
+				{
+					if (seed == 8)
+						surround_string(wordnode->word, "[]");
+					else if (seed == 9)
+						surround_string(wordnode->word, "{}");
+					else if (seed == 10)
+						surround_string(wordnode->word, "()");
+					else if (seed == 11)
+						surround_string(wordnode->word, "<>");
+				}
 			}
 			wordnode->len = ft_strlen(wordnode->word);
 		}

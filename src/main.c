@@ -60,6 +60,8 @@ void	init_default_options(t_options *options)
 	options->cur_lang = options->lang_paths;
 	options->num_words = 30;
 	options->punc = 0;
+	options->brackets = 1;
+	options->quotes = 1;
 }
 
 void	init(t_typer *tester)

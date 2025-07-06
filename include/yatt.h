@@ -86,6 +86,8 @@ typedef struct s_options
 	int		fingers[128];
 	int		kmode;
 	int		punc;
+	int		brackets;
+	int		quotes;
 	int		numbers;
 	int		full_keyboard;
 }	t_options;
@@ -152,6 +154,7 @@ void	draw_borders(t_typer *tester);
 int		kbhit(void);
 int		get_escape_char(char *sequence);
 char	getchar_nb(t_typer *tester, void (*render)(t_typer *));
+void	surround_string(char *str, char *set);
 
 void	setup_default_fingers(t_options *tester);
 void	pick_key_cols(t_typer *tester);

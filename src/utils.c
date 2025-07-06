@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "yatt.h"
 #include <stdio.h>
 #include <sys/select.h>
@@ -128,4 +129,25 @@ char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
 	if (c[0] == ESC)
 		return (get_escape_char(c));
 	return (c[0]);
+}
+
+void	surround_string(char *str, char *set)
+{
+	char	left;
+	char	right;
+	int		len;
+
+	len = ft_strlen(set);
+	if (len > 2)
+		return ;
+	left = set[0];
+	if (len == 2)
+		right = set[1];
+	else
+		right = set[0];
+	len = ft_strlen(str);
+	ft_memmove(str + 1, str, len);
+	str[0] = left;
+	str[len + 1] = right;
+	str[len + 2] = 0;
 }
