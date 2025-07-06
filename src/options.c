@@ -33,15 +33,15 @@ void	set_keyset_col(t_options *options, char *keyset, int col)
 
 void	setup_default_fingers(t_options *options)
 {
-	char			index_l[]	= "rtfgcvb";
-	char			middle_l[]	= "edx";
-	char			ring_l[]	= "wsz";
-	char			pinky_l[]	= "qa";
+	char			index_l[]	= "rtfgcvb4$5%";
+	char			middle_l[]	= "edx3#";
+	char			ring_l[]	= "wsz2@";
+	char			pinky_l[]	= "qa1!";
 
-	char			index_r[]	= "yhnujm";
-	char			middle_r[]	= "ik,<";
-	char			ring_r[]	= "ol.>";
-	char			pinky_r[]	= "p;:/?'\"[{]}";
+	char			index_r[]	= "yhnujm67";
+	char			middle_r[]	= "ik,<8";
+	char			ring_r[]	= "ol.>9";
+	char			pinky_r[]	= "p0;:/?'\"[{]}-_=+";
 
 	char			thumb[]		= " ";
 
