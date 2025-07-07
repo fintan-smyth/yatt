@@ -116,14 +116,33 @@ int	get_escape_char(char *sequence)
 	return (-1);
 }
 
+void	render_too_small(t_typer *tester)
+{
+	int		y = tester->env->win_height / 2;
+
+	draw_borders(tester);
+	print_str_centred("\e[1;3mWindow too small!", y, tester->env->win_width);
+}
+
+int	win_too_small(t_env *env)
+{
+	return (env->win_height < env->min_height || env->win_width < env->min_width);
+}
+
 char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
 {
 	char	c[4] = {};
+	t_env	*env = tester->env;
 
-	while (!kbhit())
+	while (!kbhit() || win_too_small(env))
 	{
-		if (set_winsize(tester->env))
-			render(tester);
+		if (set_winsize(env))
+		{
+			if (win_too_small(tester->env))
+				render_too_small(tester);
+			else
+				render(tester);
+		}
 	}
 	read(0, c, 3);
 	if (c[0] == ESC)

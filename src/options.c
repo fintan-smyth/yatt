@@ -249,7 +249,15 @@ void	render_options(t_typer *tester)
 		tester->lang = load_language_file(tester->options.cur_lang->str);
 	}
 	if (tester->options.punc || tester->options.numbers)
+	{
 		tester->options.full_keyboard = 1;
+		tester->env->min_height = MIN_HEIGHT_FULL;
+		tester->env->min_width = MIN_WIDTH_FULL;
+	}
 	else
+	{
 		tester->options.full_keyboard = 0;
+		tester->env->min_height = MIN_HEIGHT_SMALL;
+		tester->env->min_width = MIN_WIDTH_SMALL;
+	}
 }

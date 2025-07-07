@@ -28,6 +28,7 @@ void	render_game(t_typer *tester)
 	int	i;
 
 	draw_borders(tester);
+	// ft_printf("\e[Hwidth %d height %d", tester->env->win_width, tester->env->win_height);
 	line = print_wordlist(tester);
 	ft_printf("\e[%d;1H├", line);
 	i = 2;

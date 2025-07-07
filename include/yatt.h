@@ -26,6 +26,11 @@
 # define POLL_NS 50000000
 # define POLL_US 50000
 
+# define MIN_WIDTH_SMALL 43
+# define MIN_HEIGHT_SMALL 17
+# define MIN_WIDTH_FULL 53
+# define MIN_HEIGHT_FULL 19
+
 # define BLACK 0
 # define RED 1
 # define GREEN 2
@@ -76,6 +81,8 @@ typedef struct s_env
 	struct termios	g_term_original;
 	int				win_width;
 	int				win_height;
+	int				min_width;
+	int				min_height;
 }	t_env;
 
 typedef struct s_options

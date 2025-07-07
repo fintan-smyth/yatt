@@ -75,6 +75,8 @@ void	init(t_typer *tester)
 	set_term_settings(env);
 	set_winsize(env);
 	tester->env = env;
+	env->min_height = MIN_HEIGHT_SMALL;
+	env->min_width = MIN_WIDTH_SMALL;
 	tester->menu_state.no_entries = M_MAX;
 	init_default_options(&tester->options);
 }
