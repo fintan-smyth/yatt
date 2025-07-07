@@ -198,6 +198,64 @@ int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
 	return (start);
 }
 
+void	calculate_scroll_vars(t_typer *tester, int *total_lines, int *max_lines, int *cur_word_line)
+{
+	t_word	*cur_word;
+	int		word_idx;
+	int		nl_word;
+	int		y;
+	int		lines;
+	int		tmp_max;
+	int		tmp_total;
+	int		tmp_cur;
+	int		last_row;
+
+	last_row = tester->env->win_height - (tester->options.full_keyboard ? 15 : 13);
+	cur_word = tester->wordlist;
+	tmp_max = 1337;
+	tmp_total = 0;
+	word_idx = 0;
+	nl_word = 0;
+	y = 1;
+	lines = 0;
+	while (cur_word != NULL)
+	{
+		if (nl_word == word_idx)
+		{
+			lines++;
+			calculate_line_start(tester, cur_word, &nl_word);
+			y += 2;
+			if (tmp_max == 1337 && y >= last_row)
+				tmp_max = lines - 1;
+		}
+		if (cur_word == tester->cur_word)
+			tmp_cur = lines;
+		cur_word = cur_word->next;
+		word_idx++;
+	}
+	tmp_total = lines;
+	if (tmp_total > tmp_max)
+	{
+		int	pane_height = tmp_max * 2 + 1;
+		int	max_pos = tmp_total - tmp_max;
+		int	scroll_pos = clamp_int(((tmp_cur - 2) * pane_height) / max_pos, 0, pane_height - 1);
+		// ft_printf("\e[Hscroll_pos %d pane_height %d", scroll_pos, pane_height);
+		int	x = tester->env->win_width - 1;
+		int	y = -1;
+
+		while (++y < pane_height)
+		{
+			if (y == scroll_pos)
+				ft_printf("\e[%d;%dH\e[44m \e[m", y + 2, x);
+			else
+				ft_printf("\e[%d;%dH│", y + 2, x);
+		}
+	}
+	*max_lines = tmp_max;
+	*cur_word_line = tmp_cur;
+	*total_lines = tmp_total;
+}
+
 int	print_wordlist(t_typer *tester)
 {
 	t_word	*cur_word;
@@ -205,23 +263,42 @@ int	print_wordlist(t_typer *tester)
 	int		nl_word;
 	int		x;
 	int		y;
+	int		line;
+	int		max_lines;
+	int		total_lines;
+	int		cur_word_line;
+	int		print;
+	// int		last_frame;
 
 	cur_word = tester->wordlist;
+	calculate_scroll_vars(tester, &total_lines, &max_lines, &cur_word_line);
+	// last_frame = total_lines - max_lines + 2;
+	// exit(0);
 	word_idx = 0;
 	nl_word = 0;
 	y = 1;
+	line = 0;
+	print = 0;
 	while (cur_word != NULL)
 	{
 		if (nl_word == word_idx)
 		{
+			line++;
+			if (line >= (cur_word_line == 1 ? 2 : cur_word_line) + max_lines - 1)
+				break ;
+			if (print == 0 && (line >= cur_word_line - 1 || line + max_lines > total_lines))
+				print = 1;
 			x = calculate_line_start(tester, cur_word, &nl_word);
-			y += 2;
+			if (print)
+				y += 2;
 			ft_printf("\e[%d;%dH", y, x);
 		}
-		print_word(cur_word, word_idx, tester->cur_word_idx);
+		if (print)
+			print_word(cur_word, word_idx, tester->cur_word_idx);
 		cur_word = cur_word->next;
 		word_idx++;
 	}
+	// ft_printf("\ntotal: %d max: %d cur_word: %d", total_lines, max_lines, cur_word_line);
 	write(1, "\n", 1);
 	return (y + 2);
 }

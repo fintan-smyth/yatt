@@ -147,7 +147,7 @@ void	print_correct_inputs(t_typer *tester, int line)
 
 void	print_stats(t_typer *tester, int line)
 {
-	line += 3;
+	line += 2;
 	print_adj_wpm(tester, line++);
 	print_net_wpm(tester, line++);
 	print_raw_wpm(tester, line++);
@@ -155,7 +155,7 @@ void	print_stats(t_typer *tester, int line)
 	print_correct_inputs(tester, ++line);
 	line++;
 	print_str_centred("\e[1;3mPress '\e[32mR\e[39m' to retry, '\e[31mQ\e[39m' to quit,\e[m", ++line, tester->env->win_width);
-	print_str_centred("\e[1;3mor '\e[34mO\e[39m' for options\e[m", line + 2, tester->env->win_width);
+	print_str_centred("\e[1;3mor '\e[34mO\e[39m' for options\e[m", line + 1, tester->env->win_width);
 }
 
 void	render_stats(t_typer *tester)

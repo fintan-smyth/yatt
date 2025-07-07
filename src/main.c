@@ -62,6 +62,7 @@ void	init_default_options(t_options *options)
 	options->punc = 0;
 	options->brackets = 1;
 	options->quotes = 1;
+	options->full_keyboard = 0;
 }
 
 void	init(t_typer *tester)
@@ -87,6 +88,7 @@ void	cleanup_lang(t_lang *lang)
 void	cleanup(t_typer *tester)
 {
 	cleanup_lang(&tester->lang);
+	clear_wordlist(&tester->wordlist);
 	reset_term_settings(tester->env);
 	free(tester->env);
 	ft_lstclear(&tester->options.lang_paths, free);
@@ -105,7 +107,7 @@ int	handle_args(int argc, char **argv, t_typer *tester)
 		words = ft_strtol(argv[1], &endptr, 10);
 		if (*endptr != 0 || errno != 0)
 			return (1);
-		if (words > 500)
+		if (words > 250)
 			return (2);
 		if (words < 1)
 			return (3);

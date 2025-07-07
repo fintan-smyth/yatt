@@ -121,6 +121,7 @@ void	store_term_settings(t_env *env);
 void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
 int		set_winsize(t_env *env);
+void	cleanup(t_typer *tester);
 
 char	*extract_lang_name(char *lang_path);
 t_lang	load_language_file(char	*filename);
@@ -149,6 +150,7 @@ int		stats_screen(t_typer *tester);
 size_t	get_time_ms(void);
 int		max_int(int a, int b);
 int		ft_output_len(char *str);
+int		clamp_int(int num, int min, int max);
 int		print_str_centred(char *str, int row, int width);
 void	draw_borders(t_typer *tester);
 int		kbhit(void);

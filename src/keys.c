@@ -79,7 +79,7 @@ int print_keyboard(t_typer *tester, int y, t_word *cur_word)
 	int		line_start;
 
 	line_start = (tester->env->win_width - 41) / 2 + 1;
-	y += 3;
+	y += 2;
 	ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
 	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = -1;
@@ -204,7 +204,7 @@ int print_keyboard_full(t_typer *tester, int y, t_word *cur_word)
 	int		line_start;
 
 	line_start = (tester->env->win_width - 51) / 2 + 1;
-	y += 3;
+	y += 2;
 	ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
 	ft_printf("\e[%d;%dH│", y++, line_start);
 	i = 0;

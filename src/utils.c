@@ -151,3 +151,12 @@ void	surround_string(char *str, char *set)
 	str[len + 1] = right;
 	str[len + 2] = 0;
 }
+
+int	clamp_int(int num, int min, int max)
+{
+	if (num < min)
+		return (min);
+	if (num > max)
+		return (max);
+	return (num);
+}
