@@ -45,7 +45,7 @@ void	run_game(t_typer *tester)
 {
 	reset_game(tester);
 	tester->cur_word = tester->wordlist;
-	render_game(tester);
+	exec_render_func(tester, render_game);
 	tester->c = getchar_nb(tester, render_game);
 	tester->start_time = get_time_ms();
 	while (tester->c != ESC)
@@ -91,7 +91,7 @@ void	run_game(t_typer *tester)
 			tester->c = getchar_nb(tester, render_game);
 			continue ;
 		}
-		render_game(tester);
+		exec_render_func(tester, render_game);
 		if (tester->cur_word_idx == tester->options.num_words - 1
 			&& ft_strcmp(tester->cur_word->input_buf, tester->cur_word->word) == 0)
 			break ;

@@ -226,7 +226,7 @@ void	render_options(t_typer *tester)
 	char	c;
 
 	tester->menu_state.selected = 0;
-	print_menu_screen(tester);
+	exec_render_func(tester, print_menu_screen);
 	c = getchar_nb(tester, print_menu_screen);
 	while (c != 'q' && c != ESC)
 	{
@@ -240,7 +240,7 @@ void	render_options(t_typer *tester)
 			menu_change_value(tester, 1);
 		else if ((c == ' ' || c == '\n') && tester->menu_state.selected == M_KEYCOLS)
 			pick_key_cols(tester);
-		print_menu_screen(tester);
+		exec_render_func(tester, print_menu_screen);
 		c = getchar_nb(tester, print_menu_screen);
 	}
 	if (ft_strcmp(extract_lang_name(tester->options.cur_lang->str), tester->lang.name) != 0)

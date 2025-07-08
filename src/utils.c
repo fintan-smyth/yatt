@@ -129,20 +129,26 @@ int	win_too_small(t_env *env)
 	return (env->win_height < env->min_height || env->win_width < env->min_width);
 }
 
+void	exec_render_func(t_typer *tester, void (*render)(t_typer *))
+{
+	if (win_too_small(tester->env))
+	{
+		render_too_small(tester);
+		return ;
+	}
+	render(tester);
+
+}
+
 char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
 {
 	char	c[4] = {};
 	t_env	*env = tester->env;
 
-	while (!kbhit() || win_too_small(env))
+	while (!kbhit())
 	{
 		if (set_winsize(env))
-		{
-			if (win_too_small(tester->env))
-				render_too_small(tester);
-			else
-				render(tester);
-		}
+			exec_render_func(tester, render);
 	}
 	read(0, c, 3);
 	if (c[0] == ESC)
