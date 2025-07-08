@@ -63,18 +63,18 @@ void	pick_key_cols(t_typer *tester)
 	char	c;
 
 	tester->c = 0;
-	print_keyboard_picker(tester);
+	exec_render_func(tester, print_keyboard_picker);
 	tester->c = getchar_nb(tester, print_keyboard_picker);
 	while (tester->c != ESC)
 	{
-		print_keyboard_picker(tester);
+		exec_render_func(tester, print_keyboard_picker);
 		if (ft_isalpha(tester->c) || tester->c == ' ')
 		{
-			c = getchar();
+			c = getchar_nb(tester, print_keyboard_picker);
 			if (c >= '0' && c <= '7')
 				tester->options.fingers[tester->c] = c - '0';
 			tester->c = 0;
-			print_keyboard_picker(tester);
+			exec_render_func(tester, print_keyboard_picker);
 		}
 		tester->c = getchar_nb(tester, print_keyboard_picker);
 	}

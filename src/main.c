@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <limits.h>
 
 char	*extract_lang_name(char *lang_path)
 {
@@ -60,8 +61,18 @@ void	init_default_options(t_options *options)
 	options->cur_lang = options->lang_paths;
 	options->num_words = 30;
 	options->punc = 0;
-	options->brackets = 1;
-	options->quotes = 1;
+	options->punc_flags = (0
+		| P_COMMA
+		| P_FSTOP
+		| P_EXCLAM
+		| P_QUEST
+		| P_PAREN
+		| P_BRACK
+		| P_BRACE
+		| P_ANGBRACK
+		| P_SQUOTE
+		| P_DQUOTE
+	);
 	options->full_keyboard = 0;
 }
 

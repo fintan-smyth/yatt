@@ -57,6 +57,20 @@ enum {
 	K_RIGHT,
 };
 
+typedef enum {
+	P_COMMA = 1,
+	P_FSTOP = 2,
+	P_SQUOTE = 4,
+	P_DQUOTE = 8,
+	P_PAREN = 16,
+	P_BRACK = 32,
+	P_BRACE = 64,
+	P_ANGBRACK = 128,
+	P_EXCLAM = 256,
+	P_QUEST = 512,
+	P_MAX = 1024,
+}	e_punc;
+
 typedef struct s_lang
 {
 	char	*name;
@@ -93,8 +107,7 @@ typedef struct s_options
 	int		fingers[128];
 	int		kmode;
 	int		punc;
-	int		brackets;
-	int		quotes;
+	u_int	punc_flags;
 	int		numbers;
 	int		full_keyboard;
 }	t_options;

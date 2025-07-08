@@ -88,6 +88,44 @@ void	generate_number_word(char *buf)
 	buf[i] = 0;
 }
 
+void	apply_punc(char *word, e_punc punc)
+{
+	switch (punc) {
+		case (P_COMMA):
+			ft_strlcat(word, ",", 128);
+			break ;
+		case (P_FSTOP):
+			ft_strlcat(word, ".", 128);
+			break ;
+		case (P_SQUOTE):
+			surround_string(word, "'");
+			break ;
+		case (P_DQUOTE):
+			surround_string(word, "\"");
+			break ;
+		case (P_PAREN):
+			surround_string(word, "()");
+			break ;
+		case (P_BRACK):
+			surround_string(word, "[]");
+			break ;
+		case (P_BRACE):
+			surround_string(word, "{}");
+			break ;
+		case (P_ANGBRACK):
+			surround_string(word, "<>");
+			break ;
+		case (P_EXCLAM):
+			ft_strlcat(word, "!", 128);
+			break ;
+		case (P_QUEST):
+			ft_strlcat(word, "?", 128);
+			break ;
+		default:
+			break ;
+	}
+}
+
 void	select_words(t_typer *tester)
 {
 	unsigned int		i = 0;
@@ -106,34 +144,16 @@ void	select_words(t_typer *tester)
 		wordnode = wordlist_add_back(&tester->wordlist, new_wordnode(word));
 		if (tester->options.punc || tester->options.numbers)
 		{
-			int	seed = rand() % 20;
-
 			if (tester->options.numbers && rand() % 5 == 0)
 				generate_number_word(wordnode->word);
-			if (tester->options.punc)
+			if (tester->options.punc
+				&& tester->options.punc_flags & (P_MAX - 1)
+				&& rand() % 20 < 4)
 			{
-				if (seed < 2)
-					ft_strlcat(wordnode->word, ",", 128);
-				else if (seed < 4)
-					ft_strlcat(wordnode->word, ".", 128);
-				else if (seed < 8)
-				{
-					if (seed < 6 && tester->options.quotes)
-						surround_string(wordnode->word, "'");
-					else if (tester->options.quotes)
-						surround_string(wordnode->word, "\"");
-				}
-				else if (seed < 12 && tester->options.brackets)
-				{
-					if (seed == 8)
-						surround_string(wordnode->word, "[]");
-					else if (seed == 9)
-						surround_string(wordnode->word, "{}");
-					else if (seed == 10)
-						surround_string(wordnode->word, "()");
-					else if (seed == 11)
-						surround_string(wordnode->word, "<>");
-				}
+				int	seed = rand() % 10;
+				while (!(tester->options.punc_flags & (1 << seed)))
+					seed = rand() % 10;
+				apply_punc(wordnode->word, (1 << seed));
 			}
 			wordnode->len = ft_strlen(wordnode->word);
 		}
