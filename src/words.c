@@ -204,6 +204,8 @@ void	apply_punc_clang(char *word, int punc, t_lang *lang)
 		case (C_NOT):
 			surround_string(word, "!");
 			break ;
+		case (C_ENDL):
+			ft_strlcat(word, ";", 128);
 		default:
 			break ;
 	}

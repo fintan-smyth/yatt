@@ -85,6 +85,7 @@ enum {
 	C_ARRAY,
 	C_DEREF,
 	C_ADDR,
+	C_ENDL,
 	C_NOT,
 	C_MAX,
 };
