@@ -217,7 +217,7 @@ void	menu_change_value(t_typer *tester, int dir)
 	if (selected == M_KMODE)
 		tester->options.kmode = !tester->options.kmode;
 	if (selected == M_PUNC)
-		tester->options.punc = clamp_int(tester->options.punc + dir, 0, PMODE_MAX - 1);
+		tester->options.punc = pos_mod(tester->options.punc + dir, PMODE_MAX);
 	if (selected == M_NUMBERS)
 		tester->options.numbers = !tester->options.numbers;
 }

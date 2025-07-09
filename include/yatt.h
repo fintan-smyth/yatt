@@ -203,6 +203,7 @@ size_t	get_time_ms(void);
 int		max_int(int a, int b);
 int		ft_output_len(char *str);
 int		clamp_int(int num, int min, int max);
+int		pos_mod(int num, int mod);
 int		print_str_centred(char *str, int row, int width);
 void	draw_borders(t_typer *tester);
 int		kbhit(void);

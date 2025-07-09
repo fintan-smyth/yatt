@@ -185,3 +185,8 @@ int	clamp_int(int num, int min, int max)
 		return (max);
 	return (num);
 }
+
+int	pos_mod(int num, int mod)
+{
+	return ((num % mod + mod) % mod);
+}
