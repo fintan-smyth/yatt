@@ -107,11 +107,12 @@ void	print_menu_numbers(t_typer *tester, int selected, int line)
 void	print_menu_punc(t_typer *tester, int selected, int line)
 {
 	char	buf[128];
+	char	*strs[3] = {"Off", "Standard", "C-style"};
 
 	print_str_centred("\e[1;36mPunctuation:\e[m", line, tester->env->win_width * 2 / 3);
 	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
 		selected ? "<" : " ",
-		tester->options.punc ? "On" : "Off",
+		strs[tester->options.punc],
 		selected ? ">" : " ");
 	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
@@ -216,7 +217,7 @@ void	menu_change_value(t_typer *tester, int dir)
 	if (selected == M_KMODE)
 		tester->options.kmode = !tester->options.kmode;
 	if (selected == M_PUNC)
-		tester->options.punc = !tester->options.punc;
+		tester->options.punc = clamp_int(tester->options.punc + dir, 0, PMODE_MAX - 1);
 	if (selected == M_NUMBERS)
 		tester->options.numbers = !tester->options.numbers;
 }

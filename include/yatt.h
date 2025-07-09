@@ -57,6 +57,13 @@ enum {
 	K_RIGHT,
 };
 
+enum {
+	PMODE_OFF,
+	PMODE_STD,
+	PMODE_CLANG,
+	PMODE_MAX,
+};
+
 typedef enum {
 	P_COMMA = 1,
 	P_FSTOP = 2,
@@ -70,6 +77,30 @@ typedef enum {
 	P_QUEST = 512,
 	P_MAX = 1024,
 }	e_punc;
+
+enum {
+	C_STRUCT = 0,
+	C_FUNC,
+	C_HEADER,
+	C_ARRAY,
+	C_DEREF,
+	C_ADDR,
+	C_NOT,
+	C_MAX,
+};
+
+enum {
+	OP_AND,
+	OP_OR,
+	OP_EQ,
+	OP_LT,
+	OP_GT,
+	OP_LTE,
+	OP_GTE,
+	OP_BSLEFT,
+	OP_BSRIGHT,
+	OP_MAX,
+};
 
 typedef struct s_lang
 {

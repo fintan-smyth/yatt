@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <stdlib.h>
 
 t_word	*new_wordnode(char *str)
 {
@@ -88,7 +89,44 @@ void	generate_number_word(char *buf)
 	buf[i] = 0;
 }
 
-void	apply_punc(char *word, e_punc punc)
+void	generate_op_word(char *buf)
+{
+	int	seed = rand() % OP_MAX;
+
+	switch (seed) {
+		case (OP_AND):
+			ft_strlcpy(buf, "&&", 128);
+			break ;
+		case (OP_OR):
+			ft_strlcpy(buf, "||", 128);
+			break ;
+		case (OP_EQ):
+			ft_strlcpy(buf, "==", 128);
+			break ;
+		case (OP_LT):
+			ft_strlcpy(buf, "<", 128);
+			break ;
+		case (OP_GT):
+			ft_strlcpy(buf, ">", 128);
+			break ;
+		case (OP_LTE):
+			ft_strlcpy(buf, ">=", 128);
+			break ;
+		case (OP_GTE):
+			ft_strlcpy(buf, "<=", 128);
+			break ;
+		case (OP_BSLEFT):
+			ft_strlcpy(buf, "<<", 128);
+			break ;
+		case (OP_BSRIGHT):
+			ft_strlcpy(buf, "<<", 128);
+			break ;
+		default:
+			break ;
+	}
+}
+
+void	apply_punc_std(char *word, e_punc punc)
 {
 	switch (punc) {
 		case (P_COMMA):
@@ -98,10 +136,10 @@ void	apply_punc(char *word, e_punc punc)
 			ft_strlcat(word, ".", 128);
 			break ;
 		case (P_SQUOTE):
-			surround_string(word, "'");
+			surround_string(word, "''");
 			break ;
 		case (P_DQUOTE):
-			surround_string(word, "\"");
+			surround_string(word, "\"\"");
 			break ;
 		case (P_PAREN):
 			surround_string(word, "()");
@@ -126,6 +164,51 @@ void	apply_punc(char *word, e_punc punc)
 	}
 }
 
+void	apply_punc_clang(char *word, int punc, t_lang *lang)
+{
+	int		seed = rand() % 2;
+	char	buf[128];
+
+	ft_strlcpy(buf, lang->words[rand() % lang->size], 128);
+	switch (punc) {
+		case (C_STRUCT):
+			if (seed)
+				ft_strlcat(word, "->", 128);
+			else
+				ft_strlcat(word, ".", 128);
+			ft_strlcat(word, buf, 128);
+			break ;
+		case (C_FUNC):
+			ft_strlcat(word, "(", 128);
+			if (seed)
+				ft_strlcat(word, buf, 128);
+			ft_strlcat(word, ")", 128);
+			break ;
+		case (C_HEADER):
+			ft_strlcat(word, ".h", 128);
+			surround_string(word, "<>");
+			break ;
+		case (C_ARRAY):
+			ft_strlcat(word, "[", 128);
+			if (seed)
+				generate_number_word(buf);
+			ft_strlcat(word, buf, 128);
+			ft_strlcat(word, "]", 128);
+			break ;
+		case (C_DEREF):
+			surround_string(word, "*");
+			break ;
+		case (C_ADDR):
+			surround_string(word, "&");
+			break ;
+		case (C_NOT):
+			surround_string(word, "!");
+			break ;
+		default:
+			break ;
+	}
+}
+
 void	select_words(t_typer *tester)
 {
 	unsigned int		i = 0;
@@ -142,21 +225,37 @@ void	select_words(t_typer *tester)
 		if (i < lang->size && wordnode_exists(tester->wordlist, word))
 			continue ;
 		wordnode = wordlist_add_back(&tester->wordlist, new_wordnode(word));
-		if (tester->options.punc || tester->options.numbers)
+		if (tester->options.punc == PMODE_STD)
 		{
 			if (tester->options.numbers && rand() % 5 == 0)
 				generate_number_word(wordnode->word);
-			if (tester->options.punc
+			if (tester->options.punc == PMODE_STD
 				&& tester->options.punc_flags & (P_MAX - 1)
 				&& rand() % 20 < 4)
 			{
 				int	seed = rand() % 10;
 				while (!(tester->options.punc_flags & (1 << seed)))
 					seed = rand() % 10;
-				apply_punc(wordnode->word, (1 << seed));
+				apply_punc_std(wordnode->word, (1 << seed));
 			}
-			wordnode->len = ft_strlen(wordnode->word);
 		}
+		if (tester->options.punc == PMODE_CLANG)
+		{
+			int	seed = rand() % 10;
+
+			if (seed <= 2)
+				apply_punc_clang(wordnode->word, rand() % C_MAX, lang);
+			else if (seed == 3)
+				generate_op_word(wordnode->word);
+			else if (seed <= 5 && tester->options.numbers)
+				generate_number_word(wordnode->word);
+		}
+		else if (tester->options.numbers)
+		{
+			if (tester->options.numbers && rand() % 5 == 0)
+				generate_number_word(wordnode->word);
+		}
+		wordnode->len = ft_strlen(wordnode->word);
 		i++;
 	}
 }

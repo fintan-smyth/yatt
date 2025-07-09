@@ -169,7 +169,7 @@ void	surround_string(char *str, char *set)
 	if (len == 2)
 		right = set[1];
 	else
-		right = set[0];
+		right = '\0';
 	len = ft_strlen(str);
 	ft_memmove(str + 1, str, len);
 	str[0] = left;
