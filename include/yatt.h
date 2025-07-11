@@ -65,21 +65,22 @@ enum {
 };
 
 typedef enum {
-	P_COMMA = 1,
-	P_FSTOP = 2,
-	P_SQUOTE = 4,
-	P_DQUOTE = 8,
-	P_PAREN = 16,
-	P_BRACK = 32,
-	P_BRACE = 64,
-	P_ANGBRACK = 128,
-	P_EXCLAM = 256,
-	P_QUEST = 512,
-	P_MAX = 1024,
+	P_COMMA = 0,
+	P_FSTOP,
+	P_SQUOTE,
+	P_DQUOTE,
+	P_PAREN,
+	P_BRACK,
+	P_BRACE,
+	P_ANGBRACK,
+	P_EXCLAM,
+	P_QUEST,
+	P_MAX,
 }	e_punc;
 
 enum {
-	C_STRUCT = 0,
+	C_STRUC_ARROW = 0,
+	C_STRUC_DOT,
 	C_FUNC,
 	C_HEADER,
 	C_ARRAY,
@@ -131,6 +132,13 @@ typedef struct s_env
 	int				min_height;
 }	t_env;
 
+typedef struct s_punc
+{
+	int	*weights;
+	int	sum_weights;
+	int	prob;
+}	t_punc;
+
 typedef struct s_options
 {
 	int		num_words;
@@ -140,7 +148,10 @@ typedef struct s_options
 	int		kmode;
 	int		punc;
 	u_int	punc_flags;
+	t_punc	standard;
+	t_punc	clang;
 	int		numbers;
+	int		number_prob;
 	int		full_keyboard;
 }	t_options;
 

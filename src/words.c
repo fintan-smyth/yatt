@@ -126,7 +126,7 @@ void	generate_op_word(char *buf)
 	}
 }
 
-void	apply_punc_std(char *word, e_punc punc)
+void	apply_punc_std(t_typer *tester, char *word, int punc)
 {
 	switch (punc) {
 		case (P_COMMA):
@@ -162,20 +162,23 @@ void	apply_punc_std(char *word, e_punc punc)
 		default:
 			break ;
 	}
+	(void)tester;
 }
 
-void	apply_punc_clang(char *word, int punc, t_lang *lang)
+void	apply_punc_clang(t_typer *tester, char *word, int punc)
 {
 	int		seed = rand() % 2;
 	char	buf[128];
+	t_lang	*lang = &tester->lang;
 
 	ft_strlcpy(buf, lang->words[rand() % lang->size], 128);
 	switch (punc) {
-		case (C_STRUCT):
-			if (seed)
-				ft_strlcat(word, "->", 128);
-			else
-				ft_strlcat(word, ".", 128);
+		case (C_STRUC_ARROW):
+			ft_strlcat(word, "->", 128);
+			ft_strlcat(word, buf, 128);
+			break ;
+		case (C_STRUC_DOT):
+			ft_strlcat(word, ".", 128);
 			ft_strlcat(word, buf, 128);
 			break ;
 		case (C_FUNC):
@@ -211,6 +214,47 @@ void	apply_punc_clang(char *word, int punc, t_lang *lang)
 	}
 }
 
+int	pick_punc(t_punc *punc)
+{
+	int	cum_weights;
+	int	punc_code;
+	int	seed = rand() % punc->sum_weights;
+
+	punc_code = -1;
+	cum_weights = 0;
+	do {
+		punc_code++;
+		cum_weights += punc->weights[punc_code];
+	}
+	while (cum_weights <= seed);
+	// ft_dprintf(2, "\nseed: %d cum_weights %d code %d\n", seed, cum_weights, punc_code);
+	// exit(0);
+	return (punc_code);
+}
+
+void	apply_punc(t_typer *tester, char *word)
+{
+	int		seed;
+	t_punc	*punc;
+	void	(*punc_func)(t_typer *, char *, int);
+
+	if (tester->options.punc == PMODE_OFF)
+		return ;
+	if (tester->options.punc == PMODE_STD)
+	{
+		punc = &tester->options.standard;
+		punc_func = apply_punc_std;
+	}
+	else if (tester->options.punc == PMODE_CLANG)
+	{
+		punc = &tester->options.clang;
+		punc_func = apply_punc_clang;
+	}
+	seed = rand() % 100;
+	if (seed < punc->prob)
+		punc_func(tester, word, pick_punc(punc));
+}
+
 void	select_words(t_typer *tester)
 {
 	unsigned int		i = 0;
@@ -227,40 +271,66 @@ void	select_words(t_typer *tester)
 		if (i < lang->size && wordnode_exists(tester->wordlist, word))
 			continue ;
 		wordnode = wordlist_add_back(&tester->wordlist, new_wordnode(word));
-		if (tester->options.punc == PMODE_STD)
+		if (tester->options.numbers && tester->options.punc != PMODE_CLANG)
 		{
-			if (tester->options.numbers && rand() % 5 == 0)
-				generate_number_word(wordnode->word);
-			if (tester->options.punc == PMODE_STD
-				&& tester->options.punc_flags & (P_MAX - 1)
-				&& rand() % 20 < 4)
-			{
-				int	seed = rand() % 10;
-				while (!(tester->options.punc_flags & (1 << seed)))
-					seed = rand() % 10;
-				apply_punc_std(wordnode->word, (1 << seed));
-			}
-		}
-		if (tester->options.punc == PMODE_CLANG)
-		{
-			int	seed = rand() % 10;
-
-			if (seed <= 2)
-				apply_punc_clang(wordnode->word, rand() % C_MAX, lang);
-			else if (seed == 3)
-				generate_op_word(wordnode->word);
-			else if (seed <= 5 && tester->options.numbers)
+			if (rand() % 100 < tester->options.number_prob)
 				generate_number_word(wordnode->word);
 		}
-		else if (tester->options.numbers)
-		{
-			if (tester->options.numbers && rand() % 5 == 0)
-				generate_number_word(wordnode->word);
-		}
+		apply_punc(tester, wordnode->word);
 		wordnode->len = ft_strlen(wordnode->word);
 		i++;
 	}
 }
+
+// void	select_words(t_typer *tester)
+// {
+// 	unsigned int		i = 0;
+// 	unsigned int		num_words = tester->options.num_words;
+// 	int					index;
+// 	char				*word;
+// 	t_lang				*lang = &tester->lang;
+// 	t_word				*wordnode;
+// 	t_punc				*punc;
+//
+// 	while (i < num_words)
+// 	{
+// 		index = rand() % lang->size;
+// 		word = lang->words[index];
+// 		if (i < lang->size && wordnode_exists(tester->wordlist, word))
+// 			continue ;
+// 		wordnode = wordlist_add_back(&tester->wordlist, new_wordnode(word));
+// 		if (tester->options.punc == PMODE_STD)
+// 		{
+// 			if (tester->options.numbers && rand() % 5 == 0)
+// 				generate_number_word(wordnode->word);
+// 			{
+// 				int	seed = rand() % 10;
+// 				while (!(tester->options.punc_flags & (1 << seed)))
+// 					seed = rand() % 10;
+// 				apply_punc_std(wordnode->word, (1 << seed));
+// 			}
+// 		}
+// 		if (tester->options.punc == PMODE_CLANG)
+// 		{
+// 			punc = &tester->options.clang;
+// 			int	seed = rand() % 10;
+//
+// 			if (seed < punc->prob)
+// 				apply_punc_clang(wordnode->word, pick_punc(punc), lang);
+// 			// else if (seed == 3)
+// 			// 	generate_op_word(wordnode->word);
+// 			// else if (seed <= 5 && tester->options.numbers)
+// 			// 	generate_number_word(wordnode->word);
+// 		}
+// 		else if (tester->options.numbers)
+// 		{
+// 			if (tester->options.numbers && rand() % 5 == 0)
+// 				generate_number_word(wordnode->word);
+// 		}
+// 		wordnode->len = ft_strlen(wordnode->word);
+// 		i++;
+// 	}
+// }
 
 void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 {

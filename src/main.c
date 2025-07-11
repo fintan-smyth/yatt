@@ -53,6 +53,51 @@ void	init_lang_paths(t_options *options)
 	ft_lstadd_back(&options->lang_paths, ft_lstnew(ft_strdup("./lang/english-advanced")));
 }
 
+void	init_std_punc(t_punc *standard)
+{
+	int	i;
+
+	standard->weights = ft_calloc(P_MAX + 1, sizeof(int));
+	standard->weights[P_COMMA] = 5;
+	standard->weights[P_FSTOP] = 5;
+	standard->weights[P_SQUOTE] = 5;
+	standard->weights[P_DQUOTE] = 5;
+	standard->weights[P_PAREN] = 5;
+	standard->weights[P_BRACK] = 5;
+	standard->weights[P_BRACE] = 5;
+	standard->weights[P_ANGBRACK] = 5;
+	standard->weights[P_EXCLAM] = 5;
+	standard->weights[P_QUEST] = 5;
+	i = -1;
+	standard->sum_weights = 0;
+	while (++i < P_MAX)
+		standard->sum_weights += standard->weights[i];
+	standard->weights[P_MAX] = -42;
+	standard->prob = 30;
+}
+
+void	init_clang_punc(t_punc *clang)
+{
+	int	i;
+
+	clang->weights = ft_calloc(C_MAX + 1, sizeof(int));
+	clang->weights[C_STRUC_ARROW] = 5;
+	clang->weights[C_STRUC_DOT] = 5;
+	clang->weights[C_FUNC] = 5;
+	clang->weights[C_HEADER] = 5;
+	clang->weights[C_ARRAY] = 5;
+	clang->weights[C_DEREF] = 5;
+	clang->weights[C_ADDR] = 5;
+	clang->weights[C_ENDL] = 5;
+	clang->weights[C_NOT] = 5;
+	i = -1;
+	clang->sum_weights = 0;
+	while (++i < C_MAX)
+		clang->sum_weights += clang->weights[i];
+	clang->weights[C_MAX] = -42;
+	clang->prob = 40;
+}
+
 void	init_default_options(t_options *options)
 {
 	init_lang_paths(options);
@@ -60,20 +105,12 @@ void	init_default_options(t_options *options)
 	options->kmode = 1;
 	options->cur_lang = options->lang_paths;
 	options->num_words = 30;
-	options->punc = PMODE_OFF;
-	options->punc_flags = (0
-		| P_COMMA
-		| P_FSTOP
-		| P_EXCLAM
-		| P_QUEST
-		| P_PAREN
-		| P_BRACK
-		| P_BRACE
-		| P_ANGBRACK
-		| P_SQUOTE
-		| P_DQUOTE
-	);
+	options->punc = 0;
 	options->full_keyboard = 0;
+	options->numbers = 0;
+	options->number_prob = 20;
+	init_clang_punc(&options->clang);
+	init_std_punc(&options->standard);
 }
 
 void	init(t_typer *tester)
