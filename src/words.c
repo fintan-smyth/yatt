@@ -238,8 +238,6 @@ void	apply_punc(t_typer *tester, char *word)
 	t_punc	*punc;
 	void	(*punc_func)(t_typer *, char *, int);
 
-	if (tester->options.punc == PMODE_OFF)
-		return ;
 	if (tester->options.punc == PMODE_STD)
 	{
 		punc = &tester->options.standard;
@@ -250,6 +248,8 @@ void	apply_punc(t_typer *tester, char *word)
 		punc = &tester->options.clang;
 		punc_func = apply_punc_clang;
 	}
+	else
+		return ;
 	seed = rand() % 100;
 	if (seed < punc->prob)
 		punc_func(tester, word, pick_punc(punc));
