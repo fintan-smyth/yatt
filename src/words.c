@@ -89,43 +89,6 @@ void	generate_number_word(char *buf)
 	buf[i] = 0;
 }
 
-void	generate_op_word(char *buf)
-{
-	int	seed = rand() % OP_MAX;
-
-	switch (seed) {
-		case (OP_AND):
-			ft_strlcpy(buf, "&&", 128);
-			break ;
-		case (OP_OR):
-			ft_strlcpy(buf, "||", 128);
-			break ;
-		case (OP_EQ):
-			ft_strlcpy(buf, "==", 128);
-			break ;
-		case (OP_LT):
-			ft_strlcpy(buf, "<", 128);
-			break ;
-		case (OP_GT):
-			ft_strlcpy(buf, ">", 128);
-			break ;
-		case (OP_LTE):
-			ft_strlcpy(buf, ">=", 128);
-			break ;
-		case (OP_GTE):
-			ft_strlcpy(buf, "<=", 128);
-			break ;
-		case (OP_BSLEFT):
-			ft_strlcpy(buf, "<<", 128);
-			break ;
-		case (OP_BSRIGHT):
-			ft_strlcpy(buf, "<<", 128);
-			break ;
-		default:
-			break ;
-	}
-}
-
 void	apply_punc_std(t_typer *tester, char *word, int punc)
 {
 	switch (punc) {
@@ -209,6 +172,34 @@ void	apply_punc_clang(t_typer *tester, char *word, int punc)
 			break ;
 		case (C_ENDL):
 			ft_strlcat(word, ";", 128);
+			break ;
+		case (C_AND):
+			ft_strlcpy(word, "&&", 128);
+			break ;
+		case (C_OR):
+			ft_strlcpy(word, "||", 128);
+			break ;
+		case (C_EQ):
+			ft_strlcpy(word, "==", 128);
+			break ;
+		case (C_LT):
+			ft_strlcpy(word, "<", 128);
+			break ;
+		case (C_GT):
+			ft_strlcpy(word, ">", 128);
+			break ;
+		case (C_LTE):
+			ft_strlcpy(word, ">=", 128);
+			break ;
+		case (C_GTE):
+			ft_strlcpy(word, "<=", 128);
+			break ;
+		case (C_BSLEFT):
+			ft_strlcpy(word, "<<", 128);
+			break ;
+		case (C_BSRIGHT):
+			ft_strlcpy(word, ">>", 128);
+			break ;
 		default:
 			break ;
 	}

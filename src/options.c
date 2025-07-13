@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 23:55:53 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/12 00:07:51 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,15 @@ void	set_keyset_col(t_options *options, char *keyset, int col)
 
 void	setup_default_fingers(t_options *options)
 {
-	char			index_l[]	= "rtfgcvb4$5%";
-	char			middle_l[]	= "edx3#";
-	char			ring_l[]	= "wsz2@";
-	char			pinky_l[]	= "qa1!";
+	char	index_l[]	= "rtfgcvb4$5%";
+	char	middle_l[]	= "edx3#";
+	char	ring_l[]	= "wsz2@";
+	char	pinky_l[]	= "qa1!";
 
-	char			index_r[]	= "yhnujm67";
-	char			middle_r[]	= "ik,<8";
-	char			ring_r[]	= "ol.>9";
-	char			pinky_r[]	= "p0;:/?'\"[{]}-_=+";
+	char	index_r[]	= "yhnujm6^7&";
+	char	middle_r[]	= "ik,<8*";
+	char	ring_r[]	= "ol.>9(";
+	char	pinky_r[]	= "p0);:/?'\"[{]}-_=+";
 
 	char			thumb[]		= " ";
 

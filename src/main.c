@@ -89,7 +89,16 @@ void	init_clang_punc(t_punc *clang)
 	clang->weights[C_DEREF] = 5;
 	clang->weights[C_ADDR] = 5;
 	clang->weights[C_ENDL] = 5;
-	clang->weights[C_NOT] = 5;
+	clang->weights[C_NOT] = 2;
+	clang->weights[C_AND] = 2;
+	clang->weights[C_OR] = 2;
+	clang->weights[C_EQ] = 2;
+	clang->weights[C_LT] = 2;
+	clang->weights[C_GT] = 2;
+	clang->weights[C_LTE] = 2;
+	clang->weights[C_GTE] = 2;
+	clang->weights[C_BSLEFT] = 2;
+	clang->weights[C_BSRIGHT] = 2;
 	i = -1;
 	clang->sum_weights = 0;
 	while (++i < C_MAX)

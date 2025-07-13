@@ -88,19 +88,19 @@ enum {
 	C_ADDR,
 	C_ENDL,
 	C_NOT,
+	C_AND,
+	C_OR,
+	C_EQ,
+	C_LT,
+	C_GT,
+	C_LTE,
+	C_GTE,
+	C_BSLEFT,
+	C_BSRIGHT,
 	C_MAX,
 };
 
 enum {
-	OP_AND,
-	OP_OR,
-	OP_EQ,
-	OP_LT,
-	OP_GT,
-	OP_LTE,
-	OP_GTE,
-	OP_BSLEFT,
-	OP_BSRIGHT,
 	OP_MAX,
 };
 
