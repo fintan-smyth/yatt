@@ -97,6 +97,10 @@ enum {
 	C_GTE,
 	C_BSLEFT,
 	C_BSRIGHT,
+	C_PREINC,
+	C_POSTINC,
+	C_PREDEC,
+	C_POSTDEC,
 	C_MAX,
 };
 
@@ -223,6 +227,7 @@ void	render_too_small(t_typer *tester);
 int		win_too_small(t_env *env);
 char	getchar_nb(t_typer *tester, void (*render)(t_typer *));
 void	surround_string(char *str, char *set);
+void	prefix_string(char *str, char *prefix);
 void	exec_render_func(t_typer *tester, void (*render)(t_typer *));
 
 void	setup_default_fingers(t_options *tester);

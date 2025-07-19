@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 21:15:30 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/12 00:07:51 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/14 00:24:58 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	setup_default_fingers(t_options *options)
 	char	ring_r[]	= "ol.>9(";
 	char	pinky_r[]	= "p0);:/?'\"[{]}-_=+";
 
-	char			thumb[]		= " ";
+	char	thumb[]		= " ";
 
 	for (int i = 0; i < 128; i++)
 		options->fingers[i] = 7;

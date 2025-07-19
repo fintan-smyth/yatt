@@ -130,7 +130,7 @@ void	apply_punc_std(t_typer *tester, char *word, int punc)
 
 void	apply_punc_clang(t_typer *tester, char *word, int punc)
 {
-	int		seed = rand() % 2;
+	int		seed = rand() % 10;
 	char	buf[128];
 	t_lang	*lang = &tester->lang;
 
@@ -146,7 +146,7 @@ void	apply_punc_clang(t_typer *tester, char *word, int punc)
 			break ;
 		case (C_FUNC):
 			ft_strlcat(word, "(", 128);
-			if (seed)
+			if (seed < 5)
 				ft_strlcat(word, buf, 128);
 			ft_strlcat(word, ")", 128);
 			break ;
@@ -156,7 +156,7 @@ void	apply_punc_clang(t_typer *tester, char *word, int punc)
 			break ;
 		case (C_ARRAY):
 			ft_strlcat(word, "[", 128);
-			if (seed)
+			if (tester->options.numbers && seed < 7)
 				generate_number_word(buf);
 			ft_strlcat(word, buf, 128);
 			ft_strlcat(word, "]", 128);
@@ -199,6 +199,18 @@ void	apply_punc_clang(t_typer *tester, char *word, int punc)
 			break ;
 		case (C_BSRIGHT):
 			ft_strlcpy(word, ">>", 128);
+			break ;
+		case (C_PREINC):
+			prefix_string(word, "++");
+			break ;
+		case (C_PREDEC):
+			prefix_string(word, "++");
+			break ;
+		case (C_POSTINC):
+			ft_strlcat(word, "++", 128);
+			break ;
+		case (C_POSTDEC):
+			ft_strlcat(word, "--", 128);
 			break ;
 		default:
 			break ;

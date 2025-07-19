@@ -99,6 +99,10 @@ void	init_clang_punc(t_punc *clang)
 	clang->weights[C_GTE] = 2;
 	clang->weights[C_BSLEFT] = 2;
 	clang->weights[C_BSRIGHT] = 2;
+	clang->weights[C_PREINC] = 2;
+	clang->weights[C_POSTINC] = 2;
+	clang->weights[C_PREDEC] = 2;
+	clang->weights[C_POSTDEC] = 2;
 	i = -1;
 	clang->sum_weights = 0;
 	while (++i < C_MAX)

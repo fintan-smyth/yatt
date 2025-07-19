@@ -177,6 +177,17 @@ void	surround_string(char *str, char *set)
 	str[len + 2] = 0;
 }
 
+void	prefix_string(char *str, char *prefix)
+{
+	int	str_len;
+	int	prefix_len;
+
+	str_len = ft_strlen(str);
+	prefix_len = ft_strlen(prefix);
+	ft_memmove(str + prefix_len, str, str_len + 1);
+	ft_memmove(str, prefix, prefix_len);
+}
+
 int	clamp_int(int num, int min, int max)
 {
 	if (num < min)
