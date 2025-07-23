@@ -64,6 +64,12 @@ enum {
 	PMODE_MAX,
 };
 
+enum {
+	KMODE_ACC,
+	KMODE_INSTRUCT,
+	KMODE_MAX,
+};
+
 typedef enum {
 	P_COMMA = 0,
 	P_FSTOP,
@@ -104,9 +110,14 @@ enum {
 	C_MAX,
 };
 
-enum {
-	OP_MAX,
-};
+typedef enum {
+	E_SUCCESS = 0,
+	E_SYNTAX,
+	E_TOOMANYWORDS,
+	E_NOWORDS,
+	E_MISSINGARG,
+	E_HELP,
+} e_errorcode;
 
 typedef struct s_lang
 {
