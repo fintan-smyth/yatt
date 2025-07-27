@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 12:19:13 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/02/14 18:51:29 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/24 16:45:16 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ typedef struct s_list
 	union
 	{
 		void		*content;
-		void		*str;
+		char		*str;
 		int			num;
 		long		lnum;
 		char		c;

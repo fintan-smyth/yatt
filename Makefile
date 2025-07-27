@@ -3,8 +3,8 @@ CC = cc
 CFLAGS = -Wall -Wextra -I ./include -O0
 
 DBG_FLAGS =		-g3 \
+				-fsanitize=address \
 				# -pg \
-				# -fsanitize=address \
 
 SRC_DIR := ./src
 
@@ -18,6 +18,8 @@ SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/utils.c \
 	  $(SRC_DIR)/options.c \
 	  $(SRC_DIR)/keys.c \
+	  $(SRC_DIR)/handle_args.c \
+	  $(SRC_DIR)/parse_config.c \
 
 OBJ = $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRC:.c=.o))
 

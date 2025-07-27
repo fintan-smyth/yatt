@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/04 00:04:12 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/24 16:47:47 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,9 +212,13 @@ int		print_keyboard(t_typer *tester, int y, t_word *cur_word);
 int 	print_keyboard_full(t_typer *tester, int y, t_word *cur_word);
 void	select_words(t_typer *tester);
 
+int		handle_args(int argc, char **argv, t_typer *tester);
+void	print_help(void);
+int		parse_config(t_typer *tester, char *filename);
+
 void	run_game(t_typer *tester);
 void	game_loop(t_typer *tester);
-void		render_game(t_typer *tester);
+void	render_game(t_typer *tester);
 
 void	check_input(t_typer *tester, char c, t_word *cur_word);
 double	calculate_raw_wpm(t_typer *tester);
