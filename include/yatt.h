@@ -116,6 +116,7 @@ typedef enum {
 	E_TOOMANYWORDS,
 	E_NOWORDS,
 	E_MISSINGARG,
+	E_OPENFILE,
 	E_HELP,
 } e_errorcode;
 

@@ -10,71 +10,92 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "yatt.h"
 #include <fcntl.h>
 
-t_list	*read_file(char *filename)
+void	delimit_token(t_list **tokens, int *token_len, char *buf)
 {
-	int		fd;
-	char	*line;
-	t_list	*lines;
+	char	*token_str;
 
-	lines = NULL;
-	fd = open(filename, O_RDONLY);
-	while ((line = get_next_line(fd)) != NULL)
-		ft_lstadd_back(&lines, ft_lstnew(line));
-	close(fd);
-	return (lines);
+	buf[*token_len] = 0;
+	token_str = ft_strdup(buf);
+	*token_len = 0;
+	ft_lstadd_back(tokens, ft_lstnew(token_str));
 }
 
-void	strip_comments_and_empty(t_list **lines)
+t_list	*tokenise_config(char *filename)
 {
-	t_list	*current;
-	char	*comment_start;
+	FILE	*file;
+	t_list	*tokens = NULL;
+	char	buf[1024] = {};
+	char	c;
+	int		token_len = 0;
+	int		quoting = 0;
 
-	current = *lines;
-	while (current != NULL)
-	{
-		if ((comment_start = ft_strchr(current->str, '#')) != NULL)
-			*comment_start = '\0';
-		current = current->next;
-	}
+	file = fopen(filename, "r");
+	if (file == NULL)
+		return (NULL);
 
-	current = *lines;
-	while (ft_strwhitespace(current->str))
+	while ((c = getc(file)) != EOF)
 	{
-		*lines = current->next;
-		ft_lstdelone(current, free);
-		current = *lines;
-		if (current == NULL)
-			return ;
-	}
-	while (current->next != NULL)
-	{
-		if (ft_strwhitespace(current->next->str))
+		if (c == '"')
 		{
-			ft_lstdel_next(current, free);
+			if (token_len > 0 || quoting)
+				delimit_token(&tokens, &token_len, buf);
+			quoting = !quoting;
 			continue ;
 		}
-		current = current->next;
+		if (quoting && c == '\\')
+		{
+			c = getc(file);
+			if (c != '"')
+			{
+				ungetc(c, file);
+				c = '\\';
+			}
+		}
+		else if (!quoting && ft_iswhitespace(c))
+		{
+			if (token_len != 0)
+				delimit_token(&tokens, &token_len, buf);
+			continue ;
+		}
+		else if (!quoting && c == '=' && token_len > 0)
+			delimit_token(&tokens, &token_len, buf);
+		else if (!quoting && c == '#')
+		{
+			if (token_len > 0)
+				delimit_token(&tokens, &token_len, buf);
+			c = getc(file);
+			while (c != '\n' && c != EOF)
+				c = getc(file);
+			ungetc(c, file);
+			continue ;
+		}
+		buf[token_len] = c;
+		token_len++;
 	}
+	if (token_len > 0)
+		delimit_token(&tokens, &token_len, buf);
+	fclose(file);
+	return (tokens);
 }
 
 int	parse_config(t_typer *tester, char *filename)
 {
-	t_list	*lines;
+	t_list	*tokens;
 	t_list	*current;
 
-	lines = read_file(filename);
-	strip_comments_and_empty(&lines);
-	// cleanup(tester);
-	// current = lines;
-	// while (current != NULL)
-	// {
-	// 	printf("<%s>", current->str);
-	// 	current = current->next;
-	// }
-	ft_lstclear(&lines, free);
-	return (0);
+	tokens = tokenise_config(filename);
+	if (tokens == NULL)
+		return (E_OPENFILE);
+
+	current = tokens;
+	while (current != NULL)
+	{
+		printf("<%s>\n", current->str);
+		current = current->next;
+	}
+	ft_lstclear(&tokens, free);
+	return (E_SUCCESS);
 }

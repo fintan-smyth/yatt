@@ -167,6 +167,8 @@ int main(int argc, char **argv)
 	init(tester);
 	tester->lang = load_language_file(tester->options.cur_lang->str);
 	// parse_config(tester, "default.cfg");
+	// cleanup(tester);
+	// exit(0);
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
 	{
 		cleanup(tester);
