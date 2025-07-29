@@ -88,7 +88,7 @@ void	print_menu_words(t_typer *tester, int selected, int line)
 	ft_snprintf(buf, 128, "\e[31m%s\e[m  %d  \e[31m%s\e[m",
 		(selected && tester->options.num_words > 1) ? "<" : " ",
 		tester->options.num_words,
-		(selected && tester->options.num_words < 250) ? ">" : " ");
+		(selected && tester->options.num_words < 500) ? ">" : " ");
 	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
 
@@ -188,7 +188,7 @@ void	menu_change_value(t_typer *tester, int dir)
 	selected = tester->menu_state.selected;
 	if (selected == M_WORDS)
 	{
-		int	new_val = clamp_int(options->num_words + dir, 1, 250);
+		int	new_val = clamp_int(options->num_words + dir, 1, 500);
 
 		options->num_words = new_val;
 		return ;

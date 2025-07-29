@@ -21,7 +21,7 @@ int	extract_arg_words(t_typer *tester, char *arg)
 	words = ft_strtol(arg, &endptr, 10);
 	if (*endptr != 0 || errno != 0)
 		return (E_SYNTAX);
-	if (words > 250)
+	if (words > 500)
 		return (E_TOOMANYWORDS);
 	if (words < 1)
 		return (E_NOWORDS);
@@ -33,11 +33,11 @@ int	extract_arg_punc(t_typer *tester, char *arg)
 {
 	int	pmode;
 
-	if (ft_strncmp(arg, "off", 4) == 0)
+	if (ft_strcmp(arg, "off") == 0)
 		pmode = PMODE_OFF;
-	else if (ft_strncmp(arg, "std", 4) == 0)
+	else if (ft_strcmp(arg, "std") == 0)
 		pmode = PMODE_STD;
-	else if (ft_strncmp(arg, "c", 2) == 0)
+	else if (ft_strcmp(arg, "c") == 0)
 		pmode = PMODE_CLANG;
 	else
 		return (E_SYNTAX);

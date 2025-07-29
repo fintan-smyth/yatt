@@ -159,6 +159,34 @@ void	cleanup(t_typer *tester)
 	ft_lstclear(&tester->options.lang_paths, free);
 }
 
+void	handle_errors(t_typer *tester, int errcode)
+{
+	cleanup(tester);
+	if (errcode == E_SYNTAX)
+		printf("Invalid argument provided\n");
+	else if (errcode == E_TOOMANYWORDS)
+		printf("The maximum word count is 500\n");
+	else if (errcode == E_NOWORDS)
+		printf("The minimum word count is 1\n");
+	else if (errcode == E_MISSINGARG)
+		printf("Argument not provided\n");
+	else if (errcode == E_DOUBLEDEF)
+		printf("Config error: option defined multiple times\n");
+	else if (errcode == E_CONFIGERR)
+		printf("Config error: failed to parse config\n");
+	else if (errcode == E_OPENFILE)
+		printf("Config error: failed to open config file\n");
+	else if (errcode == E_INVALIDOPT)
+		printf("Config error: invalid option provided\n");
+	else if (errcode == E_TOOMANYWORDS_CFG)
+		printf("Config error: The maximum word count is 500\n");
+	else if (errcode == E_NOWORDS_CFG)
+		printf("Config error: The minimum word count is 1\n");
+	else if (errcode == E_HELP)
+		print_help();
+	exit(1);
+}
+
 int main(int argc, char **argv)
 {
 	t_typer	*tester = &(t_typer){};
@@ -166,24 +194,10 @@ int main(int argc, char **argv)
 
 	init(tester);
 	tester->lang = load_language_file(tester->options.cur_lang->str);
-	// parse_config(tester, "default.cfg");
-	// cleanup(tester);
-	// exit(0);
+	if ((retval = parse_config(tester, "default.cfg")) != E_SUCCESS)
+		handle_errors(tester, retval);
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
-	{
-		cleanup(tester);
-		if (retval == E_SYNTAX)
-			printf("Invalid argument provided\n");
-		else if (retval == E_TOOMANYWORDS)
-			printf("The maximum word count is 500\n");
-		else if (retval == E_NOWORDS)
-			printf("The minimum word count is 1\n");
-		else if (retval == E_MISSINGARG)
-			printf("Argument not provided\n");
-		else if (retval == E_HELP)
-			print_help();
-		return (1);
-	}
+		handle_errors(tester, retval);
 	game_loop(tester);;
 	cleanup(tester);
 }
