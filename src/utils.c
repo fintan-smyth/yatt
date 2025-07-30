@@ -12,6 +12,8 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <sys/select.h>
 #include <unistd.h>
@@ -67,21 +69,18 @@ int	print_str_centred(char *str, int row, int width)
 
 void	draw_borders(t_typer *tester)
 {
-	int	i;
+	cchar_t	*boxchars = tester->boxchars;
 
-	ft_printf("\e[2J\e[H╭");
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("╮", 1);
-	i = 1;
-	while (i++ < tester->env->win_height - 1)
-		ft_printf("\e[%d;H│\e[\e[%dG│", i, tester->env->win_width);
-	ft_putstr_fd("╰", 1);
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("╯", 1);
+	border_set(
+		&boxchars[0],
+		&boxchars[0],
+		&boxchars[1],
+		&boxchars[1],
+		&boxchars[2],
+		&boxchars[3],
+		&boxchars[4],
+		&boxchars[5]
+	);
 }
 
 int	kbhit(void)
@@ -137,7 +136,6 @@ void	exec_render_func(t_typer *tester, void (*render)(t_typer *))
 		return ;
 	}
 	render(tester);
-
 }
 
 char	getchar_nb(t_typer *tester, void (*render)(t_typer *))

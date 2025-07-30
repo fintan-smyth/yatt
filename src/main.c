@@ -13,6 +13,8 @@
 #include "libft.h"
 #include "yatt.h"
 #include <limits.h>
+#include <locale.h>
+#include <ncurses.h>
 
 char	*extract_lang_name(char *lang_path)
 {
@@ -135,6 +137,23 @@ void	init(t_typer *tester)
 	store_term_settings(env);
 	set_term_settings(env);
 	set_winsize(env);
+	setlocale(LC_ALL, "");
+	initscr();
+	setcchar(&tester->boxchars[0], L"│", 0, 0, NULL);
+	setcchar(&tester->boxchars[1], L"─", 0, 0, NULL);
+	setcchar(&tester->boxchars[2], L"╭", 0, 0, NULL);
+	setcchar(&tester->boxchars[3], L"╮", 0, 0, NULL);
+	setcchar(&tester->boxchars[4], L"╰", 0, 0, NULL);
+	setcchar(&tester->boxchars[5], L"╯", 0, 0, NULL);
+	setcchar(&tester->boxchars[6], L"├", 0, 0, NULL);
+	setcchar(&tester->boxchars[7], L"┤", 0, 0, NULL);
+	use_default_colors();
+	start_color();
+	init_pair(0, -1, -1);
+	init_pair(1, COLOR_RED, -1);
+	init_pair(2, COLOR_GREEN, -1);
+	init_pair(3, COLOR_BLUE, -1);
+	init_pair(4, -1, COLOR_BLUE);
 	tester->env = env;
 	env->min_height = MIN_HEIGHT_SMALL;
 	env->min_width = MIN_WIDTH_SMALL;
@@ -198,6 +217,19 @@ int main(int argc, char **argv)
 		handle_errors(tester, retval);
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
 		handle_errors(tester, retval);
-	game_loop(tester);;
+	// char c;
+	// while ((c = getchar_nb(tester, render_game)) != ESC)
+	// {
+	// 	addch(c);
+	// 	refresh();
+	// }
+	// cleanup(tester);
+	// exit(0);
+	// draw_borders(tester);
+	// refresh();
+	// getchar();
+	// game_loop(tester);
+	run_game(tester);
+	endwin();
 	cleanup(tester);
 }

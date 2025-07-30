@@ -13,11 +13,15 @@
 #ifndef YATT_H
 # define YATT_H
 
+# define NCURSES_WIDECHAR 1
+
 # include "libft.h"
 # include <fcntl.h>
 # include <termios.h>
 # include <time.h>
 # include <sys/time.h>
+# include <ncurses.h>
+# include <locale.h>
 # include <errno.h>
 
 # define ESC 27
@@ -189,6 +193,7 @@ typedef struct s_typer
 	t_word			*cur_word;
 	t_lang			lang;
 	t_options		options;
+	cchar_t			boxchars[8];
 	unsigned char	c;
 	int				is_correct;
 	int				cur_word_idx;

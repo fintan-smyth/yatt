@@ -36,7 +36,7 @@ void	set_term_settings(t_env *env)
 	term.c_cc[VMIN] = 1;
 	tcsetattr(fileno(stdin), TCSANOW, &term);
 	ft_printf("\e[?25l");
-	ft_printf("\e[?1049h");
+	// ft_printf("\e[?1049h");
 }
 
 void	reset_term_settings(t_env *env)
@@ -45,7 +45,7 @@ void	reset_term_settings(t_env *env)
 	struct termios term;
 	term = env->g_term_original;
 	tcsetattr(fileno(stdin), TCSANOW, &term);
-	ft_printf("\e[?1049l");
+	// ft_printf("\e[?1049l");
 	ft_printf("\e[?25h");
 }
 
