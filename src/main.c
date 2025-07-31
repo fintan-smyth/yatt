@@ -188,6 +188,10 @@ void	cleanup(t_typer *tester)
 	free(tester->options.standard.weights);
 	free(tester->env);
 	ft_lstclear(&tester->options.lang_paths, free);
+	endwin();
+	delwin(stdscr);
+	extern SCREEN *SP;
+	delscreen(SP);
 }
 
 void	handle_errors(t_typer *tester, int errcode)
@@ -229,19 +233,7 @@ int main(int argc, char **argv)
 		handle_errors(tester, retval);
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
 		handle_errors(tester, retval);
-	// char c;
-	// while ((c = getchar_nb(tester, render_game)) != ESC)
-	// {
-	// 	addch(c);
-	// 	refresh();
-	// }
-	// cleanup(tester);
-	// exit(0);
-	// draw_borders(tester);
-	// refresh();
-	// getchar();
-	// game_loop(tester);
 	run_game(tester);
-	endwin();
+	// game_loop(tester);
 	cleanup(tester);
 }

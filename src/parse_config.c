@@ -222,14 +222,14 @@ int	parse_tokens(t_typer *tester, t_list *tokens)
 int	parse_config(t_typer *tester, char *filename)
 {
 	t_list	*tokens;
-	t_list	*current;
+	// t_list	*current;
 	int		retval;
 
 	tokens = tokenise_config(filename);
 	if (tokens == NULL)
 		return (E_OPENFILE);
 
-	current = tokens;
+	// current = tokens;
 	// while (current != NULL)
 	// {
 	// 	printf("<%s>\n", current->str);

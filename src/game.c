@@ -21,12 +21,13 @@ void	reset_game(t_typer *tester)
 	tester->cur_word_idx = 0;
 	tester->incorrect_inputs = 0;
 	tester->c = 0;
+	if (tester->options.punc != PMODE_OFF || tester->options.numbers != 0)
+		tester->options.full_keyboard = 1;
 }
 
 void	render_game(t_typer *tester)
 {
 	int		line;
-	int		i;
 	cchar_t	*boxchars = tester->boxchars;
 
 	erase();
@@ -35,10 +36,10 @@ void	render_game(t_typer *tester)
 	mvadd_wch(line, 0, &boxchars[6]);
 	hline_set(&boxchars[1], tester->env->win_width - 2);
 	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
-	// if (tester->options.full_keyboard)
-	// 	print_keyboard_full(tester, line, tester->cur_word);
-	// else
-	print_keyboard(tester, line, tester->cur_word);
+	if (tester->options.full_keyboard)
+		print_keyboard_full(tester, line, tester->cur_word);
+	else
+		print_keyboard(tester, line, tester->cur_word);
 	refresh();
 }
 
