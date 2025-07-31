@@ -343,17 +343,20 @@ void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 	int	x, y;
 
 	i = 0;
-	attrset(A_BOLD);
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	while (i < cur_word->pos)
 	{
+		if (cur_word_idx == word_idx)
+			attron(A_BOLD);
 		if (i < cur_word->len && cur_word->input_buf[i] == cur_word->word[i])
 			// printw("\e[32;1m%c\e[m", cur_word->word[i]);
-			addch(cur_word->word[i] | COLOR_PAIR(2));
+			addch(cur_word->word[i] | COLOR_PAIR(GREEN_FG));
 		else
 		{
-			addch((i < cur_word->len ? cur_word->word[i] : cur_word->input_buf[i]) | COLOR_PAIR(1));
+			addch((i < cur_word->len ? cur_word->word[i] : cur_word->input_buf[i]) | COLOR_PAIR(RED_FG));
 			getyx(stdscr, y, x);
-			mvaddch(y + 1, x - 1, cur_word->input_buf[i] | COLOR_PAIR(1) | A_ITALIC);
+			attrset(A_ITALIC | COLOR_PAIR(DEFAULT_COLS));
+			mvaddch(y + 1, x - 1, cur_word->input_buf[i]);
 			move(y, x);
 			// printw("\e[B\e[D\e[3m%c\e[m\e[A", cur_word->input_buf[i]);
 		}
@@ -363,17 +366,18 @@ void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 	{
 		if (cur_word_idx == word_idx)
 		{
-			attron(COLOR_PAIR(3));
+			attron(COLOR_PAIR(BLUE_FG) | A_BOLD);
 			addch(cur_word->word[i++] | A_UNDERLINE);
 			// printw("\e[34;1;4m%c\e[m", cur_word->word[i++]);
 			addstr(&cur_word->word[i]);
 		}
 		else
 		{
-			attrset(A_NORMAL);
+			attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 			printw("%s", &cur_word->word[i]);
 		}
 	}
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	if (cur_word->next != NULL)
 		// write(1, " ", 1);
 		addch(' ');
@@ -455,7 +459,7 @@ void	calculate_scroll_vars(t_typer *tester, int *total_lines, int *max_lines, in
 		{
 			if (y == scroll_pos)
 			{
-				attrset(COLOR_PAIR(4));
+				attrset(COLOR_PAIR(BLUE_BG));
 				mvprintw(y + 1, x, " ");
 			}
 			else

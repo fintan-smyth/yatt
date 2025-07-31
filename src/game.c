@@ -35,16 +35,11 @@ void	render_game(t_typer *tester)
 	mvadd_wch(line, 0, &boxchars[6]);
 	hline_set(&boxchars[1], tester->env->win_width - 2);
 	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
-	refresh();
-	// ft_printf("\e[%d;1H├", line);
-	// i = 2;
-	// while (i++ < tester->env->win_width)
-	// 	ft_putstr_fd("─", 1);
-	// ft_putstr_fd("┤", 1);
 	// if (tester->options.full_keyboard)
 	// 	print_keyboard_full(tester, line, tester->cur_word);
 	// else
-	// 	print_keyboard(tester, line, tester->cur_word);
+	print_keyboard(tester, line, tester->cur_word);
+	refresh();
 }
 
 void	run_game(t_typer *tester)

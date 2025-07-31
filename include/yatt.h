@@ -129,6 +129,26 @@ typedef enum {
 	E_HELP,
 } e_errorcode;
 
+typedef enum {
+	BLACK_FG = 0,
+	RED_FG,
+	GREEN_FG,
+	YELLOW_FG,
+	BLUE_FG,
+	MAGENTA_FG,
+	CYAN_FG,
+	WHITE_FG,
+	BLACK_BG,
+	RED_BG,
+	GREEN_BG,
+	YELLOW_BG,
+	BLUE_BG,
+	MAGENTA_BG,
+	CYAN_BG,
+	WHITE_BG,
+	DEFAULT_COLS,
+} e_colorpair;
+
 typedef struct s_lang
 {
 	char	*name;

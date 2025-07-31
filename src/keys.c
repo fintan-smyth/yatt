@@ -12,32 +12,50 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <ncurses.h>
 
 void	print_formatted_key(t_typer *tester, char c, t_word *cur_word)
 {
+	attron(COLOR_PAIR(DEFAULT_COLS));
 	if (tester->options.kmode == 0)
 	{
 		if (c == tester->c)
 		{
 			if (tester->is_correct)
-				ft_printf("\e[30;42m %c \e[39;49m", ft_toupper(c));
+			{
+				attron(COLOR_PAIR(GREEN_BG));
+				printw(" %c ", ft_toupper(c));
+			}
 			else
-				ft_printf("\e[30;41m %c \e[39;49m", ft_toupper(c));
+			{
+				attron(COLOR_PAIR(RED_BG));
+				printw(" %c ", ft_toupper(c));
+			}
 		}
 		else
-			ft_printf(" %c ", ft_toupper(c));
+			printw(" %c ", ft_toupper(c));
 	}
 	else if (tester->options.kmode == 1)
 	{
 		int	pos = cur_word->pos;
 		int	len = cur_word->len;
+		int	col = tester->options.fingers[(unsigned char)c];
 
 		if (pos < len && c == cur_word->word[pos])
-			ft_printf("\e[30;4%dm %c \e[39;49m", tester->options.fingers[(unsigned char)c], ft_toupper(c));
+		{
+			attron(COLOR_PAIR(col + 8));
+			printw(" %c ", ft_toupper(c));
+			// ft_printf("\e[30;4%dm %c \e[39;49m", tester->options.fingers[(unsigned char)c], ft_toupper(c));
+		}
 		else
-			ft_printf("\e[3%dm %c \e[39;49m", tester->options.fingers[(unsigned char)c], ft_toupper(c));
+		{
+			attron(COLOR_PAIR(col));
+			printw(" %c ", ft_toupper(c));
+			// ft_printf("\e[3%dm %c \e[39;49m", tester->options.fingers[(unsigned char)c], ft_toupper(c));
+		}
 	}
-	ft_putstr_fd("│", 1);
+	attron(COLOR_PAIR(DEFAULT_COLS));
+	add_wch(&tester->boxchars[0]);
 }
 
 void	print_formatted_space(t_typer *tester, t_word *cur_word)
@@ -78,29 +96,31 @@ int print_keyboard(t_typer *tester, int y, t_word *cur_word)
 	int		i;
 	int		line_start;
 
-	line_start = (tester->env->win_width - 41) / 2 + 1;
+	line_start = (tester->env->win_width - 41) / 2;
 	y += 2;
-	ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
-	ft_printf("\e[%d;%dH│", y++, line_start);
+	attrset(A_BOLD);
+	mvaddwstr(y++, line_start, L"┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐");
+	mvadd_wch(y++, line_start, &tester->boxchars[0]);
 	i = -1;
 	while (row1[++i])
 		print_formatted_key(tester, row1[i], cur_word);
-	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
-	ft_printf("\e[%d;%dH│", y++, line_start);
-	i = -1;
-	while (row2[++i])
-		print_formatted_key(tester, row2[i], cur_word);
-	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴───┘", y++, line_start++);
-	ft_printf("\e[%d;%dH│", y++, line_start);
-	i = -1;
-	while (row3[++i])
-		print_formatted_key(tester, row3[i], cur_word);
-	ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴┬──┘", y++, line_start);
-	line_start += 9;
-	ft_printf("\e[%d;%dH│", y++, line_start);
-	print_formatted_wordkey(tester, cur_word, ' ');
-	ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
-	ft_printf("\e[m\n");
+	// ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
+	// ft_printf("\e[%d;%dH│", y++, line_start);
+	// i = -1;
+	// while (row2[++i])
+	// 	print_formatted_key(tester, row2[i], cur_word);
+	// ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴───┘", y++, line_start++);
+	// ft_printf("\e[%d;%dH│", y++, line_start);
+	// i = -1;
+	// while (row3[++i])
+	// 	print_formatted_key(tester, row3[i], cur_word);
+	// ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴┬──┘", y++, line_start);
+	// line_start += 9;
+	// ft_printf("\e[%d;%dH│", y++, line_start);
+	// print_formatted_wordkey(tester, cur_word, ' ');
+	// ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
+	// ft_printf("\e[m\n");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	return (y);
 }
 
