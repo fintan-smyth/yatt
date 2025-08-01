@@ -355,8 +355,8 @@ void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 		{
 			addch((i < cur_word->len ? cur_word->word[i] : cur_word->input_buf[i]) | COLOR_PAIR(RED_FG));
 			getyx(stdscr, y, x);
-			attrset(A_ITALIC | COLOR_PAIR(DEFAULT_COLS));
-			mvaddch(y + 1, x - 1, cur_word->input_buf[i]);
+			attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+			mvaddch(y + 1, x - 1, cur_word->input_buf[i] | A_ITALIC);
 			move(y, x);
 			// printw("\e[B\e[D\e[3m%c\e[m\e[A", cur_word->input_buf[i]);
 		}

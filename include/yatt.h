@@ -266,6 +266,7 @@ int		ft_output_len(char *str);
 int		clamp_int(int num, int min, int max);
 int		pos_mod(int num, int mod);
 int		print_str_centred(char *str, int row, int width);
+void	centre_str(char *str, int row, int width);
 void	draw_borders(t_typer *tester);
 int		kbhit(void);
 int		get_escape_char(char *sequence);

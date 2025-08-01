@@ -67,6 +67,16 @@ int	print_str_centred(char *str, int row, int width)
 	return (start_x);
 }
 
+void	centre_str(char *str, int row, int width)
+{
+	int	start_x;
+	int	len;
+
+	len = ft_output_len(str);
+	start_x = (width - len) / 2;
+	move(row, start_x);
+}
+
 void	draw_borders(t_typer *tester)
 {
 	cchar_t	*boxchars = tester->boxchars;
@@ -143,6 +153,7 @@ char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
 	char	c[4] = {};
 	t_env	*env = tester->env;
 
+	// refresh();
 	while (!kbhit())
 	{
 		if (set_winsize(env))

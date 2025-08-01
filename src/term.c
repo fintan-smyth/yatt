@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "yatt.h"
+#include <ncurses.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -59,6 +60,9 @@ int	set_winsize(t_env *env)
 	ioctl(0, TIOCGWINSZ, &w);
 	env->win_width = w.ws_col;
 	env->win_height = w.ws_row;
+	// getmaxyx(stdscr, env->win_height, env->win_width);
+	// env->win_width++;
+	// env->win_height++;
 	if (env->win_width != old_width || env->win_height != old_height)
 		return (1);
 	return (0);

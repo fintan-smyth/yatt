@@ -233,7 +233,7 @@ int main(int argc, char **argv)
 		handle_errors(tester, retval);
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
 		handle_errors(tester, retval);
-	run_game(tester);
-	// game_loop(tester);
+	// run_game(tester);
+	game_loop(tester);
 	cleanup(tester);
 }

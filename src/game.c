@@ -59,9 +59,9 @@ void	run_game(t_typer *tester)
 			{
 				tester->inputs_count++;
 				check_input(tester, tester->c, tester->cur_word);
+				tester->cur_word_idx++;
 				if (tester->cur_word->next == NULL)
 					break ;
-				tester->cur_word_idx++;
 				tester->cur_word = tester->cur_word->next;
 			}
 		}
@@ -96,7 +96,10 @@ void	run_game(t_typer *tester)
 		exec_render_func(tester, render_game);
 		if (tester->cur_word_idx == tester->options.num_words - 1
 			&& ft_strcmp(tester->cur_word->input_buf, tester->cur_word->word) == 0)
+		{
+			tester->cur_word_idx++;
 			break ;
+		}
 		tester->c = getchar_nb(tester, render_game);
 	}
 	tester->end_time = get_time_ms();
