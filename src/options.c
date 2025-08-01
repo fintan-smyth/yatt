@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <ncurses.h>
 #include <stdio.h>
 
 void	set_key_col(t_options *options, unsigned char c, int col)
@@ -82,69 +83,138 @@ void	pick_key_cols(t_typer *tester)
 
 void	print_menu_words(t_typer *tester, int selected, int line)
 {
+	char	*str = "No. Words:";
 	char	buf[128];
+	char	left_arrow = ' ';
+	char	right_arrow = ' ';
 
-	print_str_centred("\e[1;34mNo. Words:\e[m", line, tester->env->win_width * 2 / 3);
-	ft_snprintf(buf, 128, "\e[31m%s\e[m  %d  \e[31m%s\e[m",
-		(selected && tester->options.num_words > 1) ? "<" : " ",
-		tester->options.num_words,
-		(selected && tester->options.num_words < 500) ? ">" : " ");
-	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+	centre_str(str, line, tester->env->win_width * 2 / 3);
+	attrset(A_BOLD | COLOR_PAIR(BLUE_FG));
+	addstr(str);
+	if (selected && tester->options.num_words > 1)
+		left_arrow = '<';
+	if (selected && tester->options.num_words < 500)
+		right_arrow = '>';
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	ft_snprintf(buf, 128, "  %d  ", tester->options.num_words);
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	addch(left_arrow | COLOR_PAIR(RED_FG));
+	addstr(buf);
+	addch(right_arrow | COLOR_PAIR(RED_FG));
 }
 
 void	print_menu_numbers(t_typer *tester, int selected, int line)
 {
+	char	*str = "Numbers:";
 	char	buf[128];
+	char	left_arrow = ' ';
+	char	right_arrow = ' ';
 
-	print_str_centred("\e[1;36mNumbers:\e[m", line, tester->env->win_width * 2 / 3);
-	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
-		selected ? "<" : " ",
-		tester->options.numbers ? "On" : "Off",
-		selected ? ">" : " ");
-	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+	centre_str(str, line, tester->env->win_width * 2 / 3);
+	attrset(A_BOLD | COLOR_PAIR(CYAN_FG));
+	addstr(str);
+	if (selected)
+	{
+		left_arrow = '<';
+		right_arrow = '>';
+	}
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	ft_snprintf(buf, 128, "  %s  ", tester->options.numbers ? "On" : "Off");
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	addch(left_arrow | COLOR_PAIR(RED_FG));
+	addstr(buf);
+	addch(right_arrow | COLOR_PAIR(RED_FG));
 }
 
 void	print_menu_punc(t_typer *tester, int selected, int line)
 {
+	char	*str = "Punctuation:";
 	char	buf[128];
 	char	*strs[3] = {"Off", "Standard", "C-style"};
+	char	left_arrow = ' ';
+	char	right_arrow = ' ';
 
-	print_str_centred("\e[1;36mPunctuation:\e[m", line, tester->env->win_width * 2 / 3);
-	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
-		selected ? "<" : " ",
-		strs[tester->options.punc],
-		selected ? ">" : " ");
-	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+	centre_str(str, line, tester->env->win_width * 2 / 3);
+	attrset(A_BOLD | COLOR_PAIR(CYAN_FG));
+	addstr(str);
+	if (selected)
+	{
+		left_arrow = '<';
+		right_arrow = '>';
+	}
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	ft_snprintf(buf, 128, "  %s  ", strs[tester->options.punc]);
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	addch(left_arrow | COLOR_PAIR(RED_FG));
+	addstr(buf);
+	addch(right_arrow | COLOR_PAIR(RED_FG));
 }
 
 void	print_menu_lang(t_typer *tester, int selected, int line)
 {
+	char	*str = "Language:";
 	char	buf[128];
+	char	left_arrow = ' ';
+	char	right_arrow = ' ';
 
-	print_str_centred("\e[1;32mLanguage:\e[m", line, tester->env->win_width * 2 / 3);
-	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
-		selected ? "<" : " ",
-		extract_lang_name(tester->options.cur_lang->str),
-		selected ? ">" : " ");
-	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+	centre_str(str, line, tester->env->win_width * 2 / 3);
+	attrset(A_BOLD | COLOR_PAIR(GREEN_FG));
+	addstr(str);
+	if (selected)
+	{
+		left_arrow = '<';
+		right_arrow = '>';
+	}
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	ft_snprintf(buf, 128, "  %s  ", extract_lang_name(tester->options.cur_lang->str));
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	addch(left_arrow | COLOR_PAIR(RED_FG));
+	addstr(buf);
+	addch(right_arrow | COLOR_PAIR(RED_FG));
+
+	// print_str_centred("\e[1;32mLanguage:\e[m", line, tester->env->win_width * 2 / 3);
+	// ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
+	// 	selected ? "<" : " ",
+	// 	extract_lang_name(tester->options.cur_lang->str),
+	// 	selected ? ">" : " ");
+	// print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
 
 void	print_menu_kmode(t_typer *tester, int selected, int line)
 {
+	char	*str = "Keyboard Mode::";
 	char	buf[128];
+	char	left_arrow = ' ';
+	char	right_arrow = ' ';
 
-	print_str_centred("\e[1;33mKeyboard mode:\e[m", line, tester->env->win_width * 2 / 3);
-	ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
-		selected ? "<" : " ",
-		tester->options.kmode ? "Instructional" : "Accuracy",
-		selected ? ">" : " ");
-	print_str_centred(buf, line, tester->env->win_width * 4 / 3);
+	centre_str(str, line, tester->env->win_width * 2 / 3);
+	attrset(A_BOLD | COLOR_PAIR(YELLOW_FG));
+	addstr(str);
+	if (selected)
+	{
+		left_arrow = '<';
+		right_arrow = '>';
+	}
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	ft_snprintf(buf, 128, "  %s  ", tester->options.kmode ? "Instructional" : "Accuracy");
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	addch(left_arrow | COLOR_PAIR(RED_FG));
+	addstr(buf);
+	addch(right_arrow | COLOR_PAIR(RED_FG));
+
+	// print_str_centred("\e[1;33mKeyboard mode:\e[m", line, tester->env->win_width * 2 / 3);
+	// ft_snprintf(buf, 128, "\e[31m%s\e[m  %s  \e[31m%s\e[m",
+	// 	selected ? "<" : " ",
+	// 	tester->options.kmode ? "Instructional" : "Accuracy",
+	// 	selected ? ">" : " ");
+	// print_str_centred(buf, line, tester->env->win_width * 4 / 3);
 }
-
+	
 void	print_menu_screen(t_typer *tester)
 {
 	int		line;
 
+	erase();
 	draw_borders(tester);
 	line = tester->env->win_height / 2 - 4;
 	print_menu_words(tester, tester->menu_state.selected == M_WORDS, line);
@@ -157,10 +227,16 @@ void	print_menu_screen(t_typer *tester)
 	line += 2;
 	print_menu_kmode(tester, tester->menu_state.selected == M_KMODE, line);
 	line += 3;
+	centre_str("Choose key colours", line, tester->env->win_width);
 	if (tester->menu_state.selected == M_KEYCOLS)
-		print_str_centred("\e[30;45;1mChoose key colours\e[m", line, tester->env->win_width);
+		attrset(A_BOLD | COLOR_PAIR(MAGENTA_BG));
+		// print_str_centred("\e[30;45;1mChoose key colours\e[m", line, tester->env->win_width);
 	else
-		print_str_centred("\e[35;1mChoose key colours\e[m", line, tester->env->win_width);
+		attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
+		// print_str_centred("\e[35;1mChoose key colours\e[m", line, tester->env->win_width);
+	addstr("Choose key colours");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	refresh();
 }
 
 void	change_selection(t_menu *menu, int dir)

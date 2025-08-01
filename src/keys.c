@@ -346,7 +346,7 @@ void	print_keyboard_picker(t_typer *tester)
 	int		line_start;
 
 	draw_borders(tester);
-	y= tester->env->win_height / 2 - 6;
+	y = tester->env->win_height / 2 - 6;
 	y = print_col_hints(tester, y);
 	line_start = (tester->env->win_width - 41) / 2 + 1;
 	y += 2;
