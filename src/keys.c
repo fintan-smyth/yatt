@@ -222,8 +222,6 @@ int print_keyboard_full(t_typer *tester, int y, t_word *cur_word)
 
 	line_start = (tester->env->win_width - 51) / 2;
 	y += 2;
-	// ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
-	// ft_printf("\e[%d;%dH│", y++, line_start);
 	attrset(A_BOLD);
 	mvaddwstr(y++, line_start, L"┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐");
 	mvadd_wch(y++, line_start, &tester->boxchars[0]);
@@ -233,8 +231,6 @@ int print_keyboard_full(t_typer *tester, int y, t_word *cur_word)
 		print_formatted_key_non_alpha(tester, row0, i, cur_word);
 		i += 2;
 	}
-	// ft_printf("\e[1m\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┐", y++, line_start++);
-	// ft_printf("\e[%d;%dH│", y++, line_start);
 	mvaddwstr(y++, line_start++, L"└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┐");
 	mvadd_wch(y++, line_start, &tester->boxchars[0]);
 	i = 0;
@@ -251,8 +247,6 @@ int print_keyboard_full(t_typer *tester, int y, t_word *cur_word)
 			i += 2;
 		}
 	}
-	// ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
-	// ft_printf("\e[%d;%dH│", y++, line_start);
 	mvaddwstr(y++, line_start++, L"└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘");
 	mvadd_wch(y++, line_start, &tester->boxchars[0]);
 	i = 0;
@@ -269,8 +263,6 @@ int print_keyboard_full(t_typer *tester, int y, t_word *cur_word)
 			i += 2;
 		}
 	}
-	// ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
-	// ft_printf("\e[%d;%dH│", y++, line_start);
 	mvaddwstr(y++, line_start++, L"└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘");
 	mvadd_wch(y++, line_start, &tester->boxchars[0]);
 	i = 0;
@@ -287,15 +279,10 @@ int print_keyboard_full(t_typer *tester, int y, t_word *cur_word)
 			i += 2;
 		}
 	}
-	// ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴───┴──┬┴───┴───┘", y++, line_start);
-	// line_start += 9;
-	// ft_printf("\e[%d;%dH│", y++, line_start);
 	mvaddwstr(y++, line_start, L"└───┴───┴┬──┴───┴───┴───┴───┴──┬┴───┴───┘");
 	line_start += 9;
 	mvadd_wch(y++, line_start, &tester->boxchars[0]);
-	// print_formatted_space(tester, cur_word);
 	print_formatted_wordkey(tester, cur_word, ' ');
-	// ft_printf("\e[%d;%dH└─────────────────────┘", y++, line_start);
 	mvaddwstr(y++, line_start, L"└─────────────────────┘");
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	return (y);
@@ -324,51 +311,129 @@ void	print_picker_key(t_typer *tester, unsigned char c)
 
 int	print_col_hints(t_typer *tester, int y)
 {
-	char	line1[] = "\e[1;30mBLACK:\e[39m   0        \e[34mBLUE:\e[39m     4";
-	char	line2[] = "\e[1;31mRED:\e[39m     1        \e[35mMAGENTA:\e[39m  5";
-	char	line3[] = "\e[1;32mGREEN:\e[39m   2        \e[36mCYAN:\e[39m     6";
-	char	line4[] = "\e[1;33mYELLOW:\e[39m  3        \e[37mWHITE:\e[39m    7";
+	int		start_left = (tester->env->win_width - 30) / 2;
+	// int		num_left = start_left + 10;
+	// int		start_right = num_left + 9;
+	// int		num_right = start_right + 10;
+	int		i;
+	char	*cols[] = {
+		"BLACK",
+		"RED",
+		"GREEN",
+		"YELLOW",
+		"BLUE",
+		"MAGENTA",
+		"CYAN",
+		"WHITE",
+	};
 
-	print_str_centred(line1, y++, tester->env->win_width);
-	print_str_centred(line2, y++, tester->env->win_width);
-	print_str_centred(line3, y++, tester->env->win_width);
-	print_str_centred(line4, y++, tester->env->win_width);
+	for (i = 0; i < 8; y++, i++)
+	{
+		if (i == 4)
+		{
+			y -= 4;
+			start_left += 19;
+		}
+		if (i != 0)
+			attron(COLOR_PAIR(i));
+		else
+			attron(COLOR_PAIR(BLACK_FG));
+		mvaddstr(y, start_left, cols[i]);
+		attron(COLOR_PAIR(DEFAULT_COLS));
+		mvaddch(y, start_left + 10, i + '0');
+	}
 	return (y);
+}
+
+void	print_picker_key_alt(t_typer *tester, char *keyset, int i)
+{
+	const char	c = ft_tolower(keyset[i]);
+	const char	c_alt = keyset[i + 1];
+	const char	input = ft_tolower(tester->c);
+	char		display_c = (c_alt == input ? c_alt : c);
+	int			col = tester->options.fingers[(unsigned char)display_c];
+	char		space[] = "        SPACE        ";
+
+	attron(COLOR_PAIR(DEFAULT_COLS));
+	if (tester->c == display_c)
+		attron(COLOR_PAIR(WHITE_BG));
+		// ft_printf("\e[30;47m %c \e[39;49m", ft_toupper(c));
+	else
+		attron(COLOR_PAIR(col));
+		// ft_printf("\e[3%dm %c \e[39;49m", tester->options.fingers[c], ft_toupper(c));
+		// ft_putstr_fd("│", 1);
+	if (display_c == ' ')
+	{
+		// add_wch(&tester->boxchars[0]);
+		addstr(space);
+		// add_wch(&tester->boxchars[0]);
+		// if (tester->c == display_c)
+		// 	ft_printf("│\e[30;47m%s\e[39;49m│", space);
+		// else
+		// 	ft_printf("│\e[3%dm%s\e[39;49m│", tester->options.fingers[' '], space);
+	}
+	else
+		printw(" %c ", ft_toupper(display_c));
+	attron(COLOR_PAIR(DEFAULT_COLS));
+	add_wch(&tester->boxchars[0]);
 }
 
 void	print_keyboard_picker(t_typer *tester)
 {
-	char	row1[] = "qwertyuiop";
-	char	row2[] = "asdfghjkl";
-	char	row3[] = "zxcvbnm";
+	char	row0[] = "1!2@3#4$5%6^7&8*9(0)-_=+";
+	char	row1[] = "qqwweerrttyyuuiioopp[{]}";
+	char	row2[] = "aassddffgghhjjkkll;:'\"";
+	char	row3[] = "zzxxccvvbbnnmm,<.>/?";
 	int		i;
 	int		y;
 	int		line_start;
 
+	erase();
 	draw_borders(tester);
-	y = tester->env->win_height / 2 - 6;
+	y = tester->env->win_height / 2 - 7;
+	attrset(A_BOLD);
 	y = print_col_hints(tester, y);
-	line_start = (tester->env->win_width - 41) / 2 + 1;
+	line_start = (tester->env->win_width - 51) / 2;
 	y += 2;
-	ft_printf("\e[1m\e[%d;%dH┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐", y++, line_start);
-	ft_printf("\e[%d;%dH│", y++, line_start);
-	i = -1;
-	while (row1[++i])
-		print_picker_key(tester, row1[i]);
-	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘", y++, line_start++);
-	ft_printf("\e[%d;%dH│", y++, line_start);
-	i = -1;
-	while (row2[++i])
-		print_picker_key(tester, row2[i]);
-	ft_printf("\e[%d;%dH└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴───┘", y++, line_start++);
-	ft_printf("\e[%d;%dH│", y++, line_start);
-	i = -1;
-	while (row3[++i])
-		print_picker_key(tester, row3[i]);
-	ft_printf("\e[%d;%dH└───┴───┴┬──┴───┴───┴───┴┬──┘", y++, line_start);
+	mvaddwstr(y++, line_start, L"┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐");
+	mvadd_wch(y++, line_start, &tester->boxchars[0]);
+	i = 0;
+	while (row0[i])
+	{
+		print_picker_key_alt(tester, row0, i);
+		i += 2;
+	}
+	mvaddwstr(y++, line_start++, L"└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┐");
+	mvadd_wch(y++, line_start, &tester->boxchars[0]);
+	i = 0;
+	while (row1[i])
+	{
+		print_picker_key_alt(tester, row1, i);
+		i += 2;
+	}
+	mvaddwstr(y++, line_start++, L"└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘");
+	mvadd_wch(y++, line_start, &tester->boxchars[0]);
+	i = 0;
+	while (row2[i])
+	{
+		print_picker_key_alt(tester, row2, i);
+		i += 2;
+	}
+	mvaddwstr(y++, line_start++, L"└┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┘");
+	mvadd_wch(y++, line_start, &tester->boxchars[0]);
+	i = 0;
+	while (row3[i])
+	{
+		print_picker_key_alt(tester, row3, i);
+		i += 2;
+	}
+	mvaddwstr(y++, line_start, L"└───┴───┴┬──┴───┴───┴───┴───┴──┬┴───┴───┘");
 	line_start += 9;
-	ft_printf("\e[%d;%dH", y++, line_start);
-	print_picker_key(tester, ' ');
-	ft_printf("\e[%d;%dH└───────────────┘", y++, line_start);
-	ft_printf("\e[m\n");
+	mvadd_wch(y++, line_start, &tester->boxchars[0]);
+	// print_formatted_wordkey(tester, cur_word, ' ');
+	print_picker_key_alt(tester, " \a", 0);
+	mvaddwstr(y++, line_start, L"└─────────────────────┘");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	refresh();
+	// return (y);
 }

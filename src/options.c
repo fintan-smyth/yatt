@@ -19,6 +19,8 @@ void	set_key_col(t_options *options, unsigned char c, int col)
 {
 	if (col < 0 || col > 7)
 		return ;
+	if (col == 0)
+		col = BLACK_FG;
 	options->fingers[c] = col;
 	options->fingers[ft_toupper(c)] = col;
 }
@@ -48,15 +50,15 @@ void	setup_default_fingers(t_options *options)
 
 	for (int i = 0; i < 128; i++)
 		options->fingers[i] = 7;
-	set_keyset_col(options, index_l, BLUE);
-	set_keyset_col(options, index_r, MAGENTA);
-	set_keyset_col(options, middle_l, RED);
-	set_keyset_col(options, middle_r, RED);
-	set_keyset_col(options, ring_l, GREEN);
-	set_keyset_col(options, ring_r, GREEN);
-	set_keyset_col(options, pinky_l, YELLOW);
-	set_keyset_col(options, pinky_r, YELLOW);
-	set_keyset_col(options, thumb, CYAN);
+	set_keyset_col(options, index_l, BLUE_FG);
+	set_keyset_col(options, index_r, MAGENTA_FG);
+	set_keyset_col(options, middle_l, RED_FG);
+	set_keyset_col(options, middle_r, RED_FG);
+	set_keyset_col(options, ring_l, GREEN_FG);
+	set_keyset_col(options, ring_r, GREEN_FG);
+	set_keyset_col(options, pinky_l, YELLOW_FG);
+	set_keyset_col(options, pinky_r, YELLOW_FG);
+	set_keyset_col(options, thumb, CYAN_FG);
 }
 
 void	pick_key_cols(t_typer *tester)
@@ -69,11 +71,11 @@ void	pick_key_cols(t_typer *tester)
 	while (tester->c != ESC)
 	{
 		exec_render_func(tester, print_keyboard_picker);
-		if (ft_isalpha(tester->c) || tester->c == ' ')
+		if (ft_isalnum(tester->c) || tester->c == ' ')
 		{
 			c = getchar_nb(tester, print_keyboard_picker);
 			if (c >= '0' && c <= '7')
-				tester->options.fingers[tester->c] = c - '0';
+				tester->options.fingers[tester->c] = (c == '0' ? BLACK_FG : c - '0');
 			tester->c = 0;
 			exec_render_func(tester, print_keyboard_picker);
 		}
@@ -182,7 +184,7 @@ void	print_menu_lang(t_typer *tester, int selected, int line)
 
 void	print_menu_kmode(t_typer *tester, int selected, int line)
 {
-	char	*str = "Keyboard Mode::";
+	char	*str = "Keyboard Mode:";
 	char	buf[128];
 	char	left_arrow = ' ';
 	char	right_arrow = ' ';
@@ -216,7 +218,7 @@ void	print_menu_screen(t_typer *tester)
 
 	erase();
 	draw_borders(tester);
-	line = tester->env->win_height / 2 - 4;
+	line = tester->env->win_height / 2 - 5;
 	print_menu_words(tester, tester->menu_state.selected == M_WORDS, line);
 	line += 2;
 	print_menu_numbers(tester, tester->menu_state.selected == M_NUMBERS, line);

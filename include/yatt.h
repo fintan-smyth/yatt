@@ -35,14 +35,14 @@
 # define MIN_WIDTH_FULL 53
 # define MIN_HEIGHT_FULL 19
 
-# define BLACK 0
-# define RED 1
-# define GREEN 2
-# define YELLOW 3
-# define BLUE 4
-# define MAGENTA 5
-# define CYAN 6
-# define WHITE 7
+// # define COL_BLACK 0
+// # define COL_RED 1
+// # define COL_GREEN 2
+// # define COL_YELLOW 3
+// # define COL_BLUE 4
+// # define COL_MAGENTA 5
+// # define COL_CYAN 6
+// # define COL_WHITE 7
 
 enum {
 	M_WORDS = 0,
@@ -130,7 +130,7 @@ typedef enum {
 } e_errorcode;
 
 typedef enum {
-	BLACK_FG = 0,
+	STD_BG = 0,
 	RED_FG,
 	GREEN_FG,
 	YELLOW_FG,
@@ -146,6 +146,7 @@ typedef enum {
 	MAGENTA_BG,
 	CYAN_BG,
 	WHITE_BG,
+	BLACK_FG,
 	DEFAULT_COLS,
 } e_colorpair;
 
