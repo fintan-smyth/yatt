@@ -132,6 +132,7 @@ typedef enum {
 	E_NUMBERS,
 	E_PUNC,
 	E_KMODE,
+	E_LISTLANG,
 	E_HELP,
 } e_errorcode;
 

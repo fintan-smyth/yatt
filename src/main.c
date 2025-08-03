@@ -78,6 +78,14 @@ void	init_lang_paths(t_options *options)
 	// 	printf("%s\n", current->str);
 }
 
+void	list_languages(t_typer *tester)
+{
+	t_options	*options = &tester->options;
+	for (t_list *current = options->lang_paths; current != NULL; current = current->next)
+		printf("%s\n", extract_lang_name(current->str));
+
+}
+
 t_list	*find_lang(t_list *lang_paths, char *name)
 {
 	t_list	*current;
@@ -244,7 +252,7 @@ void	cleanup(t_typer *tester)
 
 void	handle_errors(t_typer *tester, int errcode)
 {
-	cleanup(tester);
+	endwin();
 	if (errcode == E_SYNTAX)
 		printf("Invalid argument provided\n");
 	else if (errcode == E_TOOMANYWORDS)
@@ -279,6 +287,9 @@ void	handle_errors(t_typer *tester, int errcode)
 		printf("Config error: invalid option provided: \e[31;1mkmode\e[m\n");
 	else if (errcode == E_HELP)
 		print_help();
+	else if (errcode == E_LISTLANG)
+		list_languages(tester);
+	cleanup(tester);
 	exit(1);
 }
 
