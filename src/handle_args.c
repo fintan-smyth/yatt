@@ -79,6 +79,14 @@ int	extract_arg_kmode(t_typer *tester, char *arg)
 	return (E_SUCCESS);
 }
 
+int	extract_arg_lang(t_typer *tester, char *arg)
+{
+	tester->options.cur_lang = find_lang(tester->options.lang_paths, arg);
+	if (tester->options.cur_lang == NULL)
+		return (E_LANGERR);
+	return (E_SUCCESS);
+}
+
 void	print_help(void)
 {
 	printf("Yet Another Typing Test\n\n");
@@ -88,6 +96,7 @@ void	print_help(void)
 	printf("\e[1m  -p, --punc\e[m <off|std|c>\tSpecify punctuation style to use\n");
 	printf("\e[1m  -n, --numbers\e[m <off|on>\tSpecify if numbers are included in tests\n");
 	printf("\e[1m  -k, --keyboard\e[m <a|i>\t\tChoose on-screen keyboard style [accuracy/instructional]\n");
+	printf("\e[1m  -l, --language\e[m <filename>\tSpecify default language to use for words\n");
 	printf("\e[1m  -h, --help\e[m\t\t\tPrint help\n");
 }
 
@@ -110,6 +119,8 @@ int	handle_args(int argc, char **argv, t_typer *tester)
 			extract_arg = extract_arg_num;
 		else if (ft_strcmp(argv[i], "-k") == 0 || ft_strcmp(argv[i], "--keyboard") == 0)
 			extract_arg = extract_arg_kmode;
+		else if (ft_strcmp(argv[i], "-l") == 0 || ft_strcmp(argv[i], "--language") == 0)
+			extract_arg = extract_arg_lang;
 		else if (ft_strcmp(argv[i], "-h") == 0 || ft_strcmp(argv[i], "--help") == 0)
 			return (E_HELP);
 		else

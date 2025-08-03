@@ -15,6 +15,7 @@
 #include <limits.h>
 #include <locale.h>
 #include <ncurses.h>
+#include <dirent.h>
 
 char	*extract_lang_name(char *lang_path)
 {
@@ -32,9 +33,11 @@ t_lang	load_language_file(char	*filename)
 	char	*line;
 	char	*nl_ptr;
 	t_list	*word_list = NULL;
-	t_lang	lang;
+	t_lang	lang = {};
 
 	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		return (lang);
 	while ((line = get_next_line(fd)) != NULL)
 	{
 		if ((nl_ptr = ft_strchr(line, '\n')) != NULL)
@@ -51,8 +54,40 @@ t_lang	load_language_file(char	*filename)
 
 void	init_lang_paths(t_options *options)
 {
-	ft_lstadd_back(&options->lang_paths, ft_lstnew(ft_strdup("./lang/english1000")));
-	ft_lstadd_back(&options->lang_paths, ft_lstnew(ft_strdup("./lang/english-advanced")));
+	char			lang_dir[256];
+	char			*home;
+	struct dirent	*dirent;
+	DIR				*dir;
+
+	home = getenv("HOME");
+	ft_snprintf(lang_dir, 256, "%s/.config/yatt/lang/", home);
+	if (access(lang_dir, F_OK | R_OK | X_OK) != 0)
+		ft_strlcpy(lang_dir, "./lang/", 256);
+	dir = opendir(lang_dir);
+	dirent = readdir(dir);
+	while (dirent != NULL)
+	{
+		if (dirent->d_name[0] != '.')
+			ft_lstadd_back(&options->lang_paths, ft_lstnew(ft_strjoin(lang_dir, dirent->d_name)));
+			// printf("%s\n", dirent->d_name);
+		dirent = readdir(dir);
+	}
+	closedir(dir);
+	ft_qsort_list(options->lang_paths, (int (*)(void *, void *))ft_strcasecmp);
+	// for (t_list *current = options->lang_paths; current != NULL; current = current->next)
+	// 	printf("%s\n", current->str);
+}
+
+t_list	*find_lang(t_list *lang_paths, char *name)
+{
+	t_list	*current;
+
+	for (current = lang_paths; current != NULL; current = current->next)
+	{
+		if (ft_strcmp(extract_lang_name(current->str), name) == 0)
+			return (current);
+	}
+	return (NULL);
 }
 
 void	init_std_punc(t_punc *standard)
@@ -115,10 +150,8 @@ void	init_clang_punc(t_punc *clang)
 
 void	init_default_options(t_options *options)
 {
-	init_lang_paths(options);
 	setup_default_fingers(options);
 	options->kmode = KMODE_INSTRUCT;
-	options->cur_lang = options->lang_paths;
 	options->num_words = 30;
 	options->punc = PMODE_OFF;
 	options->full_keyboard = 0;
@@ -138,7 +171,6 @@ void	init(t_typer *tester)
 	set_term_settings(env);
 	set_winsize(env);
 	setlocale(LC_ALL, "");
-	initscr();
 	setcchar(&tester->boxchars[0], L"│", 0, 0, NULL);
 	setcchar(&tester->boxchars[1], L"─", 0, 0, NULL);
 	setcchar(&tester->boxchars[2], L"╭", 0, 0, NULL);
@@ -147,6 +179,12 @@ void	init(t_typer *tester)
 	setcchar(&tester->boxchars[5], L"╯", 0, 0, NULL);
 	setcchar(&tester->boxchars[6], L"├", 0, 0, NULL);
 	setcchar(&tester->boxchars[7], L"┤", 0, 0, NULL);
+	tester->env = env;
+	env->min_height = MIN_HEIGHT_SMALL;
+	env->min_width = MIN_WIDTH_SMALL;
+	tester->menu_state.no_entries = M_MAX;
+	init_lang_paths(&tester->options);
+	initscr();
 	use_default_colors();
 	start_color();
 	init_pair(DEFAULT_COLS, -1, -1);
@@ -166,16 +204,26 @@ void	init(t_typer *tester)
 	init_pair(MAGENTA_BG, COLOR_BLACK, COLOR_MAGENTA);
 	init_pair(CYAN_BG, COLOR_BLACK, COLOR_CYAN);
 	init_pair(WHITE_BG, COLOR_BLACK, COLOR_WHITE);
-	tester->env = env;
-	env->min_height = MIN_HEIGHT_SMALL;
-	env->min_width = MIN_WIDTH_SMALL;
-	tester->menu_state.no_entries = M_MAX;
-	init_default_options(&tester->options);
+}
+
+int	init_lang(t_typer *tester)
+{
+	if (tester->options.cur_lang == NULL)
+	{
+		tester->options.cur_lang = find_lang(tester->options.lang_paths, "english1000");
+		if (tester->options.cur_lang == NULL)
+			return (E_LANGERR);
+	}
+	tester->lang = load_language_file(tester->options.cur_lang->str);
+	if (tester->lang.name == NULL)
+		return (E_LANGERR);
+	return (E_SUCCESS);
 }
 
 void	cleanup_lang(t_lang *lang)
 {
-	free_split(&lang->words);
+	if (lang->words != NULL)
+		free_split(&lang->words);
 	free(lang->name);
 }
 
@@ -219,6 +267,16 @@ void	handle_errors(t_typer *tester, int errcode)
 		printf("Config error: The minimum word count is 1\n");
 	else if (errcode == E_DOUBLEKEYDEF)
 		printf("Config error: key colour defined multiple times\n");
+	else if (errcode == E_LANGERR)
+		printf("Failed to load language file\n");
+	else if (errcode == E_LANGERR_CFG)
+		printf("Config error: invalid language provided\n");
+	else if (errcode == E_NUMBERS)
+		printf("Config error: invalid option provided: \e[31;1mnumbers\e[m\n");
+	else if (errcode == E_PUNC)
+		printf("Config error: invalid option provided: \e[31;1mpunc\e[m\n");
+	else if (errcode == E_KMODE)
+		printf("Config error: invalid option provided: \e[31;1mkmode\e[m\n");
 	else if (errcode == E_HELP)
 		print_help();
 	exit(1);
@@ -228,14 +286,17 @@ int main(int argc, char **argv)
 {
 	t_typer	*tester = &(t_typer){};
 	int		retval;
+	int		conf_retval;
 
 	init(tester);
-	tester->lang = load_language_file(tester->options.cur_lang->str);
-	if ((retval = parse_config(tester, "default.cfg")) != E_SUCCESS)
-		handle_errors(tester, retval);
+	init_default_options(&tester->options);
+	conf_retval = parse_config(tester, "default.cfg");
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
 		handle_errors(tester, retval);
-	// run_game(tester);
+	if (conf_retval != E_SUCCESS)
+		handle_errors(tester, conf_retval);
+	if ((retval = init_lang(tester)) != E_SUCCESS)
+		handle_errors(tester, retval);
 	game_loop(tester);
 	cleanup(tester);
 }

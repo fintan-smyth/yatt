@@ -123,6 +123,8 @@ int	get_config_type(char *str)
 		return (M_PUNC);
 	if (ft_strcmp(str, "kmode") == 0)
 		return (M_KMODE);
+	if (ft_strcmp(str, "language") == 0)
+		return (M_LANG);
 	if (str_to_col(str) != -1)
 		return (M_KEYCOLS);
 	return (M_MAX);
@@ -169,7 +171,7 @@ int	apply_option_punc(t_typer *tester, char *arg)
 	else if (ft_strcmp(arg, "c-style") == 0)
 		pmode = PMODE_CLANG;
 	else
-		return (E_INVALIDOPT);
+		return (E_PUNC);
 	tester->options.punc = pmode;
 	return (E_SUCCESS);
 }
@@ -181,7 +183,7 @@ int	apply_option_num(t_typer *tester, char *arg)
 	else if (ft_strcmp(arg, "disabled") == 0)
 		tester->options.numbers = 0;
 	else
-		return (E_INVALIDOPT);
+		return (E_NUMBERS);
 	return (E_SUCCESS);
 }
 
@@ -192,7 +194,15 @@ int	apply_option_kmode(t_typer *tester, char *arg)
 	else if (ft_strcmp(arg, "instructional") == 0)
 		tester->options.kmode = KMODE_INSTRUCT;
 	else
-		return (E_INVALIDOPT);
+		return (E_KMODE);
+	return (E_SUCCESS);
+}
+
+int	apply_option_lang(t_typer *tester, char *arg)
+{
+	tester->options.cur_lang = find_lang(tester->options.lang_paths, arg);
+	if (tester->options.cur_lang == NULL)
+		return (E_LANGERR_CFG);
 	return (E_SUCCESS);
 }
 
@@ -241,6 +251,9 @@ int	apply_config_option(t_typer *tester, t_list *token, int type)
 			break ;
 		case (M_KMODE):
 			retval = apply_option_kmode(tester, arg);
+			break ;
+		case (M_LANG):
+			retval = apply_option_lang(tester, arg);
 			break ;
 		case (M_KEYCOLS):
 			retval = apply_option_keycol(tester, option, arg, 0);
@@ -294,8 +307,9 @@ int	parse_config(t_typer *tester, char *filename)
 	// 	current = current->next;
 	// }
 	// exit(0);
-	if ((retval = parse_tokens(tester, tokens)) != E_SUCCESS)
-		return (retval);
+	retval = parse_tokens(tester, tokens);
 	ft_lstclear(&tokens, free);
+	if ((retval) != E_SUCCESS)
+		return (retval);
 	return (E_SUCCESS);
 }

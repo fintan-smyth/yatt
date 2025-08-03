@@ -109,7 +109,10 @@ int		ft_match_wc(char *str, char *wc, char wchar);
 void	**ft_lst_to_arr(t_list *list);
 void	ft_qsort(void **array, int left, int right,
 			int (*cmp)(void *, void *));
+void	ft_qsort_list(t_list *list, int (*cmp)(void *, void *));
 int		ft_strcmp(char *s1, char *s2);
+int		ft_strcasecmp(char *s1, char *s2);
+int		ft_strncasecmp(const char *s1, const char *s2, size_t n);
 int		ft_strnum(char *str);
 long	ft_strtol(char *nptr, char **endptr, int base);
 int		ft_lst_exists(t_list *lst, void *match, int (*cmp)(void *, void *));

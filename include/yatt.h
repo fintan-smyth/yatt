@@ -127,6 +127,11 @@ typedef enum {
 	E_INVALIDOPT,
 	E_DOUBLEDEF,
 	E_DOUBLEKEYDEF,
+	E_LANGERR,
+	E_LANGERR_CFG,
+	E_NUMBERS,
+	E_PUNC,
+	E_KMODE,
 	E_HELP,
 } e_errorcode;
 
@@ -233,8 +238,10 @@ void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
 int		set_winsize(t_env *env);
 void	cleanup(t_typer *tester);
+void	handle_errors(t_typer *tester, int errcode);
 
 char	*extract_lang_name(char *lang_path);
+t_list	*find_lang(t_list *lang_paths, char *name);
 t_lang	load_language_file(char	*filename);
 void	cleanup_lang(t_lang *lang);
 t_word	*new_wordnode(char *str);

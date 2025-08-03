@@ -23,3 +23,15 @@ int	ft_strcmp(char *s1, char *s2)
 	}
 	return (*s1 - *s2);
 }
+
+int	ft_strcasecmp(char *s1, char *s2)
+{
+	while (ft_tolower(*s1) == ft_tolower(*s2))
+	{
+		if (*s1 == '\0')
+			return (0);
+		s1++;
+		s2++;
+	}
+	return (ft_tolower(*s1) - ft_tolower(*s2));
+}
