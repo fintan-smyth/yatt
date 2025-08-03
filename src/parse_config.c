@@ -13,6 +13,7 @@
 #include "libft.h"
 #include "yatt.h"
 #include <fcntl.h>
+#include <unistd.h>
 
 void	delimit_token(t_list **tokens, int *token_len, char *buf)
 {
@@ -312,4 +313,21 @@ int	parse_config(t_typer *tester, char *filename)
 	if ((retval) != E_SUCCESS)
 		return (retval);
 	return (E_SUCCESS);
+}
+
+int	initial_config_parse(t_typer *tester)
+{
+	char	*home;
+	char	buf[256];
+
+	home = getenv("HOME");
+	ft_strlcpy(buf, home, 256);
+	ft_strlcat(buf, "/.config/yatt/yatt.cfg", 256);
+	if (access(buf, F_OK | R_OK) != 0)
+		ft_strlcpy(buf, "./yatt.cfg", 256);
+	if (access(buf, F_OK | R_OK) != 0)
+		ft_strlcpy(buf, "./default.cfg", 256);
+	if (access(buf, F_OK | R_OK) != 0)
+		return (E_SUCCESS);
+	return (parse_config(tester, buf));
 }

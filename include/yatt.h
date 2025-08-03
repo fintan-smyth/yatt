@@ -255,6 +255,7 @@ void	select_words(t_typer *tester);
 int		handle_args(int argc, char **argv, t_typer *tester);
 void	print_help(void);
 int		parse_config(t_typer *tester, char *filename);
+int		initial_config_parse(t_typer *tester);
 
 void	run_game(t_typer *tester);
 void	game_loop(t_typer *tester);

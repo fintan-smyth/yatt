@@ -7,8 +7,9 @@ DBG_FLAGS =		-g3 \
 				# -pg \
 
 SRC_DIR := ./src
-
 BUILD_DIR:= ./build
+CONFIG_DIR:= ${HOME}/.config/yatt
+BIN_DIR:= ${HOME}/.local/bin
 
 SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/term.c \
@@ -28,6 +29,12 @@ NAME = yatt
 LIBFT = libft/libft.a
 
 all: $(NAME)
+
+install: $(NAME)
+	@mkdir -p $(CONFIG_DIR)
+	@cp -v --update=none ./default.cfg $(CONFIG_DIR)/yatt.cfg
+	@cp -vfr  ./lang $(CONFIG_DIR)
+	@cp -vf ./yatt $(BIN_DIR)/yatt
 
 $(NAME): $(LIBFT) $(BUILD_DIR) $(OBJ)
 	$(CC) $(CFLAGS) $(DBG_FLAGS) $(OBJ) -o $(NAME) -L ./libft -lft -lncurses

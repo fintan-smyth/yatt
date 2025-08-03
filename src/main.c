@@ -290,7 +290,7 @@ int main(int argc, char **argv)
 
 	init(tester);
 	init_default_options(&tester->options);
-	conf_retval = parse_config(tester, "default.cfg");
+	conf_retval = initial_config_parse(tester);
 	if ((retval = handle_args(argc, argv, tester)) != E_SUCCESS)
 		handle_errors(tester, retval);
 	if (conf_retval != E_SUCCESS)
