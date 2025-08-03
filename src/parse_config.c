@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "yatt.h"
 #include <fcntl.h>
 
@@ -87,6 +88,31 @@ t_list	*tokenise_config(char *filename)
 	return (tokens);
 }
 
+int	str_to_col(char *str)
+{
+	int		i;
+	char	*cols[] = {
+		"BLACK",
+		"RED",
+		"GREEN",
+		"YELLOW",
+		"BLUE",
+		"MAGENTA",
+		"CYAN",
+		"WHITE",
+		NULL,
+	};
+
+	i = 0;
+	while (cols[i])
+	{
+		if (ft_strcmp(str, cols[i]) == 0)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
 int	get_config_type(char *str)
 {
 	if (ft_strcmp(str, "words") == 0)
@@ -97,6 +123,8 @@ int	get_config_type(char *str)
 		return (M_PUNC);
 	if (ft_strcmp(str, "kmode") == 0)
 		return (M_KMODE);
+	if (str_to_col(str) != -1)
+		return (M_KEYCOLS);
 	return (M_MAX);
 }
 
@@ -168,6 +196,31 @@ int	apply_option_kmode(t_typer *tester, char *arg)
 	return (E_SUCCESS);
 }
 
+int	apply_option_keycol(t_typer *tester, char *str, char *keyset, int reset)
+{
+	static char	keys[128];
+	int			i;
+	int			col;
+
+	if (reset)
+	{
+		ft_memset(keys, 0, 128);
+		return (E_SUCCESS);
+	}
+	i = -1;
+	while (keyset[++i])
+	{
+		if (keys[(int)keyset[i]] != 0)
+			return (E_DOUBLEKEYDEF);
+		keys[(int)keyset[i]] = 1;
+	}
+	col = str_to_col(str);
+	if (col == -1)
+		return (E_CONFIGERR);
+	set_keyset_col(&tester->options, keyset, col);
+	return (E_SUCCESS);
+}
+
 int	apply_config_option(t_typer *tester, t_list *token, int type)
 {
 	int		retval;
@@ -189,6 +242,9 @@ int	apply_config_option(t_typer *tester, t_list *token, int type)
 		case (M_KMODE):
 			retval = apply_option_kmode(tester, arg);
 			break ;
+		case (M_KEYCOLS):
+			retval = apply_option_keycol(tester, option, arg, 0);
+			break ;
 		default:
 			retval = E_CONFIGERR;
 			break ;
@@ -203,13 +259,14 @@ int	parse_tokens(t_typer *tester, t_list *tokens)
 	int		provided_options[M_MAX] = {};
 	int		retval;
 
+	apply_option_keycol(tester, NULL, NULL, 1);
 	current = tokens;
 	while (current != NULL)
 	{
 		if ((retval = config_option_valid(current)) != E_SUCCESS)
 			return (retval);
 		config_type = get_config_type(current->str);
-		if (provided_options[config_type] != 0)
+		if (config_type != M_KEYCOLS && provided_options[config_type] != 0)
 			return (E_DOUBLEDEF);
 		if ((retval = apply_config_option(tester, current, config_type)) != E_SUCCESS)
 			return (retval);
@@ -230,11 +287,13 @@ int	parse_config(t_typer *tester, char *filename)
 		return (E_OPENFILE);
 
 	// current = tokens;
+	// cleanup(tester);
 	// while (current != NULL)
 	// {
 	// 	printf("<%s>\n", current->str);
 	// 	current = current->next;
 	// }
+	// exit(0);
 	if ((retval = parse_tokens(tester, tokens)) != E_SUCCESS)
 		return (retval);
 	ft_lstclear(&tokens, free);

@@ -126,6 +126,7 @@ typedef enum {
 	E_CONFIGERR,
 	E_INVALIDOPT,
 	E_DOUBLEDEF,
+	E_DOUBLEKEYDEF,
 	E_HELP,
 } e_errorcode;
 
@@ -279,6 +280,7 @@ void	prefix_string(char *str, char *prefix);
 void	exec_render_func(t_typer *tester, void (*render)(t_typer *));
 
 void	setup_default_fingers(t_options *tester);
+void	set_keyset_col(t_options *options, char *keyset, int col);
 void	pick_key_cols(t_typer *tester);
 void	print_keyboard_picker(t_typer *tester);
 void	render_options(t_typer *tester);

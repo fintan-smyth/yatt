@@ -217,6 +217,8 @@ void	handle_errors(t_typer *tester, int errcode)
 		printf("Config error: The maximum word count is 500\n");
 	else if (errcode == E_NOWORDS_CFG)
 		printf("Config error: The minimum word count is 1\n");
+	else if (errcode == E_DOUBLEKEYDEF)
+		printf("Config error: key colour defined multiple times\n");
 	else if (errcode == E_HELP)
 		print_help();
 	exit(1);
