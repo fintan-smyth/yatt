@@ -33,7 +33,7 @@ all: $(NAME)
 install: $(NAME)
 	@mkdir -p $(CONFIG_DIR)
 	@cp -v --update=none ./default.cfg $(CONFIG_DIR)/yatt.cfg
-	@cp -vfr  ./lang $(CONFIG_DIR)
+	@cp -fr  ./lang $(CONFIG_DIR)
 	@cp -vf ./yatt $(BIN_DIR)/yatt
 
 $(NAME): $(LIBFT) $(BUILD_DIR) $(OBJ)
@@ -46,7 +46,7 @@ $(LIBFT):
 	make -C libft/ bonus
 
 $(BUILD_DIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 clean:
 	rm -rf build/
@@ -57,4 +57,4 @@ fclean: clean
 	make -C libft/ fclean
 
 re: fclean all
-.PHONY: all clean fclean re mand bonus
+.PHONY: all clean fclean re install
