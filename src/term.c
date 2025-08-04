@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "yatt.h"
-#include <ncurses.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>

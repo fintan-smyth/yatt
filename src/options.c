@@ -12,7 +12,6 @@
 
 #include "libft.h"
 #include "yatt.h"
-#include <ncurses.h>
 #include <stdio.h>
 
 void	set_key_col(t_options *options, unsigned char c, int col)

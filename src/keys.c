@@ -12,7 +12,6 @@
 
 #include "libft.h"
 #include "yatt.h"
-#include <ncurses.h>
 
 void	print_formatted_key(t_typer *tester, char c, t_word *cur_word)
 {

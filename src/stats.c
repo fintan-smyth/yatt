@@ -12,7 +12,6 @@
 
 #include "libft.h"
 #include "yatt.h"
-#include <ncurses.h>
 #include <stdio.h>
 
 void	check_input(t_typer *tester, char c, t_word *cur_word)

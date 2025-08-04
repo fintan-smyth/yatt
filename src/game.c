@@ -12,7 +12,6 @@
 
 #include "libft.h"
 #include "yatt.h"
-#include <ncurses.h>
 
 void	reset_game(t_typer *tester)
 {

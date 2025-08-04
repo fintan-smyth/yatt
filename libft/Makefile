@@ -2,7 +2,7 @@
 CC = cc
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -Werror -g3 -O3
+CFLAGS = -Wall -Wextra -g3 -O3
 
 SRC = ft_isalpha.c \
 	  ft_isdigit.c \

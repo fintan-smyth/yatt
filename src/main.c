@@ -14,7 +14,6 @@
 #include "yatt.h"
 #include <limits.h>
 #include <locale.h>
-#include <ncurses.h>
 #include <dirent.h>
 
 char	*extract_lang_name(char *lang_path)
@@ -237,6 +236,7 @@ void	cleanup_lang(t_lang *lang)
 
 void	cleanup(t_typer *tester)
 {
+	endwin();
 	cleanup_lang(&tester->lang);
 	clear_wordlist(&tester->wordlist);
 	reset_term_settings(tester->env);
@@ -244,7 +244,6 @@ void	cleanup(t_typer *tester)
 	free(tester->options.standard.weights);
 	free(tester->env);
 	ft_lstclear(&tester->options.lang_paths, free);
-	endwin();
 	delwin(stdscr);
 	extern SCREEN *SP;
 	delscreen(SP);

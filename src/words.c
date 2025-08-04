@@ -12,8 +12,6 @@
 
 #include "libft.h"
 #include "yatt.h"
-#include <curses.h>
-#include <ncurses.h>
 #include <stdlib.h>
 
 t_word	*new_wordnode(char *str)
