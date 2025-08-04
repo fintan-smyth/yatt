@@ -237,6 +237,9 @@ void	cleanup_lang(t_lang *lang)
 void	cleanup(t_typer *tester)
 {
 	endwin();
+	delwin(stdscr);
+	extern SCREEN *SP;
+	delscreen(SP);
 	cleanup_lang(&tester->lang);
 	clear_wordlist(&tester->wordlist);
 	reset_term_settings(tester->env);
@@ -244,9 +247,6 @@ void	cleanup(t_typer *tester)
 	free(tester->options.standard.weights);
 	free(tester->env);
 	ft_lstclear(&tester->options.lang_paths, free);
-	delwin(stdscr);
-	extern SCREEN *SP;
-	delscreen(SP);
 }
 
 void	handle_errors(t_typer *tester, int errcode)
@@ -289,7 +289,7 @@ void	handle_errors(t_typer *tester, int errcode)
 	else if (errcode == E_LISTLANG)
 		list_languages(tester);
 	cleanup(tester);
-	exit(1);
+	exit(errcode != E_HELP && errcode != E_LISTLANG);
 }
 
 int main(int argc, char **argv)
