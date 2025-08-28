@@ -111,7 +111,7 @@ void	print_adj_wpm(t_typer *tester, int line)
 	
 	snprintf(buf, 256, "Adj WPM: %.1f", calculate_adj_wpm(tester));
 	// print_str_centred(buf, line, tester->env->win_width);
-	centre_str(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width * 2 / 3);
 	attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
 	addstr("Adj WPM");
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
@@ -124,7 +124,7 @@ void	print_net_wpm(t_typer *tester, int line)
 	
 	snprintf(buf, 256, "Net WPM: %.1f", calculate_net_wpm(tester));
 	// print_str_centred(buf, line, tester->env->win_width);
-	centre_str(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width * 2 / 3);
 	attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
 	addstr("Net WPM");
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
@@ -137,7 +137,7 @@ void	print_raw_wpm(t_typer *tester, int line)
 	
 	snprintf(buf, 256, "Raw WPM: %.1f", calculate_raw_wpm(tester));
 	// print_str_centred(buf, line, tester->env->win_width);
-	centre_str(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width * 2 / 3);
 	attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
 	addstr("Raw WPM");
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
@@ -187,14 +187,19 @@ void	print_retry_message(t_typer *tester, int line)
 
 void	print_stats(t_typer *tester, int line)
 {
-	line += 2;
-	print_adj_wpm(tester, line++);
-	print_net_wpm(tester, line++);
-	print_raw_wpm(tester, line++);
-	print_accuracy(tester, ++line);
-	print_correct_inputs(tester, ++line);
-	line++;
-	print_retry_message(tester, line);
+	int			cur_line = line;
+	t_tree		*inpstat = build_inpstat_tree(tester->inplog);
+	t_keystats	stats = {};
+
+	ft_traverse_tree(inpstat, PRE_ORD, (void (*)(void *, void *))get_keystats, &stats);
+	cur_line += 2;
+	print_adj_wpm(tester, cur_line++);
+	print_net_wpm(tester, cur_line++);
+	print_raw_wpm(tester, cur_line++);
+	print_accuracy(tester, ++cur_line);
+	print_correct_inputs(tester, ++cur_line);
+	cur_line++;
+	print_retry_message(tester, cur_line);
 }
 
 void	render_stats(t_typer *tester)

@@ -16,6 +16,7 @@
 
 void	reset_game(t_typer *tester)
 {
+	clear_inplog(&tester->inplog);
 	select_words(tester);
 	tester->inputs_count = 0;
 	tester->cur_word_idx = 0;
@@ -106,10 +107,6 @@ void	run_game(t_typer *tester)
 		}
 		tester->c = getchar_nb(tester, render_game);
 	}
-	endwin();
-	print_inplog(tester);
-	cleanup(tester);
-	exit(0);
 	tester->end_time = get_time_ms();
 }
 
@@ -122,4 +119,19 @@ void	game_loop(t_typer *tester)
 		retval = stats_screen(tester);
 		clear_wordlist(&tester->wordlist);
 	} while (retval != 1);
+	t_tree	*inpstat = build_inpstat_tree(tester->inplog);
+	endwin();
+	print_inplog(tester);
+	printf("\n");
+	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
+	printf("\n");
+	inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_avgtime);
+	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
+	printf("\n");
+	inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_acc);
+	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
+	fflush(stdout);
+	ft_tree_clear(inpstat, free);
+	cleanup(tester);
+	exit(0);
 }

@@ -187,6 +187,22 @@ typedef struct s_inplog
 	t_inplog	*next;
 }	t_inplog;
 
+typedef struct s_inpstat
+{
+	char	c;
+	size_t	total;
+	size_t	total_correct;
+	size_t	total_time;
+	double	avg_time;
+	double	accuracy;
+}	t_inpstat;
+
+typedef struct s_keystats
+{
+	t_inpstat	*slowest;
+	t_inpstat	*least_acc;
+}	t_keystats;
+
 typedef struct s_env
 {
 	struct termios	g_term_original;
@@ -310,5 +326,11 @@ void	inplog_add_back(t_inplog **head, t_inplog *node);
 void	log_input(t_typer *tester, char c, t_word *word, size_t *timestamp);
 void	print_inplog(t_typer *tester);
 void	clear_inplog(t_inplog **head);
+t_tree	*build_inpstat_tree(t_inplog *head);
+void	print_inpstat(t_tree *treenode, void *data);
+t_tree	*reorder_tree(t_tree *root, void (*f)(void *, void *));
+void	reorder_tree_acc(t_tree *node, t_tree **root);
+void	reorder_tree_avgtime(t_tree *node, t_tree **root);
+void	get_keystats(t_tree *node, t_keystats *stats);
 
 #endif // YATT_H
