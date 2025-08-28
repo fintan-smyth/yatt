@@ -44,3 +44,21 @@ void	ft_qsort(void **array, int left, int right,
 	ft_qsort(array, left, last - 1, cmp);
 	ft_qsort(array, last + 1, right, cmp);
 }
+
+void	ft_qsort_list(t_list *list, int (*cmp)(void *, void *))
+{
+	t_list	*current;
+	void	**arr = ft_lst_to_arr(list);
+	int		size = ft_lstsize(list);
+	int		i;
+
+	ft_qsort((void **)arr, 0, size - 1, cmp);
+	current = list;
+	i = 0;
+	while (current != NULL)
+	{
+		current->content = arr[i++];
+		current = current->next;
+	}
+	free(arr);
+}

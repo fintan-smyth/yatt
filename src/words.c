@@ -338,16 +338,25 @@ void	select_words(t_typer *tester)
 void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 {
 	int	i;
+	int	x, y;
 
 	i = 0;
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	while (i < cur_word->pos)
 	{
+		if (cur_word_idx == word_idx)
+			attron(A_BOLD);
 		if (i < cur_word->len && cur_word->input_buf[i] == cur_word->word[i])
-			ft_printf("\e[32;1m%c\e[m", cur_word->word[i]);
+			// printw("\e[32;1m%c\e[m", cur_word->word[i]);
+			addch(cur_word->word[i] | COLOR_PAIR(GREEN_FG));
 		else
 		{
-			ft_printf("\e[31;1m%c\e[m", i < cur_word->len ? cur_word->word[i] : cur_word->input_buf[i]);
-			ft_printf("\e[B\e[D\e[3m%c\e[m\e[A", cur_word->input_buf[i]);
+			addch((i < cur_word->len ? cur_word->word[i] : cur_word->input_buf[i]) | COLOR_PAIR(RED_FG));
+			getyx(stdscr, y, x);
+			attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+			mvaddch(y + 1, x - 1, cur_word->input_buf[i] | A_ITALIC);
+			move(y, x);
+			// printw("\e[B\e[D\e[3m%c\e[m\e[A", cur_word->input_buf[i]);
 		}
 		i++;
 	}
@@ -355,14 +364,21 @@ void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 	{
 		if (cur_word_idx == word_idx)
 		{
-			ft_printf("\e[34;1;4m%c\e[m", cur_word->word[i++]);
-			ft_printf("\e[34;1m%s\e[m", &cur_word->word[i]);
+			attron(COLOR_PAIR(BLUE_FG) | A_BOLD);
+			addch(cur_word->word[i++] | A_UNDERLINE);
+			// printw("\e[34;1;4m%c\e[m", cur_word->word[i++]);
+			addstr(&cur_word->word[i]);
 		}
 		else
-			ft_printf("%s", &cur_word->word[i]);
+		{
+			attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+			printw("%s", &cur_word->word[i]);
+		}
 	}
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	if (cur_word->next != NULL)
-		write(1, " ", 1);
+		// write(1, " ", 1);
+		addch(' ');
 }
 
 int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
@@ -387,7 +403,7 @@ int	calculate_line_start(t_typer *tester, t_word *first_word, int *nl_word)
 		char_count += len + 1;
 		cur_word = cur_word->next;
 	}
-	start = (1 + width - char_count) / 2 + 3;
+	start = (1 + width - char_count) / 2 + 2;
 	*nl_word = word_count;
 	return (start);
 }
@@ -434,15 +450,19 @@ void	calculate_scroll_vars(t_typer *tester, int *total_lines, int *max_lines, in
 		int	max_pos = tmp_total - tmp_max;
 		int	scroll_pos = clamp_int(((tmp_cur - 2) * pane_height) / max_pos, 0, pane_height - 1);
 		// ft_printf("\e[Hscroll_pos %d pane_height %d", scroll_pos, pane_height);
-		int	x = tester->env->win_width - 1;
+		int	x = tester->env->win_width - 2;
 		int	y = -1;
 
 		while (++y < pane_height)
 		{
 			if (y == scroll_pos)
-				ft_printf("\e[%d;%dH\e[44m \e[m", y + 2, x);
+			{
+				attrset(COLOR_PAIR(BLUE_BG));
+				mvprintw(y + 1, x, " ");
+			}
 			else
-				ft_printf("\e[%d;%dH│", y + 2, x);
+				mvprintw(y + 1, x, "│");
+			attrset(A_NORMAL);
 		}
 	}
 	*max_lines = tmp_max;
@@ -470,7 +490,7 @@ int	print_wordlist(t_typer *tester)
 	// exit(0);
 	word_idx = 0;
 	nl_word = 0;
-	y = 1;
+	y = 0;
 	line = 0;
 	print = 0;
 	while (cur_word != NULL)
@@ -485,7 +505,8 @@ int	print_wordlist(t_typer *tester)
 			x = calculate_line_start(tester, cur_word, &nl_word);
 			if (print)
 				y += 2;
-			ft_printf("\e[%d;%dH", y, x);
+			// ft_printf("\e[%d;%dH", y, x);
+			move(y, x);
 		}
 		if (print)
 			print_word(cur_word, word_idx, tester->cur_word_idx);
@@ -493,6 +514,6 @@ int	print_wordlist(t_typer *tester)
 		word_idx++;
 	}
 	// ft_printf("\ntotal: %d max: %d cur_word: %d", total_lines, max_lines, cur_word_line);
-	write(1, "\n", 1);
+	// write(1, "\n", 1);
 	return (y + 2);
 }

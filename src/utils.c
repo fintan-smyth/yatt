@@ -65,23 +65,30 @@ int	print_str_centred(char *str, int row, int width)
 	return (start_x);
 }
 
+void	centre_str(char *str, int row, int width)
+{
+	int	start_x;
+	int	len;
+
+	len = ft_output_len(str);
+	start_x = (width - len) / 2;
+	move(row, start_x);
+}
+
 void	draw_borders(t_typer *tester)
 {
-	int	i;
+	cchar_t	*boxchars = tester->boxchars;
 
-	ft_printf("\e[2J\e[H╭");
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("╮", 1);
-	i = 1;
-	while (i++ < tester->env->win_height - 1)
-		ft_printf("\e[%d;H│\e[\e[%dG│", i, tester->env->win_width);
-	ft_putstr_fd("╰", 1);
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("╯", 1);
+	border_set(
+		&boxchars[0],
+		&boxchars[0],
+		&boxchars[1],
+		&boxchars[1],
+		&boxchars[2],
+		&boxchars[3],
+		&boxchars[4],
+		&boxchars[5]
+	);
 }
 
 int	kbhit(void)
@@ -137,7 +144,6 @@ void	exec_render_func(t_typer *tester, void (*render)(t_typer *))
 		return ;
 	}
 	render(tester);
-
 }
 
 char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
@@ -145,6 +151,7 @@ char	getchar_nb(t_typer *tester, void (*render)(t_typer *))
 	char	c[4] = {};
 	t_env	*env = tester->env;
 
+	// refresh();
 	while (!kbhit())
 	{
 		if (set_winsize(env))

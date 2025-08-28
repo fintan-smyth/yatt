@@ -20,25 +20,26 @@ void	reset_game(t_typer *tester)
 	tester->cur_word_idx = 0;
 	tester->incorrect_inputs = 0;
 	tester->c = 0;
+	if (tester->options.punc != PMODE_OFF || tester->options.numbers != 0)
+		tester->options.full_keyboard = 1;
 }
 
 void	render_game(t_typer *tester)
 {
-	int	line;
-	int	i;
+	int		line;
+	cchar_t	*boxchars = tester->boxchars;
 
+	erase();
 	draw_borders(tester);
-	// ft_printf("\e[Hwidth %d height %d", tester->env->win_width, tester->env->win_height);
 	line = print_wordlist(tester);
-	ft_printf("\e[%d;1H├", line);
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("┤", 1);
+	mvadd_wch(line, 0, &boxchars[6]);
+	hline_set(&boxchars[1], tester->env->win_width - 2);
+	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
 	if (tester->options.full_keyboard)
 		print_keyboard_full(tester, line, tester->cur_word);
 	else
 		print_keyboard(tester, line, tester->cur_word);
+	refresh();
 }
 
 void	run_game(t_typer *tester)
@@ -57,9 +58,9 @@ void	run_game(t_typer *tester)
 			{
 				tester->inputs_count++;
 				check_input(tester, tester->c, tester->cur_word);
+				tester->cur_word_idx++;
 				if (tester->cur_word->next == NULL)
 					break ;
-				tester->cur_word_idx++;
 				tester->cur_word = tester->cur_word->next;
 			}
 		}
@@ -94,7 +95,10 @@ void	run_game(t_typer *tester)
 		exec_render_func(tester, render_game);
 		if (tester->cur_word_idx == tester->options.num_words - 1
 			&& ft_strcmp(tester->cur_word->input_buf, tester->cur_word->word) == 0)
+		{
+			tester->cur_word_idx++;
 			break ;
+		}
 		tester->c = getchar_nb(tester, render_game);
 	}
 	tester->end_time = get_time_ms();

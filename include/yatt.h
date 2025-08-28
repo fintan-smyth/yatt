@@ -6,18 +6,22 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/04 00:04:12 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/07/24 16:47:47 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef YATT_H
 # define YATT_H
 
+# define NCURSES_WIDECHAR 1
+
 # include "libft.h"
 # include <fcntl.h>
 # include <termios.h>
 # include <time.h>
 # include <sys/time.h>
+# include <ncurses.h>
+# include <locale.h>
 # include <errno.h>
 
 # define ESC 27
@@ -31,14 +35,14 @@
 # define MIN_WIDTH_FULL 53
 # define MIN_HEIGHT_FULL 19
 
-# define BLACK 0
-# define RED 1
-# define GREEN 2
-# define YELLOW 3
-# define BLUE 4
-# define MAGENTA 5
-# define CYAN 6
-# define WHITE 7
+// # define COL_BLACK 0
+// # define COL_RED 1
+// # define COL_GREEN 2
+// # define COL_YELLOW 3
+// # define COL_BLUE 4
+// # define COL_MAGENTA 5
+// # define COL_CYAN 6
+// # define COL_WHITE 7
 
 enum {
 	M_WORDS = 0,
@@ -62,6 +66,12 @@ enum {
 	PMODE_STD,
 	PMODE_CLANG,
 	PMODE_MAX,
+};
+
+enum {
+	KMODE_ACC,
+	KMODE_INSTRUCT,
+	KMODE_MAX,
 };
 
 typedef enum {
@@ -104,9 +114,48 @@ enum {
 	C_MAX,
 };
 
-enum {
-	OP_MAX,
-};
+typedef enum {
+	E_SUCCESS = 0,
+	E_SYNTAX,
+	E_TOOMANYWORDS,
+	E_NOWORDS,
+	E_TOOMANYWORDS_CFG,
+	E_NOWORDS_CFG,
+	E_MISSINGARG,
+	E_OPENFILE,
+	E_CONFIGERR,
+	E_INVALIDOPT,
+	E_DOUBLEDEF,
+	E_DOUBLEKEYDEF,
+	E_LANGERR,
+	E_LANGERR_CFG,
+	E_NUMBERS,
+	E_PUNC,
+	E_KMODE,
+	E_LISTLANG,
+	E_HELP,
+} e_errorcode;
+
+typedef enum {
+	STD_BG = 0,
+	RED_FG,
+	GREEN_FG,
+	YELLOW_FG,
+	BLUE_FG,
+	MAGENTA_FG,
+	CYAN_FG,
+	WHITE_FG,
+	BLACK_BG,
+	RED_BG,
+	GREEN_BG,
+	YELLOW_BG,
+	BLUE_BG,
+	MAGENTA_BG,
+	CYAN_BG,
+	WHITE_BG,
+	BLACK_FG,
+	DEFAULT_COLS,
+} e_colorpair;
 
 typedef struct s_lang
 {
@@ -172,6 +221,7 @@ typedef struct s_typer
 	t_word			*cur_word;
 	t_lang			lang;
 	t_options		options;
+	cchar_t			boxchars[8];
 	unsigned char	c;
 	int				is_correct;
 	int				cur_word_idx;
@@ -189,8 +239,10 @@ void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
 int		set_winsize(t_env *env);
 void	cleanup(t_typer *tester);
+void	handle_errors(t_typer *tester, int errcode);
 
 char	*extract_lang_name(char *lang_path);
+t_list	*find_lang(t_list *lang_paths, char *name);
 t_lang	load_language_file(char	*filename);
 void	cleanup_lang(t_lang *lang);
 t_word	*new_wordnode(char *str);
@@ -201,9 +253,14 @@ int		print_keyboard(t_typer *tester, int y, t_word *cur_word);
 int 	print_keyboard_full(t_typer *tester, int y, t_word *cur_word);
 void	select_words(t_typer *tester);
 
+int		handle_args(int argc, char **argv, t_typer *tester);
+void	print_help(void);
+int		parse_config(t_typer *tester, char *filename);
+int		initial_config_parse(t_typer *tester);
+
 void	run_game(t_typer *tester);
 void	game_loop(t_typer *tester);
-void		render_game(t_typer *tester);
+void	render_game(t_typer *tester);
 
 void	check_input(t_typer *tester, char c, t_word *cur_word);
 double	calculate_raw_wpm(t_typer *tester);
@@ -220,6 +277,7 @@ int		ft_output_len(char *str);
 int		clamp_int(int num, int min, int max);
 int		pos_mod(int num, int mod);
 int		print_str_centred(char *str, int row, int width);
+void	centre_str(char *str, int row, int width);
 void	draw_borders(t_typer *tester);
 int		kbhit(void);
 int		get_escape_char(char *sequence);
@@ -231,6 +289,7 @@ void	prefix_string(char *str, char *prefix);
 void	exec_render_func(t_typer *tester, void (*render)(t_typer *));
 
 void	setup_default_fingers(t_options *tester);
+void	set_keyset_col(t_options *options, char *keyset, int col);
 void	pick_key_cols(t_typer *tester);
 void	print_keyboard_picker(t_typer *tester);
 void	render_options(t_typer *tester);

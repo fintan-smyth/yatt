@@ -109,40 +109,80 @@ void	print_adj_wpm(t_typer *tester, int line)
 {
 	char	buf[256];
 	
-	snprintf(buf, 256, "\e[35;1mAdj WPM\e[m: %.1f", calculate_adj_wpm(tester));
-	print_str_centred(buf, line, tester->env->win_width);
+	snprintf(buf, 256, "Adj WPM: %.1f", calculate_adj_wpm(tester));
+	// print_str_centred(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width);
+	attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
+	addstr("Adj WPM");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(": %.1f", calculate_adj_wpm(tester));
 }
 
 void	print_net_wpm(t_typer *tester, int line)
 {
 	char	buf[256];
 	
-	snprintf(buf, 256, "\e[35;1mNet WPM\e[m: %.1f", calculate_net_wpm(tester));
-	print_str_centred(buf, line, tester->env->win_width);
+	snprintf(buf, 256, "Net WPM: %.1f", calculate_net_wpm(tester));
+	// print_str_centred(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width);
+	attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
+	addstr("Net WPM");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(": %.1f", calculate_net_wpm(tester));
 }
 
 void	print_raw_wpm(t_typer *tester, int line)
 {
 	char	buf[256];
 	
-	snprintf(buf, 256, "\e[35;1mRaw WPM\e[m: %.1f", calculate_raw_wpm(tester));
-	print_str_centred(buf, line, tester->env->win_width);
+	snprintf(buf, 256, "Raw WPM: %.1f", calculate_raw_wpm(tester));
+	// print_str_centred(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width);
+	attrset(A_BOLD | COLOR_PAIR(MAGENTA_FG));
+	addstr("Raw WPM");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(": %.1f", calculate_raw_wpm(tester));
 }
 
 void	print_accuracy(t_typer *tester, int line)
 {
 	char	buf[256];
 	
-	snprintf(buf, 256, "\e[33;1mAccuracy\e[m: %.1f%%", calculate_accuracy(tester) * 100);
-	print_str_centred(buf, line, tester->env->win_width);
+	snprintf(buf, 256, "Accuracy: %.1f%%", calculate_accuracy(tester) * 100);
+	// print_str_centred(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width);
+	attrset(A_BOLD | COLOR_PAIR(YELLOW_FG));
+	addstr("Accuracy");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(": %.1f%%", calculate_accuracy(tester) * 100);
 }
 
 void	print_correct_inputs(t_typer *tester, int line)
 {
 	char	buf[256];
 	
-	ft_snprintf(buf, 256, "\e[33;1mCorrect inputs\e[m: %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
-	print_str_centred(buf, line, tester->env->win_width);
+	ft_snprintf(buf, 256, "Correct inputs: %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
+	// print_str_centred(buf, line, tester->env->win_width);
+	centre_str(buf, line, tester->env->win_width);
+	attrset(A_BOLD | COLOR_PAIR(YELLOW_FG));
+	addstr("Correct inputs");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(": %d/%d", tester->inputs_count - tester->incorrect_inputs, tester->inputs_count);
+}
+
+void	print_retry_message(t_typer *tester, int line)
+{
+	attrset(A_BOLD | A_ITALIC | COLOR_PAIR(DEFAULT_COLS));
+	centre_str("Press 'R' to retry, 'Q' to quit,", ++line, tester->env->win_width);
+	addstr("Press '");
+	addch('R' | COLOR_PAIR(GREEN_FG));
+	addstr("' to retry, '");
+	addch('Q' | COLOR_PAIR(RED_FG));
+	addstr("' to quit,");
+	centre_str("or 'O' for options", line + 1, tester->env->win_width);
+	addstr("or '");
+	addch('O' | COLOR_PAIR(BLUE_FG));
+	addstr("' for options");
 }
 
 void	print_stats(t_typer *tester, int line)
@@ -154,23 +194,27 @@ void	print_stats(t_typer *tester, int line)
 	print_accuracy(tester, ++line);
 	print_correct_inputs(tester, ++line);
 	line++;
-	print_str_centred("\e[1;3mPress '\e[32mR\e[39m' to retry, '\e[31mQ\e[39m' to quit,\e[m", ++line, tester->env->win_width);
-	print_str_centred("\e[1;3mor '\e[34mO\e[39m' for options\e[m", line + 1, tester->env->win_width);
+	print_retry_message(tester, line);
 }
 
 void	render_stats(t_typer *tester)
 {
-	int	line;
-	int	i;
+	int		line;
+	cchar_t	*boxchars = tester->boxchars;
 
+	erase();
 	draw_borders(tester);
 	line = print_wordlist(tester);
-	ft_printf("\e[%d;1H├", line);
-	i = 2;
-	while (i++ < tester->env->win_width)
-		ft_putstr_fd("─", 1);
-	ft_putstr_fd("┤", 1);
-	return (print_stats(tester, line));
+	// ft_printf("\e[%d;1H├", line);
+	// i = 2;
+	// while (i++ < tester->env->win_width)
+	// 	ft_putstr_fd("─", 1);
+	// ft_putstr_fd("┤", 1);
+	mvadd_wch(line, 0, &boxchars[6]);
+	hline_set(&boxchars[1], tester->env->win_width - 2);
+	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
+	print_stats(tester, line);
+	refresh();
 }
 
 int	stats_screen(t_typer *tester)

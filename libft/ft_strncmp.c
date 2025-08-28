@@ -31,3 +31,23 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
+
+int	ft_strncasecmp(const char *s1, const char *s2, size_t n)
+{
+	if (n == 0)
+		return (0);
+	if (ft_tolower(*s1) != ft_tolower(*s2))
+		return (ft_tolower(*(unsigned char *)s1) - ft_tolower(*(unsigned char *)s2));
+	if (*s1++ == '\0')
+		return (0);
+	s2++;
+	while (--n > 0)
+	{
+		if (ft_tolower(*s1) != ft_tolower(*s2))
+			return (ft_tolower(*(unsigned char *)s1) - ft_tolower(*(unsigned char *)s2));
+		if (*s1++ == '\0')
+			break ;
+		s2++;
+	}
+	return (0);
+}
