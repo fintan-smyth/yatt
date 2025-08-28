@@ -6,12 +6,13 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/04 00:05:36 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/08/28 00:03:16 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "yatt.h"
+#include <ncurses.h>
 
 void	reset_game(t_typer *tester)
 {
@@ -44,13 +45,17 @@ void	render_game(t_typer *tester)
 
 void	run_game(t_typer *tester)
 {
+	size_t	timestamp;
+
 	reset_game(tester);
 	tester->cur_word = tester->wordlist;
 	exec_render_func(tester, render_game);
 	tester->c = getchar_nb(tester, render_game);
-	tester->start_time = get_time_ms();
+	timestamp = get_time_ms();
+	tester->start_time = timestamp;
 	while (tester->c != ESC)
 	{
+		log_input(tester, tester->c, tester->cur_word, &timestamp);
 		tester->is_correct = 1;
 		if (tester->c == ' ')
 		{
@@ -101,6 +106,10 @@ void	run_game(t_typer *tester)
 		}
 		tester->c = getchar_nb(tester, render_game);
 	}
+	endwin();
+	print_inplog(tester);
+	cleanup(tester);
+	exit(0);
 	tester->end_time = get_time_ms();
 }
 

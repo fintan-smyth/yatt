@@ -17,6 +17,7 @@ SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/stats.c \
 	  $(SRC_DIR)/game.c \
 	  $(SRC_DIR)/utils.c \
+	  $(SRC_DIR)/input_log.c \
 	  $(SRC_DIR)/options.c \
 	  $(SRC_DIR)/keys.c \
 	  $(SRC_DIR)/handle_args.c \

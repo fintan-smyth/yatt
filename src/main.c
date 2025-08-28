@@ -247,6 +247,7 @@ void	cleanup(t_typer *tester)
 	free(tester->options.standard.weights);
 	free(tester->env);
 	ft_lstclear(&tester->options.lang_paths, free);
+	clear_inplog(&tester->inplog);
 }
 
 void	handle_errors(t_typer *tester, int errcode)

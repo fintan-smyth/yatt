@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/24 16:47:47 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/08/28 00:01:11 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,17 @@ struct s_word
 	char	input_buf[BUFSIZE];
 };
 
+typedef struct s_inplog t_inplog;
+
+typedef struct s_inplog
+{
+	size_t		time;
+	size_t		time_per_key;
+	char		input;
+	char		expected;
+	t_inplog	*next;
+}	t_inplog;
+
 typedef struct s_env
 {
 	struct termios	g_term_original;
@@ -217,6 +228,7 @@ typedef struct s_menu
 typedef struct s_typer
 {
 	t_word			*wordlist;
+	t_inplog		*inplog;
 	t_word			*render_start;
 	t_word			*cur_word;
 	t_lang			lang;
@@ -293,5 +305,10 @@ void	set_keyset_col(t_options *options, char *keyset, int col);
 void	pick_key_cols(t_typer *tester);
 void	print_keyboard_picker(t_typer *tester);
 void	render_options(t_typer *tester);
+
+void	inplog_add_back(t_inplog **head, t_inplog *node);
+void	log_input(t_typer *tester, char c, t_word *word, size_t *timestamp);
+void	print_inplog(t_typer *tester);
+void	clear_inplog(t_inplog **head);
 
 #endif // YATT_H
