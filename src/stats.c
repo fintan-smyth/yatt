@@ -184,7 +184,7 @@ void	print_least_acc_key(t_typer *tester, t_keystats *keystats, int line)
 	else
 	{
 		c = ft_toupper(keystats->least_acc->c);
-		acc = keystats->least_acc->avg_time * 100;
+		acc = keystats->least_acc->accuracy * 100;
 	}
 	snprintf(buf, 256, "Least acc:  X  XXXX%%");
 	centre_str(buf, line, tester->env->win_width * 4 / 3);
