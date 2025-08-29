@@ -233,6 +233,7 @@ void	print_stats(t_typer *tester, int line)
 	cur_line = line + 2;
 	print_slowest_key(tester, &stats, cur_line++);
 	print_least_acc_key(tester, &stats, cur_line++);
+	ft_tree_clear(inpstat, free);
 }
 
 void	render_stats(t_typer *tester)
