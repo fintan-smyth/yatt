@@ -21,8 +21,6 @@
 # include <time.h>
 # include <sys/time.h>
 # include <ncurses.h>
-# include <locale.h>
-# include <errno.h>
 
 # define ESC 27
 # define BACKSPACE 127

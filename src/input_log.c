@@ -56,6 +56,8 @@ void	print_inplog(t_typer *tester)
 	size_t		start;
 
 	current = tester->inplog;
+	if (current == NULL)
+		return ;
 	start = current->time;
 	while (current != NULL)
 	{
@@ -127,6 +129,8 @@ t_tree	*build_inpstat_tree(t_inplog *head)
 	t_tree		*out = NULL;
 	t_inplog	*current;
 
+	if (head == NULL || head->next == NULL)
+		return (NULL);
 	for (current = head->next; current != NULL; current = current->next)
 	{
 		if (current->input == BACKSPACE || current->expected == ' ')

@@ -146,32 +146,54 @@ void	print_raw_wpm(t_typer *tester, int line)
 
 void	print_slowest_key(t_typer *tester, t_keystats *keystats, int line)
 {
-	char	buf[256];
+	char			buf[256];
+	unsigned char	c;
+	double			time;
 
+	if (keystats->slowest == NULL)
+	{
+		c = ' ';
+		time = 0;
+	}
+	else
+	{
+		c = ft_toupper(keystats->slowest->c);
+		time = keystats->slowest->avg_time;
+	}
 	snprintf(buf, 256, "Slowest key:  X  XXXXXms");
 	centre_str(buf, line, tester->env->win_width * 4 / 3);
 	attrset(A_BOLD | COLOR_PAIR(CYAN_FG));
 	addstr("Slowest key");
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	printw(":  ");
-	unsigned char c = ft_toupper(keystats->slowest->c);
 	addch(c | A_BOLD | COLOR_PAIR(tester->options.fingers[c]));
-	printw("  %.1fms", keystats->slowest->avg_time);
+	printw("  %.1fms", time);
 }
 
 void	print_least_acc_key(t_typer *tester, t_keystats *keystats, int line)
 {
-	char	buf[256];
+	char			buf[256];
+	unsigned char	c;
+	double			acc;
 
+	if (keystats->least_acc == NULL)
+	{
+		c = ' ';
+		acc = 0;
+	}
+	else
+	{
+		c = ft_toupper(keystats->least_acc->c);
+		acc = keystats->least_acc->avg_time * 100;
+	}
 	snprintf(buf, 256, "Least acc:  X  XXXX%%");
 	centre_str(buf, line, tester->env->win_width * 4 / 3);
 	attrset(A_BOLD | COLOR_PAIR(CYAN_FG));
 	addstr("Least acc");
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	printw(":  ");
-	unsigned char c = ft_toupper(keystats->least_acc->c);
 	addch(c | A_BOLD | COLOR_PAIR(tester->options.fingers[c]));
-	printw("  %.1f%%", keystats->least_acc->accuracy * 100);
+	printw("  %.1f%%", acc);
 }
 
 void	print_accuracy(t_typer *tester, int line)
