@@ -144,6 +144,36 @@ void	print_raw_wpm(t_typer *tester, int line)
 	printw(": %.1f", calculate_raw_wpm(tester));
 }
 
+void	print_slowest_key(t_typer *tester, t_keystats *keystats, int line)
+{
+	char	buf[256];
+
+	snprintf(buf, 256, "Slowest key:  X  XXXXXms");
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	attrset(A_BOLD | COLOR_PAIR(CYAN_FG));
+	addstr("Slowest key");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(":  ");
+	unsigned char c = ft_toupper(keystats->slowest->c);
+	addch(c | A_BOLD | COLOR_PAIR(tester->options.fingers[c]));
+	printw("  %.1fms", keystats->slowest->avg_time);
+}
+
+void	print_least_acc_key(t_typer *tester, t_keystats *keystats, int line)
+{
+	char	buf[256];
+
+	snprintf(buf, 256, "Least acc:  X  XXXX%%");
+	centre_str(buf, line, tester->env->win_width * 4 / 3);
+	attrset(A_BOLD | COLOR_PAIR(CYAN_FG));
+	addstr("Least acc");
+	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	printw(":  ");
+	unsigned char c = ft_toupper(keystats->least_acc->c);
+	addch(c | A_BOLD | COLOR_PAIR(tester->options.fingers[c]));
+	printw("  %.1f%%", keystats->least_acc->accuracy * 100);
+}
+
 void	print_accuracy(t_typer *tester, int line)
 {
 	char	buf[256];
@@ -187,12 +217,10 @@ void	print_retry_message(t_typer *tester, int line)
 
 void	print_stats(t_typer *tester, int line)
 {
-	int			cur_line = line;
+	int			cur_line = line + 2;
 	t_tree		*inpstat = build_inpstat_tree(tester->inplog);
 	t_keystats	stats = {};
 
-	ft_traverse_tree(inpstat, PRE_ORD, (void (*)(void *, void *))get_keystats, &stats);
-	cur_line += 2;
 	print_adj_wpm(tester, cur_line++);
 	print_net_wpm(tester, cur_line++);
 	print_raw_wpm(tester, cur_line++);
@@ -200,6 +228,11 @@ void	print_stats(t_typer *tester, int line)
 	print_correct_inputs(tester, ++cur_line);
 	cur_line++;
 	print_retry_message(tester, cur_line);
+
+	ft_traverse_tree(inpstat, PRE_ORD, (void (*)(void *, void *))get_keystats, &stats);
+	cur_line = line + 2;
+	print_slowest_key(tester, &stats, cur_line++);
+	print_least_acc_key(tester, &stats, cur_line++);
 }
 
 void	render_stats(t_typer *tester)
