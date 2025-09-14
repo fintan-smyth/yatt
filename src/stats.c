@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 21:15:02 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/09/14 01:35:22 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 20:46:53 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,16 +267,11 @@ void	render_stats(t_typer *tester)
 	draw_borders(tester);
 	if (tester->options.graph)
 	{
-		line = min_int(tester->env->win_height - 13, tester->env->win_height / 2);
+		line = min_int(tester->env->win_height - 13, tester->env->win_height / 2 + 1);
 		draw_graph(tester, line);
 	}
 	else
 		line = print_wordlist(tester);
-	// ft_printf("\e[%d;1H├", line);
-	// i = 2;
-	// while (i++ < tester->env->win_width)
-	// 	ft_putstr_fd("─", 1);
-	// ft_putstr_fd("┤", 1);
 	mvadd_wch(line, 0, &boxchars[6]);
 	hline_set(&boxchars[1], tester->env->win_width - 2);
 	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
@@ -289,6 +284,9 @@ int	stats_screen(t_typer *tester)
 	char	c;
 
 	tester->options.graph = 1;
+	tester->options.graph_type = 0;
+	tester->options.graph_win_size = 1000;
+	tester->options.rolling_key_window = 10;
 	c = 0;
 	while (1)
 	{
@@ -300,6 +298,22 @@ int	stats_screen(t_typer *tester)
 			exec_render_func(tester, render_options);
 		else if (c == 'g')
 			tester->options.graph = !tester->options.graph;
+		else if (c == 't')
+			tester->options.graph_type = !tester->options.graph_type;
+		else if (c == 'k')
+		{
+			if (tester->options.graph_type == 1 && tester->options.graph_win_size < 10000)
+				tester->options.graph_win_size += 500;
+			else if (tester->options.graph_type == 0 && tester->options.rolling_key_window < 50)
+				tester->options.rolling_key_window += 5;
+		}
+		else if (c == 'j')
+		{
+			if (tester->options.graph_type == 1 && tester->options.graph_win_size > 1000)
+				tester->options.graph_win_size -= 500;
+			else if (tester->options.graph_type == 0 && tester->options.rolling_key_window > 10)
+				tester->options.rolling_key_window -= 5;
+		}
 		exec_render_func(tester, render_stats);
 		c = ft_tolower(getchar_nb(tester, render_stats));
 	}

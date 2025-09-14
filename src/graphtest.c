@@ -6,7 +6,7 @@
 /*   By: fsmyth <fsmyth@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 20:23:13 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/09/14 01:23:53 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 20:34:30 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,44 +47,44 @@ void	set_graphcars(t_typer *tester)
 	setcchar(&tester->graphchars[24], L"⣿", 0, 0, NULL);
 }
 
-t_tenkey_stat *create_tenkey_struct(size_t first, size_t tenth, size_t start)
+t_rolling_keystat *create_tenkey_struct(size_t first, size_t last, size_t start, int nkeys)
 {
-	t_tenkey_stat *out = ft_calloc(1, sizeof(t_tenkey_stat));
+	t_rolling_keystat *out = ft_calloc(1, sizeof(t_rolling_keystat));
 
-	out->speed = (2.0 * 1000.0 * 60.0) / (tenth - first);
-	out->time = tenth - start;
+	out->speed = (nkeys * 1000.0 * 60.0) / ((last - first) * 5.0);
+	out->time = last - start;
 	return (out);
 }
 
-t_list	*get_tenkey_stats(t_inplog *inplog)
+t_list	*get_rolling_keystats(t_inplog *inplog, int nkeys)
 {
-	t_list		*tenkey = NULL;
+	t_list		*rolling_keystats = NULL;
 	t_inplog	*first;
-	t_inplog	*tenth;
+	t_inplog	*last;
 	size_t		start_time;
 
 	if (inplog == NULL)
 		return (NULL);
 	start_time = inplog->time;
 	first = inplog;
-	tenth = inplog;
-	for (int i = 9; tenth != NULL && i > 0; i--)
-		tenth = tenth->next;
-	while (tenth != NULL)
+	last = inplog;
+	for (int i = nkeys - 1; last != NULL && i > 0; i--)
+		last = last->next;
+	while (last != NULL)
 	{
 		while (first->input == BACKSPACE)
 			first = first->next;
-		while (tenth->input == BACKSPACE)
+		while (last->input == BACKSPACE)
 		{
-			tenth = tenth->next;
-			if (tenth == NULL)
-				return (tenkey);
+			last = last->next;
+			if (last == NULL)
+				return (rolling_keystats);
 		}
-		ft_lstadd_back(&tenkey, ft_lstnew(create_tenkey_struct(first->time, tenth->time, start_time)));
+		ft_lstadd_back(&rolling_keystats, ft_lstnew(create_tenkey_struct(first->time, last->time, start_time, nkeys)));
 		first = first->next;
-		tenth = tenth->next;
+		last = last->next;
 	}
-	return (tenkey);
+	return (rolling_keystats);
 }
 
 void	interpolate_points(t_graph graph)
@@ -174,11 +174,17 @@ void	normalise_points(t_graph *graph)
 	graph->floor = floor;
 	graph->ceiling = ceiling;
 	graph->scalar = scalar;
+	size_t	i = 0;
+	for (; graph->points[i] == 0; i++)
+		;
+	if (i == 0)
+		return ;
+	graph->normalised[i - (i % 2 == 0)] = graph->height;
 }
 
 void	plot_points(t_graph *graph, t_list *tenkey_avg)
 {
-	t_tenkey_stat	*stat;
+	t_rolling_keystat	*stat;
 	t_list			*current;
 
 	graph->n_points = (graph->width - 7) * 2;
@@ -217,6 +223,63 @@ void	plot_points(t_graph *graph, t_list *tenkey_avg)
 	// 	if (i == graph->n_points - 1)
 	// 		graph->points[i] = 100.0;
 	// }
+	normalise_points(graph);
+}
+
+int	count_inputs(t_inplog *pre, t_inplog *post)
+{
+	t_inplog	*current = pre->next;
+	int			i = 0;
+
+	while (current != post)
+	{
+		current = current->next;
+		if (current->input != BACKSPACE)
+			i++;
+	}
+	return (i);
+}
+
+void	plot_points_time(t_typer *tester, t_graph *graph)
+{
+	
+	graph->n_points = (graph->width - 7) * 2;
+	graph->points = ft_calloc(graph->n_points + 1, sizeof(double));
+	graph->normalised = ft_calloc(graph->n_points + 1, sizeof(double));
+	graph->points[graph->n_points] = -1.0;
+	graph->normalised[graph->n_points] = -1.0;
+
+	size_t	start_time = tester->start_time;
+	size_t	step = (tester->end_time - start_time) / graph->n_points;
+
+	t_inplog	*pre_inp = tester->inplog;
+	t_inplog	*post_inp = pre_inp;
+	size_t		i;
+	double		cum_time = 0;
+
+	size_t	window_size = tester->options.graph_win_size;
+	for (i = 0; cum_time < window_size; i++)
+		cum_time += step;
+	size_t	window_end = cum_time;
+	size_t	window_start = window_end - window_size;
+	for (; i < graph->n_points; i++)
+	{
+		while (pre_inp->next != NULL && pre_inp->next->time - start_time < window_start)
+			pre_inp = pre_inp->next;
+		while (post_inp != NULL && post_inp->time - start_time < window_end)
+			post_inp = post_inp->next;
+		if (pre_inp->next == NULL || post_inp == NULL)
+			break ;
+		int 	inputs = count_inputs(pre_inp, post_inp);
+		graph->points[i] = (inputs * 60000.0) / (5.0 * window_size);
+		window_start += step;
+		window_end += step;
+	}
+	// endwin();
+	// for (i = 0; i < graph->n_points; i++)
+	// 	printf("time: %ld speed: %.1f\n", i * step, graph->points[i]);
+	// cleanup(tester);
+	// exit(0);
 	normalise_points(graph);
 }
 
@@ -272,52 +335,98 @@ void	draw_graph_column(t_typer *tester, t_graph graph, int column)
 
 void	draw_graph(t_typer *tester, int line)
 {
-	t_list	*tenkey;
+	t_list	*rolling = NULL;
 	t_graph	graph;
 	
 	graph.x = 1;
 	graph.y = 1;
 	graph.width = tester->env->win_width - 2;
-	graph.height = line - 1;
-	tenkey = get_tenkey_stats(tester->inplog);
-	if (tenkey == NULL)
-		return ;
-	plot_points(&graph, tenkey);
+	graph.height = line - 3;
+	if (tester->options.graph_type == 0)
+	{
+		rolling = get_rolling_keystats(tester->inplog, tester->options.rolling_key_window);
+		if (rolling == NULL)
+			return ;
+		plot_points(&graph, rolling);
+	}
+	else
+		plot_points_time(tester, &graph);
 
-	attrset(COLOR_PAIR(MAGENTA_FG));
+	int	graph_col = tester->options.graph_type == 0 ? MAGENTA_FG : GREEN_FG;
+	attrset(COLOR_PAIR(graph_col));
 	for (int i = 0; i < graph.width - 7; i++)
-		draw_graph_column(tester, graph, i);
+	{
+		if (graph.points[i * 2] == 0 && graph.normalised[i * 2 + 1] == graph.height)
+		{
+			attrset(COLOR_PAIR(DEFAULT_COLS));
+			draw_graph_column(tester, graph, i);
+			attrset(COLOR_PAIR(graph_col));
+		}
+		else
+			draw_graph_column(tester, graph, i);
+	}
 	attrset(COLOR_PAIR(DEFAULT_COLS));
 	mvvline_set(graph.y, graph.x + 5, &tester->boxchars[0], graph.height);
-	// mvprintw(graph.y, graph.x + 1, "%3d ", graph.ceiling);
-	// add_wch(WACS_URCORNER);
-	// mvprintw(graph.y + graph.height - 1, graph.x + 1, "%3d ", graph.floor);
-	// add_wch(WACS_LRCORNER);
 	for (int i = 0; i < graph.height; i++)
 	{
 		if (i % 2 != 0)
+		{
+			// if (i == graph.height / 2 || i - 1 == graph.height / 2)
+			// {
+			// 	attrset(COLOR_PAIR(CYAN_FG));
+			// 	mvprintw(graph.y + graph.height - 1 - i, graph.x + 1, "WPM ");
+			// 	attrset(COLOR_PAIR(DEFAULT_COLS));
+			// }
 			continue ;
+		}
 		int label = round(graph.floor + (i / graph.scalar));
 		mvprintw(graph.y + graph.height - 1 - i, graph.x + 1, "%3d ", label);
 		add_wch(WACS_RTEE);
 	}
-	// int fd = open("./plotlog", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	// for (size_t i = 0; i < graph.n_points; i++)
-	// 	dprintf(fd, "i: %ld speed: %.1f norm: %.1f\n", i, graph.points[i], graph.normalised[i]);
-	// close(fd);
-	// printf("tenkey: %p\n", tenkey);
-	// for (t_list *current = tenkey; current != NULL; current = current->next)
-	// {
-	// 	t_tenkey_stat	*stat = current->content;
-	// 	printf("time: %5ld speed: %.2f\n", stat->time, stat->speed);
-	// }
-	// printf("num points: %d\n", ft_lstsize(tenkey));
-	// printf("win width: %d\n\n", tester->env->win_width);
-	// refresh();
-	// char c;
-	// while ((c = getch()) != 'q')
-	// 	;
-	ft_lstclear(&tenkey, free);
+	size_t step = (tester->end_time - tester->start_time) / graph.n_points;
+	int	height = graph.y + graph.height;
+	mvadd_wch(height, graph.x + 5, WACS_LTEE);
+	mvprintw(height + 1, graph.x + 4, "0.0");
+	for (int i = 1; i < graph.width - 6; i++)
+	{
+		if (i % 11 != 0 || i == graph.width - 7)
+		{
+			mvadd_wch(height, graph.x + 5 + i, WACS_HLINE);
+			continue ;
+		}
+		double label = (step * ((i * 2) - 1)) / 1000.0;
+		mvadd_wch(height, graph.x + 5 + i, WACS_TTEE);
+		char buf[10];
+		snprintf(buf, 10, "%.1f", label);
+		centre_str(buf, height + 1, (graph.x + 5 + i) * 2 + 1);
+		printw("%.1fs", label);
+		// if (i + 7 < graph.width / 2 && i + 18 >= graph.width / 2)
+		// {
+		// 	attrset(COLOR_PAIR(CYAN_FG));
+		// 	mvprintw(height + 1, graph.x + 9 + i, "TIME");
+		// 	attrset(COLOR_PAIR(DEFAULT_COLS));
+		// }
+	}
+	mvadd_wch(0, tester->env->win_width - 22, WACS_RTEE);
+	attrset(A_BOLD);
+	printw(" Window: ");
+	if (tester->options.graph_type == 1)
+	{
+		attrset(COLOR_PAIR(graph_col) | A_BOLD);
+		printw("%5ld ", tester->options.graph_win_size);
+		attrset(COLOR_PAIR(DEFAULT_COLS) | A_NORMAL);
+		printw("ms ");
+	}
+	else
+	{
+		attrset(COLOR_PAIR(graph_col) | A_BOLD);
+		printw(" %2d ", tester->options.rolling_key_window);
+		attrset(COLOR_PAIR(DEFAULT_COLS) | A_NORMAL);
+		printw("Keys ");
+	}
+	add_wch(WACS_LTEE);
+	if (rolling != NULL)
+		ft_lstclear(&rolling, free);
 	free(graph.points);
 	free(graph.normalised);
 }

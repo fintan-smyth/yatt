@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/09/14 01:33:34 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 19:56:13 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,7 @@ typedef struct s_tenkey_stat
 {
 	size_t	time;
 	double	speed;
-}	t_tenkey_stat;
+}	t_rolling_keystat;
 
 typedef struct s_env
 {
@@ -253,6 +253,9 @@ typedef struct s_options
 	int		number_prob;
 	int		full_keyboard;
 	int		graph;
+	int		graph_type;
+	size_t	graph_win_size;
+	int		rolling_key_window;
 }	t_options;
 
 typedef struct s_menu
@@ -355,7 +358,7 @@ t_tree	*reorder_tree(t_tree *root, void (*f)(void *, void *));
 void	reorder_tree_acc(t_tree *node, t_tree **root);
 void	reorder_tree_avgtime(t_tree *node, t_tree **root);
 void	get_keystats(t_tree *node, t_keystats *stats);
-t_list	*get_tenkey_stats(t_inplog *inplog);
+t_list	*get_rolling_keystats(t_inplog *inplog, int nkeys);
 void	plot_points(t_graph *graph, t_list *tenkey_avg);
 void	draw_graph(t_typer *tester, int line);
 
