@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/08/28 00:03:16 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/12 00:55:52 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,19 @@ void	game_loop(t_typer *tester)
 	printf("\n");
 	inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_acc);
 	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
-	fflush(stdout);
 	ft_tree_clear(inpstat, free);
+	// draw_graph(tester);
+	// t_list	*tenkey = get_tenkey_stats(tester->inplog);
+	// printf("tenkey: %p\n", tenkey);
+	// for (t_list *current = tenkey; current != NULL; current = current->next)
+	// {
+	// 	t_tenkey_stat	*stat = current->content;
+	// 	printf("time: %5ld speed: %.2f\n", stat->time, stat->speed);
+	// }
+	// printf("num points: %d\n", ft_lstsize(tenkey));
+	// printf("win width: %d\n\n", tester->env->win_width);
+	// normalise_points(tester, tenkey);
+	fflush(stdout);
 	cleanup(tester);
 	exit(0);
 }

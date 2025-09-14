@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:59:14 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/08/28 00:01:11 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 01:33:34 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,21 @@ typedef enum {
 	DEFAULT_COLS,
 } e_colorpair;
 
+typedef struct s_graph
+{
+	double	*points;
+	double	*normalised;
+	size_t	n_points;
+	size_t	period;
+	int		width;
+	int		height;
+	int		x;
+	int		y;
+	int		floor;
+	int		ceiling;
+	double	scalar;
+}	t_graph;
+
 typedef struct s_lang
 {
 	char	*name;
@@ -201,6 +216,12 @@ typedef struct s_keystats
 	t_inpstat	*least_acc;
 }	t_keystats;
 
+typedef struct s_tenkey_stat
+{
+	size_t	time;
+	double	speed;
+}	t_tenkey_stat;
+
 typedef struct s_env
 {
 	struct termios	g_term_original;
@@ -231,6 +252,7 @@ typedef struct s_options
 	int		numbers;
 	int		number_prob;
 	int		full_keyboard;
+	int		graph;
 }	t_options;
 
 typedef struct s_menu
@@ -248,6 +270,7 @@ typedef struct s_typer
 	t_lang			lang;
 	t_options		options;
 	cchar_t			boxchars[8];
+	cchar_t			graphchars[25];
 	unsigned char	c;
 	int				is_correct;
 	int				cur_word_idx;
@@ -264,6 +287,7 @@ void	store_term_settings(t_env *env);
 void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
 int		set_winsize(t_env *env);
+void	set_graphcars(t_typer *tester);
 void	cleanup(t_typer *tester);
 void	handle_errors(t_typer *tester, int errcode);
 
@@ -299,6 +323,7 @@ int		stats_screen(t_typer *tester);
 
 size_t	get_time_ms(void);
 int		max_int(int a, int b);
+int		min_int(int a, int b);
 int		ft_output_len(char *str);
 int		clamp_int(int num, int min, int max);
 int		pos_mod(int num, int mod);
@@ -330,5 +355,8 @@ t_tree	*reorder_tree(t_tree *root, void (*f)(void *, void *));
 void	reorder_tree_acc(t_tree *node, t_tree **root);
 void	reorder_tree_avgtime(t_tree *node, t_tree **root);
 void	get_keystats(t_tree *node, t_keystats *stats);
+t_list	*get_tenkey_stats(t_inplog *inplog);
+void	plot_points(t_graph *graph, t_list *tenkey_avg);
+void	draw_graph(t_typer *tester, int line);
 
 #endif // YATT_H

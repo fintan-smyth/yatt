@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:44:19 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/03 23:54:27 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/12 01:06:22 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,13 @@ size_t	get_time_ms(void)
 int	max_int(int a, int b)
 {
 	if (a > b)
+		return (a);
+	return (b);
+}
+
+int	min_int(int a, int b)
+{
+	if (a < b)
 		return (a);
 	return (b);
 }

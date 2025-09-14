@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 21:15:02 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/07/02 00:53:10 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 01:35:22 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,12 +260,18 @@ void	print_stats(t_typer *tester, int line)
 
 void	render_stats(t_typer *tester)
 {
-	int		line;
-	cchar_t	*boxchars = tester->boxchars;
+	int			line;
+	cchar_t		*boxchars = tester->boxchars;
 
 	erase();
 	draw_borders(tester);
-	line = print_wordlist(tester);
+	if (tester->options.graph)
+	{
+		line = min_int(tester->env->win_height - 13, tester->env->win_height / 2);
+		draw_graph(tester, line);
+	}
+	else
+		line = print_wordlist(tester);
 	// ft_printf("\e[%d;1H├", line);
 	// i = 2;
 	// while (i++ < tester->env->win_width)
@@ -282,6 +288,7 @@ int	stats_screen(t_typer *tester)
 {
 	char	c;
 
+	tester->options.graph = 1;
 	c = 0;
 	while (1)
 	{
@@ -291,6 +298,8 @@ int	stats_screen(t_typer *tester)
 			return (0);
 		else if (c == 'o')
 			exec_render_func(tester, render_options);
+		else if (c == 'g')
+			tester->options.graph = !tester->options.graph;
 		exec_render_func(tester, render_stats);
 		c = ft_tolower(getchar_nb(tester, render_stats));
 	}

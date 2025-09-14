@@ -3,7 +3,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -I ./include -O0
 
 DBG_FLAGS =		-g3 \
-				-fsanitize=address \
+				# -fsanitize=address \
 				# -pg \
 
 SRC_DIR := ./src
@@ -22,6 +22,7 @@ SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/keys.c \
 	  $(SRC_DIR)/handle_args.c \
 	  $(SRC_DIR)/parse_config.c \
+	  $(SRC_DIR)/graphtest.c \
 
 OBJ = $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRC:.c=.o))
 
@@ -38,7 +39,7 @@ install: $(NAME)
 	@cp -vf ./yatt $(BIN_DIR)/yatt
 
 $(NAME): $(LIBFT) $(BUILD_DIR) $(OBJ)
-	$(CC) $(CFLAGS) $(DBG_FLAGS) $(OBJ) -o $(NAME) -L ./libft -lft -lncursesw
+	$(CC) $(CFLAGS) $(DBG_FLAGS) $(OBJ) -o $(NAME) -L ./libft -lft -lncursesw -lm
 
 $(OBJ): $(BUILD_DIR)%.o: $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) $(DBG_FLAGS) -c $^ -o $@
