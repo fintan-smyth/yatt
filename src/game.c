@@ -46,7 +46,8 @@ void	render_game(t_typer *tester)
 
 void	run_game(t_typer *tester)
 {
-	size_t	timestamp;
+	size_t		timestamp;
+	t_inplog	*log;
 
 	reset_game(tester);
 	tester->cur_word = tester->wordlist;
@@ -56,7 +57,7 @@ void	run_game(t_typer *tester)
 	tester->start_time = timestamp;
 	while (tester->c != ESC)
 	{
-		log_input(tester, tester->c, tester->cur_word, &timestamp);
+		log = log_input(tester, tester->c, tester->cur_word, &timestamp);
 		tester->is_correct = 1;
 		if (tester->c == ' ')
 		{
@@ -68,6 +69,7 @@ void	run_game(t_typer *tester)
 				if (tester->cur_word->next == NULL)
 					break ;
 				tester->cur_word = tester->cur_word->next;
+				log->word = tester->cur_word;
 			}
 		}
 		else if (ft_isprint(tester->c) && tester->cur_word->pos < tester->env->win_width - 6 && tester->cur_word->pos < BUFSIZE)

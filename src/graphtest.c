@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <wchar.h>
 
 void	set_graphcars(t_typer *tester)
 {
@@ -418,10 +419,6 @@ void	draw_graph_column(t_typer *tester, t_graph graph, int column)
 	double	*points = &graph.normalised[column * 2];
 	cchar_t *graphchar;
 
-	// graphchar = get_graph_char(tester, points, 1);
-	// attron(A_UNDERLINE);
-	// mvadd_wch(graph.y + graph.height - 1 , column + graph.x + 6, graphchar);
-	// attroff(A_UNDERLINE);
 	i = 0;
 	while (i < graph.height)
 	{
@@ -429,26 +426,42 @@ void	draw_graph_column(t_typer *tester, t_graph graph, int column)
 		mvadd_wch(graph.y + graph.height - i - 1 , column + graph.x + 6, graphchar);
 		i++;
 	}
-	// while ((graphchar = get_graph_char(tester, points, i + 1)) != &tester->graphchars[0])
-	// {
-	// 	// graphchar = get_graph_char(tester, points, i + 1);
-	// 	mvadd_wch(graph.y + graph.height - i - 1 , column + graph.x + 6, graphchar);
-	// 	i++;
-	// }
 }
 
-void	draw_graph(t_typer *tester, int line)
+t_word	*find_column_word(t_typer *tester, t_graph *graph,  double step, int column)
+{
+	t_inplog	*current = tester->inplog;
+	double		time;
+	t_word		*word;
+
+	time = step * column * 2.0;
+	if (current == NULL)
+		return (NULL);
+	while (current->next != NULL && current->next->time - tester->start_time < time)
+		current = current->next;
+	if (current->next == NULL)
+		word = current->word;
+	else
+		word = current->next->word;
+
+	if (word != NULL)
+		dprintf(graph->logfd, "time: %.1f	word: %s\n", time, word->word);
+	return (word);
+}
+
+void	draw_graph(t_typer *tester, int height, t_point pos)
 {
 	t_list	*rolling = NULL;
-	t_graph	graph;
+	t_graph	graph = {};
 	
 	unlink("./graphlog");
 	graph.logfd = open("./graphlog", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	graph.x = 1;
-	graph.y = 1;
+	graph.x = pos.x;
+	graph.y = pos.y;
 	graph.width = tester->env->win_width - 2;
-	graph.height = line - 3;
+	graph.height = height - 2;
 	graph.y_label_step = 2;
+	graph.selected = tester->graph_word;
 	if (tester->options.graph_type == 0)
 	{
 		rolling = get_rolling_keystats(tester->inplog, tester->options.rolling_key_window);
@@ -460,6 +473,7 @@ void	draw_graph(t_typer *tester, int line)
 		plot_points_time(tester, &graph);
 
 	int	graph_col = tester->options.graph_type == 0 ? MAGENTA_FG : GREEN_FG;
+	double step = (double)graph.period / graph.n_points;
 	attrset(COLOR_PAIR(graph_col));
 	for (int i = 0; i < graph.width - 7; i++)
 	{
@@ -467,10 +481,15 @@ void	draw_graph(t_typer *tester, int line)
 		{
 			attrset(COLOR_PAIR(DEFAULT_COLS));
 			draw_graph_column(tester, graph, i);
-			attrset(COLOR_PAIR(graph_col));
 		}
 		else
+		{
+			t_word	*column_word = find_column_word(tester, &graph, step, i);
+			if (column_word == graph.selected)
+				attrset(COLOR_PAIR(RED_FG));
 			draw_graph_column(tester, graph, i);
+		}
+		attrset(COLOR_PAIR(graph_col));
 	}
 	attrset(COLOR_PAIR(DEFAULT_COLS));
 	mvvline_set(graph.y, graph.x + 5, &tester->boxchars[0], graph.height);
@@ -490,23 +509,22 @@ void	draw_graph(t_typer *tester, int line)
 		mvprintw(graph.y + graph.height - 1 - i, graph.x + 1, "%3d ", label);
 		add_wch(WACS_RTEE);
 	}
-	size_t step = lround((double)graph.period / graph.n_points);
-	int	height = graph.y + graph.height;
-	mvadd_wch(height, graph.x + 5, WACS_LTEE);
-	mvprintw(height + 1, graph.x + 4, "0.0s");
+	int	y_label_h = graph.y + graph.height;
+	mvadd_wch(y_label_h, graph.x + 5, WACS_LTEE);
+	mvprintw(y_label_h + 1, graph.x + 4, "0.0s");
 	for (int i = 1; i < graph.width - 6; i++)
 	{
 		if (i % graph.x_label_step != 0 || i == graph.width - 7)
 		{
-			mvadd_wch(height, graph.x + 5 + i, WACS_HLINE);
+			mvadd_wch(y_label_h, graph.x + 5 + i, WACS_HLINE);
 			continue ;
 		}
 		double label = (step * ((i * 2) - 0)) / 1000.0;
-		label = (int)(2 * label + 0.5) / 2.0;
-		mvadd_wch(height, graph.x + 5 + i, WACS_TTEE);
+		// label = (int)(2 * label + 0.5) / 2.0;
+		mvadd_wch(y_label_h, graph.x + 5 + i, WACS_TTEE);
 		char buf[10];
 		snprintf(buf, 10, "%.1f", label);
-		centre_str(buf, height + 1, (graph.x + 5 + i) * 2 + 1);
+		centre_str(buf, y_label_h + 1, (graph.x + 5 + i) * 2 + 1);
 		printw("%.1fs", label);
 		// if (i + 7 < graph.width / 2 && i + 18 >= graph.width / 2)
 		// {
@@ -515,7 +533,7 @@ void	draw_graph(t_typer *tester, int line)
 		// 	attrset(COLOR_PAIR(DEFAULT_COLS));
 		// }
 	}
-	mvadd_wch(0, tester->env->win_width - 22, WACS_RTEE);
+	mvadd_wch(graph.y - 1, tester->env->win_width - 22, WACS_RTEE);
 	attrset(A_BOLD);
 	printw(" Window: ");
 	if (tester->options.graph_type == 1)

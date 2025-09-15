@@ -265,35 +265,43 @@ void	render_stats(t_typer *tester)
 
 	erase();
 	draw_borders(tester);
-	if (tester->options.graph)
-	{
-		line = min_int(tester->env->win_height - 13, tester->env->win_height / 2 + 1);
-		draw_graph(tester, line);
-	}
-	else
-		line = print_wordlist(tester);
+	line = print_wordlist(tester);
 	mvadd_wch(line, 0, &boxchars[6]);
 	hline_set(&boxchars[1], tester->env->win_width - 2);
 	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
-	print_stats(tester, line);
+	if (tester->options.graph)
+	{
+		// line = min_int(tester->env->win_height - 13, tester->env->win_height / 2 + 1);
+		draw_graph(tester, tester->env->win_height - line - 2, (t_point){1, line + 1});
+	}
+	else
+		print_stats(tester, line);
 	refresh();
 }
 
 int	stats_screen(t_typer *tester)
 {
 	char	c;
+	int		retval;
 
 	tester->options.graph = 1;
 	tester->options.graph_type = 0;
 	tester->options.graph_win_size = 1000;
 	tester->options.rolling_key_window = 10;
+	tester->graph_word = NULL;
 	c = 0;
 	while (1)
 	{
 		if (c == ESC || c == 'q')
-			return (1);
+		{
+			retval = 1;
+			break ;
+		}
 		else if (c == 'r')
-			return (0);
+		{
+			retval = 0;
+			break ;
+		}
 		else if (c == 'o')
 			exec_render_func(tester, render_options);
 		else if (c == 'g')
@@ -311,10 +319,30 @@ int	stats_screen(t_typer *tester)
 		{
 			if (tester->options.graph_type == 1 && tester->options.graph_win_size > 1000)
 				tester->options.graph_win_size -= 500;
-			else if (tester->options.graph_type == 0 && tester->options.rolling_key_window > 10)
+			else if (tester->options.graph_type == 0 && tester->options.rolling_key_window > 5)
 				tester->options.rolling_key_window -= 5;
+		}
+		else if (c == 'h')
+		{
+			if (tester->graph_word == NULL)
+				tester->graph_word = get_last_word(tester->wordlist);
+			else if (tester->graph_word != tester->wordlist)
+				tester->graph_word = tester->graph_word->prev;
+			else
+				tester->graph_word = NULL;
+		}
+		else if (c == 'l')
+		{
+			if (tester->graph_word == NULL)
+				tester->graph_word = tester->wordlist;
+			else if (tester->graph_word != get_last_word(tester->wordlist))
+				tester->graph_word = tester->graph_word->next;
+			else
+				tester->graph_word = NULL;
 		}
 		exec_render_func(tester, render_stats);
 		c = ft_tolower(getchar_nb(tester, render_stats));
 	}
+	tester->graph_word = NULL;
+	return (retval);
 }

@@ -30,10 +30,10 @@ void	inplog_add_back(t_inplog **head, t_inplog *node)
 	current->next = node;
 }
 
-void	log_input(t_typer *tester, char c, t_word *word, size_t *timestamp)
+t_inplog	*log_input(t_typer *tester, char c, t_word *word, size_t *timestamp)
 {
 	if (!ft_isprint(c) && c != BACKSPACE)
-		return ;
+		return (NULL);
 
 	t_inplog	*new = ft_calloc(1, sizeof(*new));
 	size_t		time;
@@ -43,11 +43,13 @@ void	log_input(t_typer *tester, char c, t_word *word, size_t *timestamp)
 	*timestamp = time;
 	new->time = time;
 	new->input = c;
+	new->word = word;
 	if (word->pos >= word->len)
 		new->expected = ' ';
 	else
 		new->expected = word->word[word->pos];
 	inplog_add_back(&tester->inplog, new);
+	return (new);
 }
 
 void	print_inplog(t_typer *tester)

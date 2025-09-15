@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <ncurses.h>
 #include <stdlib.h>
 
 t_word	*new_wordnode(char *str)
@@ -22,6 +23,17 @@ t_word	*new_wordnode(char *str)
 	ft_strlcpy(wordnode->word, str, 128);
 	wordnode->len = ft_strlen(str);
 	return (wordnode);
+}
+
+t_word	*get_last_word(t_word *list)
+{
+	t_word	*current = list;
+
+	if (list == NULL)
+		return (NULL);
+	while (current->next != NULL)
+		current = current->next;
+	return (current);
 }
 
 t_word	*wordlist_add_back(t_word **lst, t_word *word)
@@ -335,13 +347,22 @@ void	select_words(t_typer *tester)
 // 	}
 // }
 
-void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
+void	print_word(t_typer *tester, t_word *cur_word, int word_idx, int cur_word_idx)
 {
 	int	i;
 	int	x, y;
 
 	i = 0;
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+	if (cur_word == tester->graph_word)
+	{
+		attrset(A_BOLD | COLOR_PAIR(RED_FG));
+		addstr(cur_word->word);
+		attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
+		if (cur_word->next != NULL)
+			addch(' ');
+		return ;
+	}
 	while (i < cur_word->pos)
 	{
 		if (cur_word_idx == word_idx)
@@ -377,7 +398,6 @@ void	print_word(t_word *cur_word, int word_idx, int cur_word_idx)
 	}
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
 	if (cur_word->next != NULL)
-		// write(1, " ", 1);
 		addch(' ');
 }
 
@@ -509,7 +529,7 @@ int	print_wordlist(t_typer *tester)
 			move(y, x);
 		}
 		if (print)
-			print_word(cur_word, word_idx, tester->cur_word_idx);
+			print_word(tester, cur_word, word_idx, tester->cur_word_idx);
 		cur_word = cur_word->next;
 		word_idx++;
 	}

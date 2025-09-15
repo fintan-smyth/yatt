@@ -155,23 +155,11 @@ typedef enum {
 	DEFAULT_COLS,
 } e_colorpair;
 
-typedef struct s_graph
+typedef struct s_point
 {
-	double	*points;
-	double	*normalised;
-	size_t	n_points;
-	size_t	period;
-	int		width;
-	int		height;
-	int		x;
-	int		y;
-	int		floor;
-	int		ceiling;
-	double	scalar;
-	int		logfd;
-	int		x_label_step;
-	int		y_label_step;
-}	t_graph;
+	int	x;
+	int	y;
+}	t_point;
 
 typedef struct s_lang
 {
@@ -200,6 +188,7 @@ typedef struct s_inplog
 	size_t		time_per_key;
 	char		input;
 	char		expected;
+	t_word		*word;
 	t_inplog	*next;
 }	t_inplog;
 
@@ -224,6 +213,26 @@ typedef struct s_tenkey_stat
 	size_t	time;
 	double	speed;
 }	t_rolling_keystat;
+
+typedef struct s_graph
+{
+	double	*points;
+	double	*normalised;
+	size_t	n_points;
+	size_t	period;
+	int		width;
+	int		height;
+	int		x;
+	int		y;
+	int		floor;
+	int		ceiling;
+	double	scalar;
+	int		logfd;
+	int		x_label_step;
+	int		y_label_step;
+	t_word	*selected;
+	int		col;
+}	t_graph;
 
 typedef struct s_env
 {
@@ -273,6 +282,7 @@ typedef struct s_typer
 	t_inplog		*inplog;
 	t_word			*render_start;
 	t_word			*cur_word;
+	t_word			*graph_word;
 	t_lang			lang;
 	t_options		options;
 	cchar_t			boxchars[8];
@@ -303,6 +313,7 @@ t_lang	load_language_file(char	*filename);
 void	cleanup_lang(t_lang *lang);
 t_word	*new_wordnode(char *str);
 t_word	*wordlist_add_back(t_word **lst, t_word *word);
+t_word	*get_last_word(t_word *list);
 void	clear_wordlist(t_word **wordlist);
 int		print_wordlist(t_typer *tester);
 int		print_keyboard(t_typer *tester, int y, t_word *cur_word);
@@ -330,6 +341,7 @@ int		stats_screen(t_typer *tester);
 size_t	get_time_ms(void);
 int		max_int(int a, int b);
 int		min_int(int a, int b);
+int		abs_int(int num);
 int		ft_output_len(char *str);
 int		clamp_int(int num, int min, int max);
 int		pos_mod(int num, int mod);
@@ -351,18 +363,18 @@ void	pick_key_cols(t_typer *tester);
 void	print_keyboard_picker(t_typer *tester);
 void	render_options(t_typer *tester);
 
-void	inplog_add_back(t_inplog **head, t_inplog *node);
-void	log_input(t_typer *tester, char c, t_word *word, size_t *timestamp);
-void	print_inplog(t_typer *tester);
-void	clear_inplog(t_inplog **head);
-t_tree	*build_inpstat_tree(t_inplog *head);
-void	print_inpstat(t_tree *treenode, void *data);
-t_tree	*reorder_tree(t_tree *root, void (*f)(void *, void *));
-void	reorder_tree_acc(t_tree *node, t_tree **root);
-void	reorder_tree_avgtime(t_tree *node, t_tree **root);
-void	get_keystats(t_tree *node, t_keystats *stats);
-t_list	*get_rolling_keystats(t_inplog *inplog, int nkeys);
-void	plot_points(t_graph *graph, t_list *tenkey_avg);
-void	draw_graph(t_typer *tester, int line);
+void		inplog_add_back(t_inplog **head, t_inplog *node);
+t_inplog	*log_input(t_typer *tester, char c, t_word *word, size_t *timestamp);
+void		print_inplog(t_typer *tester);
+void		clear_inplog(t_inplog **head);
+t_tree		*build_inpstat_tree(t_inplog *head);
+void		print_inpstat(t_tree *treenode, void *data);
+t_tree		*reorder_tree(t_tree *root, void (*f)(void *, void *));
+void		reorder_tree_acc(t_tree *node, t_tree **root);
+void		reorder_tree_avgtime(t_tree *node, t_tree **root);
+void		get_keystats(t_tree *node, t_keystats *stats);
+t_list		*get_rolling_keystats(t_inplog *inplog, int nkeys);
+void		plot_points(t_graph *graph, t_list *tenkey_avg);
+void		draw_graph(t_typer *tester, int height, t_point pos);
 
 #endif // YATT_H
