@@ -6,7 +6,7 @@
 /*   By: fsmyth <fsmyth@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 20:23:13 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/09/14 20:34:30 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 21:54:15 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ t_rolling_keystat *create_tenkey_struct(size_t first, size_t last, size_t start,
 {
 	t_rolling_keystat *out = ft_calloc(1, sizeof(t_rolling_keystat));
 
-	out->speed = (nkeys * 1000.0 * 60.0) / ((last - first) * 5.0);
+	double	mins_inv = 60000.0 / (last - first);
+	out->speed = (nkeys * 0.2) * mins_inv;
 	out->time = last - start;
 	return (out);
 }
@@ -233,9 +234,9 @@ int	count_inputs(t_inplog *pre, t_inplog *post)
 
 	while (current != post)
 	{
-		current = current->next;
 		if (current->input != BACKSPACE)
 			i++;
+		current = current->next;
 	}
 	return (i);
 }
@@ -386,7 +387,7 @@ void	draw_graph(t_typer *tester, int line)
 	size_t step = (tester->end_time - tester->start_time) / graph.n_points;
 	int	height = graph.y + graph.height;
 	mvadd_wch(height, graph.x + 5, WACS_LTEE);
-	mvprintw(height + 1, graph.x + 4, "0.0");
+	mvprintw(height + 1, graph.x + 4, "0.0s");
 	for (int i = 1; i < graph.width - 6; i++)
 	{
 		if (i % 11 != 0 || i == graph.width - 7)

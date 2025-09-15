@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 12:39:56 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/09/12 00:55:52 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/09/14 21:43:35 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,18 +119,18 @@ void	game_loop(t_typer *tester)
 		retval = stats_screen(tester);
 		clear_wordlist(&tester->wordlist);
 	} while (retval != 1);
-	t_tree	*inpstat = build_inpstat_tree(tester->inplog);
-	endwin();
-	print_inplog(tester);
-	printf("\n");
-	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
-	printf("\n");
-	inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_avgtime);
-	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
-	printf("\n");
-	inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_acc);
-	ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
-	ft_tree_clear(inpstat, free);
+	// t_tree	*inpstat = build_inpstat_tree(tester->inplog);
+	// endwin();
+	// print_inplog(tester);
+	// printf("\n");
+	// ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
+	// printf("\n");
+	// inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_avgtime);
+	// ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
+	// printf("\n");
+	// inpstat = reorder_tree(inpstat, (void (*)(void *, void *))reorder_tree_acc);
+	// ft_traverse_tree(inpstat, IN_ORD, (void (*)(void *, void *))print_inpstat, NULL);
+	// ft_tree_clear(inpstat, free);
 	// draw_graph(tester);
 	// t_list	*tenkey = get_tenkey_stats(tester->inplog);
 	// printf("tenkey: %p\n", tenkey);
@@ -142,7 +142,7 @@ void	game_loop(t_typer *tester)
 	// printf("num points: %d\n", ft_lstsize(tenkey));
 	// printf("win width: %d\n\n", tester->env->win_width);
 	// normalise_points(tester, tenkey);
-	fflush(stdout);
+	// fflush(stdout);
 	cleanup(tester);
 	exit(0);
 }
