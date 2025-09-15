@@ -168,6 +168,9 @@ typedef struct s_graph
 	int		floor;
 	int		ceiling;
 	double	scalar;
+	int		logfd;
+	int		x_label_step;
+	int		y_label_step;
 }	t_graph;
 
 typedef struct s_lang

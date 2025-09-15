@@ -12,6 +12,7 @@
 
 #include "yatt.h"
 #include <fcntl.h>
+#include <limits.h>
 #include <math.h>
 #include <ncurses.h>
 #include <stddef.h>
@@ -154,6 +155,49 @@ double	get_max_speed(t_graph graph)
 	return (max);
 }
 
+int	find_ceiling(t_graph *graph, double max, int floor, int labelstep)
+{
+	int		rows = graph->height - 1;
+	int		labels = rows / labelstep;
+	int		rem = rows % labelstep;
+	double	frac = 1.0 / labelstep;
+	int		ceiling;
+
+	if ((ceiling = round(floor + (labels + (frac * rem)) * 2)) > max)
+		return (ceiling);
+
+	int step = 5;
+	while ((ceiling = round(floor + (labels + (frac * rem)) * step)) < max)
+		step += 5;
+	return (ceiling);
+}
+
+int	find_ceiling_step(t_graph *graph, double max, int floor)
+{
+	int	i;
+	int	size = (graph->height - 1) / 2 - 1;
+	if (size > 5)
+		size = 5;
+	int	*ceilings = ft_calloc(size, sizeof(int));
+
+	for (i = 0; i < size; i++)
+		ceilings[i] = find_ceiling(graph, max, floor, 2 + i);
+
+	int	min = INT_MAX;
+	int	min_index;
+
+	for (i = 0; i < size; i++)
+	{
+		if (ceilings[i] < min)
+		{
+			min = ceilings[i];
+			min_index = i;
+		}
+	}
+	graph->y_label_step = min_index + 2;
+	return (min);
+}
+
 void	normalise_points(t_graph *graph)
 {
 	double	max;
@@ -166,8 +210,16 @@ void	normalise_points(t_graph *graph)
 
 	int round = 5;
 	floor = ((int)min / round) * round;
-	ceiling = (((int)max / round) + 1) * round;
+	// ceiling = (((int)max / round) + 1) * round;
+	// ceiling = find_ceiling(graph, max, floor, 2);
+	ceiling = find_ceiling_step(graph, max, floor);
 
+	dprintf(graph->logfd, "labels: %d step: %d ceiling: %d max: %.2f min: %.2f\n",
+			(graph->height - 1) / graph->y_label_step,
+		 	graph->y_label_step,
+			ceiling,
+			max,
+			min);
 	double	scalar = (double)(graph->height - 1) / (ceiling - floor);
 
 	for (size_t i = 0; i < graph->n_points; i++)
@@ -183,6 +235,48 @@ void	normalise_points(t_graph *graph)
 	graph->normalised[i - (i % 2 == 0)] = graph->height;
 }
 
+size_t	find_time_ceiling(t_graph *graph, size_t time, int labelstep)
+{
+	int		cols = graph->width - 7;
+	int		labels = cols / labelstep;
+	int		rem = cols % labelstep;
+	double	frac = 1.0 / labelstep;
+	size_t	ceiling;
+
+	size_t	step = 500;
+	while ((ceiling = (labels + (frac * rem)) * step) < time)
+		step += 500;
+	return (ceiling);
+}
+
+size_t	find_time_ceiling_step(t_graph *graph, size_t time)
+{
+	size_t	i;
+	size_t	size = (graph->width - 7) / 4 - 10;
+	if (size > 15)
+		size = 15;
+	size_t	*ceilings = ft_calloc(size, sizeof(size_t));
+
+	for (i = 0; i < size; i++)
+		ceilings[i] = find_time_ceiling(graph, time, i + 10);
+
+	size_t	min = ULONG_MAX;
+	int		min_index;
+
+	for (i = 0; i < size; i++)
+	{
+		if (ceilings[i] < min)
+		{
+			min = ceilings[i];
+			min_index = i;
+		}
+	}
+	graph->x_label_step = min_index + 10;
+	free(ceilings);
+	dprintf(graph->logfd, "time: %.2f ceiling: %ld step: %d\n", time / 1000.0, min, graph->x_label_step);
+	return (min);
+}
+
 void	plot_points(t_graph *graph, t_list *tenkey_avg)
 {
 	t_rolling_keystat	*stat;
@@ -194,10 +288,10 @@ void	plot_points(t_graph *graph, t_list *tenkey_avg)
 	graph->points[graph->n_points] = -1.0;
 	graph->normalised[graph->n_points] = -1.0;
 	stat = ft_lstlast(tenkey_avg)->content;
-	graph->period = stat->time;
 
-	double	step = (double)stat->time / graph->n_points;
-	double	current_time = 0;
+	graph->period = find_time_ceiling_step(graph, stat->time);
+	double	step = (double)graph->period / graph->n_points;
+	double	current_time = step * 2;
 
 	current = tenkey_avg;
 	size_t	i = 0;
@@ -208,11 +302,14 @@ void	plot_points(t_graph *graph, t_list *tenkey_avg)
 		{
 			graph->points[i] = stat->speed;
 			current = current->next;
+			if (current == NULL)
+				break ;
 			stat = current->content;
 		}
 		current_time += step;
 		i++;
 	}
+	dprintf(graph->logfd, "stat_time: %ld i: %ld no_points: %ld\n", stat->time, i, graph->n_points);
 	interpolate_points(*graph);
 	// size_t	height = 205;
 	// size_t	fifth = graph->n_points / 5;
@@ -243,39 +340,45 @@ int	count_inputs(t_inplog *pre, t_inplog *post)
 
 void	plot_points_time(t_typer *tester, t_graph *graph)
 {
-	
+	size_t	start_time = tester->start_time;
 	graph->n_points = (graph->width - 7) * 2;
 	graph->points = ft_calloc(graph->n_points + 1, sizeof(double));
 	graph->normalised = ft_calloc(graph->n_points + 1, sizeof(double));
 	graph->points[graph->n_points] = -1.0;
 	graph->normalised[graph->n_points] = -1.0;
+	graph->period = find_time_ceiling_step(graph, tester->end_time - start_time);
 
-	size_t	start_time = tester->start_time;
-	size_t	step = (tester->end_time - start_time) / graph->n_points;
+	double	step = (double)graph->period / graph->n_points;
 
 	t_inplog	*pre_inp = tester->inplog;
 	t_inplog	*post_inp = pre_inp;
 	size_t		i;
 	double		cum_time = 0;
 
-	size_t	window_size = tester->options.graph_win_size;
-	for (i = 0; cum_time < window_size; i++)
+	double	window_size = tester->options.graph_win_size;
+	for (i = -2; cum_time < window_size;)
+	{
 		cum_time += step;
-	size_t	window_end = cum_time;
-	size_t	window_start = window_end - window_size;
+		i++;
+	}
+	double	window_end = cum_time;
+	double	window_start = window_end - window_size;
 	for (; i < graph->n_points; i++)
 	{
 		while (pre_inp->next != NULL && pre_inp->next->time - start_time < window_start)
 			pre_inp = pre_inp->next;
 		while (post_inp != NULL && post_inp->time - start_time < window_end)
 			post_inp = post_inp->next;
-		if (pre_inp->next == NULL || post_inp == NULL)
+		if (pre_inp->next == NULL)
 			break ;
 		int 	inputs = count_inputs(pre_inp, post_inp);
 		graph->points[i] = (inputs * 60000.0) / (5.0 * window_size);
 		window_start += step;
 		window_end += step;
+		if (post_inp == NULL)
+			break ;
 	}
+	dprintf(graph->logfd, "win_end: %.2fd i: %ld no_points: %ld\n", window_end, i, graph->n_points);
 	// endwin();
 	// for (i = 0; i < graph->n_points; i++)
 	// 	printf("time: %ld speed: %.1f\n", i * step, graph->points[i]);
@@ -339,10 +442,13 @@ void	draw_graph(t_typer *tester, int line)
 	t_list	*rolling = NULL;
 	t_graph	graph;
 	
+	unlink("./graphlog");
+	graph.logfd = open("./graphlog", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	graph.x = 1;
 	graph.y = 1;
 	graph.width = tester->env->win_width - 2;
 	graph.height = line - 3;
+	graph.y_label_step = 2;
 	if (tester->options.graph_type == 0)
 	{
 		rolling = get_rolling_keystats(tester->inplog, tester->options.rolling_key_window);
@@ -370,7 +476,7 @@ void	draw_graph(t_typer *tester, int line)
 	mvvline_set(graph.y, graph.x + 5, &tester->boxchars[0], graph.height);
 	for (int i = 0; i < graph.height; i++)
 	{
-		if (i % 2 != 0)
+		if (i % graph.y_label_step != 0)
 		{
 			// if (i == graph.height / 2 || i - 1 == graph.height / 2)
 			// {
@@ -384,18 +490,19 @@ void	draw_graph(t_typer *tester, int line)
 		mvprintw(graph.y + graph.height - 1 - i, graph.x + 1, "%3d ", label);
 		add_wch(WACS_RTEE);
 	}
-	size_t step = (tester->end_time - tester->start_time) / graph.n_points;
+	size_t step = lround((double)graph.period / graph.n_points);
 	int	height = graph.y + graph.height;
 	mvadd_wch(height, graph.x + 5, WACS_LTEE);
 	mvprintw(height + 1, graph.x + 4, "0.0s");
 	for (int i = 1; i < graph.width - 6; i++)
 	{
-		if (i % 11 != 0 || i == graph.width - 7)
+		if (i % graph.x_label_step != 0 || i == graph.width - 7)
 		{
 			mvadd_wch(height, graph.x + 5 + i, WACS_HLINE);
 			continue ;
 		}
-		double label = (step * ((i * 2) - 1)) / 1000.0;
+		double label = (step * ((i * 2) - 0)) / 1000.0;
+		label = (int)(2 * label + 0.5) / 2.0;
 		mvadd_wch(height, graph.x + 5 + i, WACS_TTEE);
 		char buf[10];
 		snprintf(buf, 10, "%.1f", label);
@@ -430,4 +537,5 @@ void	draw_graph(t_typer *tester, int line)
 		ft_lstclear(&rolling, free);
 	free(graph.points);
 	free(graph.normalised);
+	close(graph.logfd);
 }
