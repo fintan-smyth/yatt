@@ -440,9 +440,14 @@ t_word	*find_column_word(t_typer *tester, t_graph *graph,  double step, int colu
 	while (current->next != NULL && current->next->time - tester->start_time < time)
 		current = current->next;
 	if (current->next == NULL)
-		word = current->word;
-	else
-		word = current->next->word;
+		return (current->word);
+
+	// double	pre_time = current->time - tester->start_time;
+	// double	post_time = current->next->time - tester->start_time;
+	// double	pre_diff = fabs(pre_time - time);
+	// double	post_diff = fabs(post_time - time);
+	// word = pre_diff < post_diff ? current->word : current->next->word;
+	word = current->word;
 
 	if (word != NULL)
 		dprintf(graph->logfd, "time: %.1f	word: %s\n", time, word->word);
