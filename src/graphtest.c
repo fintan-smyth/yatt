@@ -233,7 +233,7 @@ void	normalise_points(t_graph *graph)
 		;
 	if (i == 0)
 		return ;
-	graph->normalised[i - (i % 2 == 0)] = graph->height;
+	graph->normalised[i - 0 - (i % 2 == 0)] = graph->height;
 }
 
 size_t	find_time_ceiling(t_graph *graph, size_t time, int labelstep)
@@ -434,7 +434,7 @@ t_word	*find_column_word(t_typer *tester, t_graph *graph,  double step, int colu
 	double		time;
 	t_word		*word;
 
-	time = step * column * 2.0;
+	time = step * (column + 1) * 2.0;
 	if (current == NULL)
 		return (NULL);
 	while (current->next != NULL && current->next->time - tester->start_time < time)

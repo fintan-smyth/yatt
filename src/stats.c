@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "yatt.h"
+#include <ncurses.h>
 #include <stdio.h>
 
 void	check_input(t_typer *tester, char c, t_word *cur_word)
@@ -269,6 +270,14 @@ void	render_stats(t_typer *tester)
 	mvadd_wch(line, 0, &boxchars[6]);
 	hline_set(&boxchars[1], tester->env->win_width - 2);
 	mvadd_wch(line, tester->env->win_width - 1, &boxchars[7]);
+	mvadd_wch(line, 6, &boxchars[7]);
+	attrset(A_BOLD | A_ITALIC);
+	printw(" '");
+	attron(COLOR_PAIR(MAGENTA_FG));
+	addch('G');
+	attron(COLOR_PAIR(DEFAULT_COLS));
+	printw("' to toggle graph ");
+	add_wch(&boxchars[6]);
 	if (tester->options.graph)
 	{
 		// line = min_int(tester->env->win_height - 13, tester->env->win_height / 2 + 1);
@@ -284,7 +293,7 @@ int	stats_screen(t_typer *tester)
 	char	c;
 	int		retval;
 
-	tester->options.graph = 1;
+	tester->options.graph = 0;
 	tester->options.graph_type = 0;
 	tester->options.graph_win_size = 1000;
 	tester->options.rolling_key_window = 10;
