@@ -22,6 +22,9 @@
 # include <sys/time.h>
 # include <ncurses.h>
 
+# define LEFT 0
+# define RIGHT 1
+
 # define ESC 27
 # define BACKSPACE 127
 # define BUFSIZE 256
@@ -155,6 +158,20 @@ typedef enum {
 	DEFAULT_COLS,
 } e_colorpair;
 
+enum {
+	SHAPE_FALLING = 0,
+	SHAPE_RISING,
+	SHAPE_PEAK_FALLING,
+	SHAPE_PEAK_RISING,
+	SHAPE_TROUGH,
+};
+
+enum {
+	GR_ENABLED = 1,
+	GR_FILLED = 2,
+	GR_MTIME = 4,
+};
+
 typedef struct s_point
 {
 	int	x;
@@ -220,6 +237,7 @@ typedef struct s_graph
 	double	*normalised;
 	size_t	n_points;
 	size_t	period;
+	size_t	win_size;
 	int		width;
 	int		height;
 	int		x;
@@ -231,7 +249,9 @@ typedef struct s_graph
 	int		x_label_step;
 	int		y_label_step;
 	t_word	*selected;
-	int		col;
+	int		flags;
+	size_t	time_window;
+	int		rolling_key_window;
 }	t_graph;
 
 typedef struct s_env
@@ -264,10 +284,6 @@ typedef struct s_options
 	int		numbers;
 	int		number_prob;
 	int		full_keyboard;
-	int		graph;
-	int		graph_type;
-	size_t	graph_win_size;
-	int		rolling_key_window;
 }	t_options;
 
 typedef struct s_menu
@@ -282,11 +298,12 @@ typedef struct s_typer
 	t_inplog		*inplog;
 	t_word			*render_start;
 	t_word			*cur_word;
-	t_word			*graph_word;
 	t_lang			lang;
 	t_options		options;
 	cchar_t			boxchars[8];
+	t_graph			graph;
 	cchar_t			graphchars[25];
+	cchar_t			graphchars2[256];
 	unsigned char	c;
 	int				is_correct;
 	int				cur_word_idx;
@@ -295,7 +312,6 @@ typedef struct s_typer
 	size_t			start_time;
 	size_t			end_time;
 	t_env			*env;
-	int				last_display_cutoff;
 	t_menu			menu_state;
 }	t_typer;
 
@@ -304,6 +320,7 @@ void	set_term_settings(t_env *env);
 void	reset_term_settings(t_env *env);
 int		set_winsize(t_env *env);
 void	set_graphcars(t_typer *tester);
+void	set_graphcars2(t_typer *tester);
 void	cleanup(t_typer *tester);
 void	handle_errors(t_typer *tester, int errcode);
 

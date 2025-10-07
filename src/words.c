@@ -354,7 +354,7 @@ void	print_word(t_typer *tester, t_word *cur_word, int word_idx, int cur_word_id
 
 	i = 0;
 	attrset(A_NORMAL | COLOR_PAIR(DEFAULT_COLS));
-	if (tester->options.graph && cur_word == tester->graph_word)
+	if (tester->graph.flags & GR_ENABLED && cur_word == tester->graph.selected)
 	{
 		attrset(A_BOLD | COLOR_PAIR(RED_FG));
 		addstr(cur_word->word);

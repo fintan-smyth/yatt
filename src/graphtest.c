@@ -17,6 +17,7 @@
 #include <ncurses.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <wchar.h>
 
@@ -47,6 +48,81 @@ void	set_graphcars(t_typer *tester)
 	setcchar(&tester->graphchars[22], L"⣧", 0, 0, NULL);
 	setcchar(&tester->graphchars[23], L"⣷", 0, 0, NULL);
 	setcchar(&tester->graphchars[24], L"⣿", 0, 0, NULL);
+}
+
+void	enable_braille_bit(u_char *byte, int dot)
+{
+	switch (dot) {
+		case (0):
+			*byte |= 1 << 6;
+			break ;
+		case (1):
+			*byte |= 1 << 2;
+			break ;
+		case (2):
+			*byte |= 1 << 1;
+			break ;
+		case (3):
+			*byte |= 1 << 0;
+			break ;
+		case (4):
+			*byte |= 1 << 7;
+			break ;
+		case (5):
+			*byte |= 1 << 5;
+			break ;
+		case (6):
+			*byte |= 1 << 4;
+			break ;
+		case (7):
+			*byte |= 1 << 3;
+			break ;
+		default:
+			break ;
+	}
+}
+
+void	encode_braille(u_char *byte, int num)
+{
+	*byte = 0;
+	for (int i = 0; i < 8; i++)
+	{
+		if ((num >> i) & 1)
+			enable_braille_bit(byte, i);
+	}
+}
+
+void	set_graphcars2(t_typer *tester)
+{
+	int wc[2];
+	u_char	*bytes = (u_char *)&wc;
+
+	wc[0] = 0;
+	wc[1] = 0;
+	setcchar(&tester->graphchars2[0], L" ", 0, 0, NULL);
+	bytes[1] = 40;
+	for (int i = 1; i < 256; i++)
+	{
+		encode_braille(&bytes[0], i);
+		setcchar(&tester->graphchars2[i], wc, 0, 0, NULL);
+	}
+	// for (int i = 0; i < 256; i++)
+	// {
+	// 	printf("\e[32m");
+	// 	for (int l = 7; l >= 0; l--)
+	// 		printf("%d", (i >> l) & 1);
+	// 	printf("\e[m ");
+	// 	printf("[%ls]\t", tester->graphchars2[i].chars);
+	// 	for (int j = 0; j < 4; j++)
+	// 	{
+	// 		u_char	c = ((u_char *)tester->graphchars2[i].chars)[j];
+	// 		for (int k = 7; k >= 0; k--)
+	// 			printf("%d", (c >> k) & 1);
+	// 		printf(" ");
+	// 	}
+	// 	printf("\n");
+	// }
+	// exit(0);
 }
 
 t_rolling_keystat *create_tenkey_struct(size_t first, size_t last, size_t start, int nkeys)
@@ -90,9 +166,9 @@ t_list	*get_rolling_keystats(t_inplog *inplog, int nkeys)
 	return (rolling_keystats);
 }
 
-void	interpolate_points(t_graph graph)
+void	interpolate_points(t_graph *graph)
 {
-	double	*points = graph.points;
+	double	*points = graph->points;
 	size_t	i = 0;
 	size_t	j;
 	size_t	diff;
@@ -100,7 +176,7 @@ void	interpolate_points(t_graph graph)
 
 	while (points[i] == 0)
 		i++;
-	while (i < graph.n_points)
+	while (i < graph->n_points)
 	{
 		if (points[i] == 0)
 		{
@@ -128,28 +204,28 @@ void	interpolate_points(t_graph graph)
 	}
 }
 
-double	get_min_speed(t_graph graph)
+double	get_min_speed(t_graph *graph)
 {
 	double	min = 10000.0;
 	double	cur;
 
-	for (size_t i = 0; i < graph.n_points; i++)
+	for (size_t i = 0; i < graph->n_points; i++)
 	{
-		cur = graph.points[i];
+		cur = graph->points[i];
 		if (cur > 0 && cur < min)
 			min = cur;
 	}
 	return (min);
 }
 
-double	get_max_speed(t_graph graph)
+double	get_max_speed(t_graph *graph)
 {
 	double	max = 0.0;
 	double	cur;
 
-	for (size_t i = 0; i < graph.n_points; i++)
+	for (size_t i = 0; i < graph->n_points; i++)
 	{
-		cur = graph.points[i];
+		cur = graph->points[i];
 		if (cur != 0 && cur > max)
 			max = cur;
 	}
@@ -206,8 +282,8 @@ void	normalise_points(t_graph *graph)
 	int		floor;
 	int		ceiling;
 
-	max = get_max_speed(*graph);
-	min = get_min_speed(*graph);
+	max = get_max_speed(graph);
+	min = get_min_speed(graph);
 
 	int round = 5;
 	floor = ((int)min / round) * round;
@@ -311,7 +387,7 @@ void	plot_points(t_graph *graph, t_list *tenkey_avg)
 		i++;
 	}
 	dprintf(graph->logfd, "stat_time: %ld i: %ld no_points: %ld\n", stat->time, i, graph->n_points);
-	interpolate_points(*graph);
+	interpolate_points(graph);
 	// size_t	height = 205;
 	// size_t	fifth = graph->n_points / 5;
 	// for (size_t i = 0; i < graph->n_points; i++)
@@ -356,7 +432,7 @@ void	plot_points_time(t_typer *tester, t_graph *graph)
 	size_t		i;
 	double		cum_time = 0;
 
-	double	window_size = tester->options.graph_win_size;
+	double	window_size = tester->graph.time_window;
 	for (i = -2; cum_time < window_size;)
 	{
 		cum_time += step;
@@ -392,7 +468,7 @@ int	get_num_dots(double point, int height)
 {
 	if (point >= height)
 		return (4);
-	if (point < height - 1)
+	if (point <= height - 1)
 		return (0);
 
 	double mod = fmod(point, 1.0);
@@ -413,17 +489,102 @@ cchar_t	*get_graph_char(t_typer *tester, double *points, int height)
 	return (&tester->graphchars[left * 5 + right]);
 }
 
-void	draw_graph_column(t_typer *tester, t_graph graph, int column)
+int	get_line_shape(double *points)
+{
+	if (points[0] < points[1])
+	{
+		if (points[-1] > points[0])
+			return (SHAPE_TROUGH);
+		else
+			return (SHAPE_RISING);
+	}
+	else if (points[-1] < points[0])
+	{
+		if (points[-1] > points[1] && points[1] > 0.5)
+			return (SHAPE_PEAK_FALLING);
+		else
+			return (SHAPE_PEAK_RISING);
+	}
+	return (SHAPE_FALLING);
+}
+
+int	get_line_dots(t_typer *tester, double *points, int height)
+{
+	// double	copy[2];
+	double	low;
+	double	high;
+
+	int	shape = get_line_shape(points);
+	switch (shape) {
+		case (SHAPE_FALLING):
+			low = points[1];
+			high = points[0];
+			break ;
+		case (SHAPE_RISING):
+			low = points[-1];
+			high = points[0];
+			break ;
+		case (SHAPE_TROUGH):
+			low = points[0];
+			high = points[0];
+			break ;
+		case (SHAPE_PEAK_RISING):
+			low = points[-1];
+			high = points[0];
+			break ;
+		case (SHAPE_PEAK_FALLING):
+			low = points[1];
+			high = points[0];
+			break ;
+	}
+
+	// low = fmin(points[0], points[1]);
+	// high = fmax(points[0], points[1]);
+
+	if (low < high - 0.25) //TODO fix 
+		low += 0.25;
+	if (low < 0.75)
+		low = high;
+
+	double	start = height - 1;
+	int		out = 0;
+	int		in_range = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (low <= start + 0.25)
+			in_range = 1;
+		if (high <= start)
+			in_range = 0;
+		if (in_range)
+			out |= 1 << i;
+		start += 0.25;
+	}
+	return (out);
+}
+
+cchar_t	*get_line_graph_char(t_typer *tester, double *points, int height)
+{
+	int	left = get_line_dots(tester, points, height);
+	int	right = get_line_dots(tester, points + 1, height);
+
+	int	index = left | (right << 4);
+	return (&tester->graphchars2[index]);
+}
+
+void	draw_graph_column(t_typer *tester, t_graph *graph, int column)
 {
 	int		i;
-	double	*points = &graph.normalised[column * 2];
+	double	*points = &graph->normalised[column * 2];
 	cchar_t *graphchar;
 
 	i = 0;
-	while (i < graph.height)
+	while (i < graph->height)
 	{
-		graphchar = get_graph_char(tester, points, i + 1);
-		mvadd_wch(graph.y + graph.height - i - 1 , column + graph.x + 6, graphchar);
+		if (tester->graph.flags & GR_FILLED)
+			graphchar = get_graph_char(tester, points, i + 1);
+		else
+			graphchar = get_line_graph_char(tester, points, i + 1);
+		mvadd_wch(graph->y + graph->height - i - 1 , column + graph->x + 6, graphchar);
 		i++;
 	}
 }
@@ -449,116 +610,138 @@ t_word	*find_column_word(t_typer *tester, t_graph *graph,  double step, int colu
 	// word = pre_diff < post_diff ? current->word : current->next->word;
 	word = current->word;
 
-	if (word != NULL)
-		dprintf(graph->logfd, "time: %.1f	word: %s\n", time, word->word);
+	// if (word != NULL)
+	// 	dprintf(graph->logfd, "time: %.1f	word: %s\n", time, word->word);
 	return (word);
 }
 
 void	draw_graph(t_typer *tester, int height, t_point pos)
 {
 	t_list	*rolling = NULL;
-	t_graph	graph = {};
+	t_graph	*graph = &tester->graph;
 	
 	unlink("./graphlog");
-	graph.logfd = open("./graphlog", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	graph.x = pos.x;
-	graph.y = pos.y;
-	graph.width = tester->env->win_width - 2;
-	graph.height = height - 2;
-	graph.y_label_step = 2;
-	graph.selected = tester->graph_word;
-	if (tester->options.graph_type == 0)
+	graph->logfd = open("./graphlog", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	graph->x = pos.x;
+	graph->y = pos.y;
+	graph->width = tester->env->win_width - 2;
+	graph->height = height - 2;
+	graph->y_label_step = 2;
+	if ((tester->graph.flags & GR_MTIME) == 0)
 	{
-		rolling = get_rolling_keystats(tester->inplog, tester->options.rolling_key_window);
+		rolling = get_rolling_keystats(tester->inplog, tester->graph.rolling_key_window);
 		if (rolling == NULL)
 			return ;
-		plot_points(&graph, rolling);
+		plot_points(graph, rolling);
 	}
 	else
-		plot_points_time(tester, &graph);
+		plot_points_time(tester, graph);
 
-	int	graph_col = tester->options.graph_type == 0 ? MAGENTA_FG : GREEN_FG;
-	double step = (double)graph.period / graph.n_points;
+	int	graph_col = tester->graph.flags & GR_MTIME ? GREEN_FG : MAGENTA_FG;
+	double step = (double)graph->period / graph->n_points;
 	attrset(COLOR_PAIR(graph_col));
-	for (int i = 0; i < graph.width - 7; i++)
+	for (int i = 0; i < graph->width - 7; i++)
 	{
-		if (graph.points[i * 2] == 0 && graph.normalised[i * 2 + 1] == graph.height)
+		if (graph->points[i * 2] == 0 && graph->normalised[i * 2 + 1] == graph->height)
 		{
 			attrset(COLOR_PAIR(DEFAULT_COLS));
+			int	old_flags = tester->graph.flags;
+			tester->graph.flags |= GR_FILLED;
 			draw_graph_column(tester, graph, i);
+			tester->graph.flags = old_flags;
 		}
 		else
 		{
-			t_word	*column_word = find_column_word(tester, &graph, step, i);
-			if (column_word == graph.selected)
+			t_word	*column_word = find_column_word(tester, graph, step, i);
+			int	old_flags = tester->graph.flags;
+			if (column_word == graph->selected)
+			{
 				attrset(COLOR_PAIR(RED_FG));
+				tester->graph.flags |= GR_FILLED;
+			}
 			draw_graph_column(tester, graph, i);
+			tester->graph.flags = old_flags;
 		}
 		attrset(COLOR_PAIR(graph_col));
 	}
 	attrset(COLOR_PAIR(DEFAULT_COLS));
-	mvvline_set(graph.y, graph.x + 5, &tester->boxchars[0], graph.height);
-	for (int i = 0; i < graph.height; i++)
+	mvvline_set(graph->y, graph->x + 5, &tester->boxchars[0], graph->height);
+	for (int i = 0; i < graph->height; i++)
 	{
-		if (i % graph.y_label_step != 0)
+		if (i % graph->y_label_step != 0)
 		{
-			// if (i == graph.height / 2 || i - 1 == graph.height / 2)
+			// if (i == graph->height / 2 || i - 1 == graph->height / 2)
 			// {
 			// 	attrset(COLOR_PAIR(CYAN_FG));
-			// 	mvprintw(graph.y + graph.height - 1 - i, graph.x + 1, "WPM ");
+			// 	mvprintw(graph->y + graph->height - 1 - i, graph->x + 1, "WPM ");
 			// 	attrset(COLOR_PAIR(DEFAULT_COLS));
 			// }
 			continue ;
 		}
-		int label = round(graph.floor + (i / graph.scalar));
-		mvprintw(graph.y + graph.height - 1 - i, graph.x + 1, "%3d ", label);
+		int label = round(graph->floor + (i / graph->scalar));
+		mvprintw(graph->y + graph->height - 1 - i, graph->x + 1, "%3d ", label);
 		add_wch(WACS_RTEE);
 	}
-	int	y_label_h = graph.y + graph.height;
-	mvadd_wch(y_label_h, graph.x + 5, WACS_LTEE);
-	mvprintw(y_label_h + 1, graph.x + 4, "0.0s");
-	for (int i = 1; i < graph.width - 6; i++)
+	int	y_label_h = graph->y + graph->height;
+	mvadd_wch(y_label_h, graph->x + 5, WACS_LTEE);
+	mvprintw(y_label_h + 1, graph->x + 4, "0.0s");
+	for (int i = 1; i < graph->width - 6; i++)
 	{
-		if (i % graph.x_label_step != 0 || i == graph.width - 7)
+		if (i % graph->x_label_step != 0 || i == graph->width - 7)
 		{
-			mvadd_wch(y_label_h, graph.x + 5 + i, WACS_HLINE);
+			mvadd_wch(y_label_h, graph->x + 5 + i, WACS_HLINE);
 			continue ;
 		}
 		double label = (step * ((i * 2) - 0)) / 1000.0;
 		// label = (int)(2 * label + 0.5) / 2.0;
-		mvadd_wch(y_label_h, graph.x + 5 + i, WACS_TTEE);
+		mvadd_wch(y_label_h, graph->x + 5 + i, WACS_TTEE);
 		char buf[10];
 		snprintf(buf, 10, "%.1f", label);
-		centre_str(buf, y_label_h + 1, (graph.x + 5 + i) * 2 + 1);
+		centre_str(buf, y_label_h + 1, (graph->x + 5 + i) * 2 + 1);
 		printw("%.1fs", label);
-		// if (i + 7 < graph.width / 2 && i + 18 >= graph.width / 2)
+		// if (i + 7 < graph->width / 2 && i + 18 >= graph->width / 2)
 		// {
 		// 	attrset(COLOR_PAIR(CYAN_FG));
-		// 	mvprintw(height + 1, graph.x + 9 + i, "TIME");
+		// 	mvprintw(height + 1, graph->x + 9 + i, "TIME");
 		// 	attrset(COLOR_PAIR(DEFAULT_COLS));
 		// }
 	}
-	mvadd_wch(graph.y - 1, tester->env->win_width - 22, WACS_RTEE);
+	mvadd_wch(graph->y - 1, tester->env->win_width - 22, WACS_RTEE);
 	attrset(A_BOLD);
 	printw(" Window: ");
-	if (tester->options.graph_type == 1)
+	if (tester->graph.flags & GR_MTIME)
 	{
 		attrset(COLOR_PAIR(graph_col) | A_BOLD);
-		printw("%5ld ", tester->options.graph_win_size);
+		printw("%5ld ", tester->graph.time_window);
 		attrset(COLOR_PAIR(DEFAULT_COLS) | A_NORMAL);
 		printw("ms ");
 	}
 	else
 	{
 		attrset(COLOR_PAIR(graph_col) | A_BOLD);
-		printw(" %2d ", tester->options.rolling_key_window);
+		printw(" %2d ", tester->graph.rolling_key_window);
 		attrset(COLOR_PAIR(DEFAULT_COLS) | A_NORMAL);
 		printw("Keys ");
 	}
 	add_wch(WACS_LTEE);
 	if (rolling != NULL)
 		ft_lstclear(&rolling, free);
-	free(graph.points);
-	free(graph.normalised);
-	close(graph.logfd);
+	free(graph->points);
+	free(graph->normalised);
+	for (int i = 0; i < 25; i++)
+	{
+		dprintf(graph->logfd, "%ls\t", tester->graphchars[i].chars);
+		for (int j = 0; j < 8; j++)
+		{
+			u_char	c = ((u_char *)tester->graphchars[i].chars)[j];
+			for (int k = 7; k >= 0; k--)
+				dprintf(graph->logfd, "%d", (c >> k) & 1);
+			dprintf(graph->logfd, " ");
+		}
+		dprintf(graph->logfd, "\n\n");
+	}
+	cchar_t	ch;
+	mvin_wch(tester->env->win_height - 6, tester->env->win_width / 2, &ch);
+	dprintf(graph->logfd, "char: <\e[4%dm%ls\e[m>\n", ch.chars[0] == ' ' ? 2 : 1, ch.chars);
+	close(graph->logfd);
 }

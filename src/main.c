@@ -187,6 +187,7 @@ void	init(t_typer *tester)
 	setcchar(&tester->boxchars[6], L"├", 0, 0, NULL);
 	setcchar(&tester->boxchars[7], L"┤", 0, 0, NULL);
 	set_graphcars(tester);
+	set_graphcars2(tester);
 	tester->env = env;
 	env->min_height = MIN_HEIGHT_SMALL;
 	env->min_width = MIN_WIDTH_SMALL;

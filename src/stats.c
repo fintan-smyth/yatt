@@ -278,7 +278,7 @@ void	render_stats(t_typer *tester)
 	attron(COLOR_PAIR(DEFAULT_COLS));
 	printw("' to toggle graph ");
 	add_wch(&boxchars[6]);
-	if (tester->options.graph)
+	if (tester->graph.flags & GR_ENABLED)
 	{
 		// line = min_int(tester->env->win_height - 13, tester->env->win_height / 2 + 1);
 		draw_graph(tester, tester->env->win_height - line - 2, (t_point){1, line + 1});
@@ -293,11 +293,11 @@ int	stats_screen(t_typer *tester)
 	char	c;
 	int		retval;
 
-	tester->options.graph = 0;
-	tester->options.graph_type = 0;
-	tester->options.graph_win_size = 1000;
-	tester->options.rolling_key_window = 10;
-	tester->graph_word = NULL;
+	tester->graph.flags &= ~GR_ENABLED;
+	tester->graph.flags &= ~GR_MTIME;
+	tester->graph.time_window = 1000;
+	tester->graph.rolling_key_window = 10;
+	tester->graph.selected = NULL;
 	c = 0;
 	while (1)
 	{
@@ -314,44 +314,46 @@ int	stats_screen(t_typer *tester)
 		else if (c == 'o')
 			exec_render_func(tester, render_options);
 		else if (c == 'g')
-			tester->options.graph = !tester->options.graph;
+			tester->graph.flags ^= GR_ENABLED;
 		else if (c == 't')
-			tester->options.graph_type = !tester->options.graph_type;
+			tester->graph.flags ^= GR_MTIME;
 		else if (c == 'k')
 		{
-			if (tester->options.graph_type == 1 && tester->options.graph_win_size < 10000)
-				tester->options.graph_win_size += 500;
-			else if (tester->options.graph_type == 0 && tester->options.rolling_key_window < 50)
-				tester->options.rolling_key_window += 5;
+			if (tester->graph.flags & GR_MTIME && tester->graph.time_window < 10000)
+				tester->graph.time_window += 500;
+			if (!(tester->graph.flags & GR_MTIME) && tester->graph.rolling_key_window < 50)
+				tester->graph.rolling_key_window += 5;
 		}
 		else if (c == 'j')
 		{
-			if (tester->options.graph_type == 1 && tester->options.graph_win_size > 1000)
-				tester->options.graph_win_size -= 500;
-			else if (tester->options.graph_type == 0 && tester->options.rolling_key_window > 5)
-				tester->options.rolling_key_window -= 5;
+			if (tester->graph.flags & GR_MTIME && tester->graph.time_window > 1000)
+				tester->graph.time_window -= 500;
+			if (!(tester->graph.flags & GR_MTIME) && tester->graph.rolling_key_window > 5)
+				tester->graph.rolling_key_window -= 5;
 		}
 		else if (c == 'h')
 		{
-			if (tester->graph_word == NULL)
-				tester->graph_word = get_last_word(tester->wordlist);
-			else if (tester->graph_word != tester->wordlist)
-				tester->graph_word = tester->graph_word->prev;
+			if (tester->graph.selected == NULL)
+				tester->graph.selected = get_last_word(tester->wordlist);
+			else if (tester->graph.selected != tester->wordlist)
+				tester->graph.selected = tester->graph.selected->prev;
 			else
-				tester->graph_word = NULL;
+				tester->graph.selected = NULL;
 		}
 		else if (c == 'l')
 		{
-			if (tester->graph_word == NULL)
-				tester->graph_word = tester->wordlist;
-			else if (tester->graph_word != get_last_word(tester->wordlist))
-				tester->graph_word = tester->graph_word->next;
+			if (tester->graph.selected == NULL)
+				tester->graph.selected = tester->wordlist;
+			else if (tester->graph.selected != get_last_word(tester->wordlist))
+				tester->graph.selected = tester->graph.selected->next;
 			else
-				tester->graph_word = NULL;
+				tester->graph.selected = NULL;
 		}
+		else if (c == 'f')
+			tester->graph.flags ^= GR_FILLED;
 		exec_render_func(tester, render_stats);
 		c = ft_tolower(getchar_nb(tester, render_stats));
 	}
-	tester->graph_word = NULL;
+	tester->graph.selected = NULL;
 	return (retval);
 }
