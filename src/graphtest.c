@@ -291,12 +291,12 @@ void	normalise_points(t_graph *graph)
 	// ceiling = find_ceiling(graph, max, floor, 2);
 	ceiling = find_ceiling_step(graph, max, floor);
 
-	dprintf(graph->logfd, "labels: %d step: %d ceiling: %d max: %.2f min: %.2f\n",
-			(graph->height - 1) / graph->y_label_step,
-		 	graph->y_label_step,
-			ceiling,
-			max,
-			min);
+	// dprintf(graph->logfd, "labels: %d step: %d ceiling: %d max: %.2f min: %.2f\n",
+	// 		(graph->height - 1) / graph->y_label_step,
+	// 	 	graph->y_label_step,
+	// 		ceiling,
+	// 		max,
+	// 		min);
 	double	scalar = (double)(graph->height - 1) / (ceiling - floor);
 
 	for (size_t i = 0; i < graph->n_points; i++)
@@ -350,7 +350,7 @@ size_t	find_time_ceiling_step(t_graph *graph, size_t time)
 	}
 	graph->x_label_step = min_index + 10;
 	free(ceilings);
-	dprintf(graph->logfd, "time: %.2f ceiling: %ld step: %d\n", time / 1000.0, min, graph->x_label_step);
+	// dprintf(graph->logfd, "time: %.2f ceiling: %ld step: %d\n", time / 1000.0, min, graph->x_label_step);
 	return (min);
 }
 
@@ -386,7 +386,7 @@ void	plot_points(t_graph *graph, t_list *tenkey_avg)
 		current_time += step;
 		i++;
 	}
-	dprintf(graph->logfd, "stat_time: %ld i: %ld no_points: %ld\n", stat->time, i, graph->n_points);
+	// dprintf(graph->logfd, "stat_time: %ld i: %ld no_points: %ld\n", stat->time, i, graph->n_points);
 	interpolate_points(graph);
 	// size_t	height = 205;
 	// size_t	fifth = graph->n_points / 5;
@@ -455,7 +455,7 @@ void	plot_points_time(t_typer *tester, t_graph *graph)
 		if (post_inp == NULL)
 			break ;
 	}
-	dprintf(graph->logfd, "win_end: %.2fd i: %ld no_points: %ld\n", window_end, i, graph->n_points);
+	// dprintf(graph->logfd, "win_end: %.2fd i: %ld no_points: %ld\n", window_end, i, graph->n_points);
 	// endwin();
 	// for (i = 0; i < graph->n_points; i++)
 	// 	printf("time: %ld speed: %.1f\n", i * step, graph->points[i]);
@@ -620,8 +620,8 @@ void	draw_graph(t_typer *tester, int height, t_point pos)
 	t_list	*rolling = NULL;
 	t_graph	*graph = &tester->graph;
 	
-	unlink("./graphlog");
-	graph->logfd = open("./graphlog", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	// unlink("./graphlog");
+	// graph->logfd = open("./graphlog", O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	graph->x = pos.x;
 	graph->y = pos.y;
 	graph->width = tester->env->win_width - 2;
@@ -728,20 +728,20 @@ void	draw_graph(t_typer *tester, int height, t_point pos)
 		ft_lstclear(&rolling, free);
 	free(graph->points);
 	free(graph->normalised);
-	for (int i = 0; i < 25; i++)
-	{
-		dprintf(graph->logfd, "%ls\t", tester->graphchars[i].chars);
-		for (int j = 0; j < 8; j++)
-		{
-			u_char	c = ((u_char *)tester->graphchars[i].chars)[j];
-			for (int k = 7; k >= 0; k--)
-				dprintf(graph->logfd, "%d", (c >> k) & 1);
-			dprintf(graph->logfd, " ");
-		}
-		dprintf(graph->logfd, "\n\n");
-	}
+	// for (int i = 0; i < 25; i++)
+	// {
+	// 	dprintf(graph->logfd, "%ls\t", tester->graphchars[i].chars);
+	// 	for (int j = 0; j < 8; j++)
+	// 	{
+	// 		u_char	c = ((u_char *)tester->graphchars[i].chars)[j];
+	// 		for (int k = 7; k >= 0; k--)
+	// 			dprintf(graph->logfd, "%d", (c >> k) & 1);
+	// 		dprintf(graph->logfd, " ");
+	// 	}
+	// 	dprintf(graph->logfd, "\n\n");
+	// }
 	cchar_t	ch;
 	mvin_wch(tester->env->win_height - 6, tester->env->win_width / 2, &ch);
-	dprintf(graph->logfd, "char: <\e[4%dm%ls\e[m>\n", ch.chars[0] == ' ' ? 2 : 1, ch.chars);
-	close(graph->logfd);
+	// dprintf(graph->logfd, "char: <\e[4%dm%ls\e[m>\n", ch.chars[0] == ' ' ? 2 : 1, ch.chars);
+	// close(graph->logfd);
 }
