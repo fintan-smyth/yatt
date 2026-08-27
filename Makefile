@@ -36,7 +36,7 @@ install: $(NAME)
 	@mkdir -p $(CONFIG_DIR)
 	@cp -n -v ./default.cfg $(CONFIG_DIR)/yatt.cfg
 	@cp -fr  ./lang $(CONFIG_DIR)
-	@cp -vf ./yatt $(BIN_DIR)/yatt
+	@cp -vfr ./yatt $(BIN_DIR)/yatt
 
 $(NAME): $(LIBFT) $(BUILD_DIR) $(OBJ)
 	$(CC) $(CFLAGS) $(DBG_FLAGS) $(OBJ) -o $(NAME) -L ./libft -lft -lncursesw -lm
